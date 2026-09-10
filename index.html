@@ -266,7 +266,9 @@ function renderPeriod(){
     const sub = m.mode==="stock" ? `${nf(CAP)} / ${nf(q.fact,0)} т на ${fmtD(agg.d)}`
               : m.mode==="val"   ? `в среднем ${nf(q.plan, m.dec||0)} / ${nf(q.fact, m.dec||0)} ${m.u}`
               :                    `${nf(q.plan, 0)} / ${nf(q.fact, 0)} ${m.u} за период`;
-    const numTxt = shown==null ? "—" : (m.mode==="val" ? nf(shown,m.dec||1)+`<i> ${m.u}</i>` : nf(shown,0)+"<i>%</i>");
+    const numTxt = shown==null
+      ? (m.mode==="pct" && q.fact!=null ? nf(q.fact,0)+`<i> ${m.u}</i>` : "—")
+      : (m.mode==="val" ? nf(shown,m.dec||1)+`<i> ${m.u}</i>` : nf(shown,0)+"<i>%</i>");
     const ref = m.mode==="stock" ? "" : `<div class="ref" style="left:${(100/scale*100).toFixed(1)}%"></div>`;
     return `<div class="row st-${st}">
       <div class="nm">${m.n}<span>${sub}</span></div>
@@ -304,7 +306,8 @@ function render(){
     const sub = m.mode==="stock"
       ? `${nf(CAP)} / ${nf(q.fact,0)} т`
       : `${nf(q.plan, m.dec||0)} / ${nf(q.fact, m.dec||0)} ${m.u}`;
-    const numTxt = shown==null ? "—"
+    const numTxt = shown==null
+      ? (m.mode==="pct" && q.fact!=null ? nf(q.fact,0)+`<i> ${m.u}</i>` : "—")
       : (m.mode==="val" ? nf(shown,m.dec||1)+`<i> ${m.u}</i>` : nf(shown,0)+"<i>%</i>");
     const ref = m.mode==="stock" ? "" : `<div class="ref" style="left:${(100/scale*100).toFixed(1)}%"></div>`;
     return `<div class="row st-${st}">
