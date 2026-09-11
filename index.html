@@ -56,10 +56,24 @@ select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outlin
   color:var(--ink);border-radius:9px;cursor:pointer;line-height:1}
 .nav button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
 .nav button:disabled{opacity:.35;cursor:default}
+.vtabs{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.vtab{flex:1;font:inherit;font-size:13px;font-weight:600;padding:9px 2px;min-width:0;border:0;border-right:1px solid var(--line);
+  background:var(--surface);color:var(--ink-2);cursor:pointer}
+.vtab:last-child{border-right:0} .vtab[aria-pressed="true"]{background:var(--accent);color:#fff}
+.strip{display:flex;flex-wrap:nowrap!important;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.mon{flex:0 0 auto;font:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);
+  color:var(--ink-2);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.mon[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.wchip{flex:0 0 auto;font:inherit;display:flex;flex-direction:column;align-items:center;min-width:64px;padding:5px 9px;
+  border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink-2);cursor:pointer;line-height:1.15}
+.wchip b{font-size:15px} .wchip span{font-size:10.5px;white-space:nowrap;opacity:.85}
+.wchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.selrow{display:flex;align-items:center;gap:10px;margin-top:10px;border-top:1px solid var(--line-soft);padding-top:10px}
+.selrow .today{margin-left:0}
 .modes{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
 .mode{font:inherit;font-weight:600;font-size:14px;padding:7px 13px;border:0;background:var(--surface);color:var(--ink-2);cursor:pointer}
 .mode[aria-pressed="true"]{background:var(--accent);color:#fff}
-.ctl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1}
+.ctl{display:block}
 .ctl[hidden]{display:none}
 .dates{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--ink-2)}
 input[type=date]{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);
@@ -71,8 +85,7 @@ input[type=date]:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 .warn{font-size:13px;color:var(--warn-t);margin:8px 0 0}
 .today{margin-left:auto;font-size:14px;color:var(--ink-2)}
 .today b{color:var(--ink);font-weight:600}
-.days{display:flex;gap:5px;overflow-x:auto;padding:12px 2px 3px;margin-top:10px;
-  border-top:1px solid var(--line-soft);scrollbar-width:thin}
+.days{display:flex;gap:5px;overflow-x:auto;padding:10px 2px 3px;margin-top:8px;scrollbar-width:thin}
 .day{flex:0 0 auto;min-width:38px;height:36px;border:1px solid var(--line);background:var(--surface);
   color:var(--ink-2);border-radius:9px;font:500 14px ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;cursor:pointer;
   display:flex;align-items:center;justify-content:center}
@@ -114,26 +127,27 @@ input[type=date]:focus-visible{outline:2px solid var(--accent);outline-offset:2p
   </div>
 
   <div class="panel picker">
-    <div class="picker-row">
-      <div class="modes" role="group" aria-label="Режим">
-        <button class="mode" id="mode-day" aria-pressed="true">День</button>
-        <button class="mode" id="mode-per" aria-pressed="false">Период</button>
-      </div>
-      <div class="ctl" id="dayctl">
-        <select id="mon" aria-label="Месяц"></select>
-        <div class="nav">
-          <button id="prev" aria-label="Предыдущий день">‹</button>
-          <button id="next" aria-label="Следующий день">›</button>
-        </div>
-        <div class="today">Выбрано: <b id="cur">—</b></div>
-      </div>
-      <div class="ctl" id="perctl" hidden>
-        <div class="dates">с <input type="date" id="from" aria-label="Начало периода"> по <input type="date" id="to" aria-label="Конец периода"></div>
-        <div class="chips" id="chips"></div>
-        <div class="today">Выбрано: <b id="pcur">—</b></div>
-      </div>
+    <div class="vtabs" role="tablist" aria-label="Режим">
+      <button class="vtab" data-mode="day" aria-pressed="true">Дни</button>
+      <button class="vtab" data-mode="week" aria-pressed="false">Недели</button>
+      <button class="vtab" data-mode="month" aria-pressed="false">Месяцы</button>
+      <button class="vtab" data-mode="year" aria-pressed="false">Год</button>
+      <button class="vtab" data-mode="per" aria-pressed="false">Период</button>
     </div>
-    <div class="days" id="days" role="group" aria-label="Дни месяца"></div>
+    <div class="ctl" id="dayctl">
+      <div class="chips strip" id="monchips"></div>
+      <div class="days" id="days" role="group" aria-label="Дни месяца"></div>
+    </div>
+    <div class="ctl" id="weekctl" hidden><div class="chips strip" id="weekchips"></div></div>
+    <div class="ctl" id="monthctl" hidden><div class="chips strip" id="monthchips"></div></div>
+    <div class="ctl" id="perctl" hidden>
+      <div class="dates">с <input type="date" id="from" aria-label="Начало периода"> по <input type="date" id="to" aria-label="Конец периода"></div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="selrow"><div class="nav" id="daynav">
+        <button id="prev" aria-label="Предыдущий день">‹</button>
+        <button id="next" aria-label="Следующий день">›</button>
+      </div><div class="today">Выбрано: <b id="cur">—</b></div></div>
     <div class="warn" id="pwarn" hidden></div>
   </div>
 
@@ -172,8 +186,19 @@ const MONS = Object.keys(DATA);
 const ALL = MONS.flatMap(m=>DATA[m]);
 const FIRST = ALL[0].d;
 const LAST = ALL.filter(r=>r.ubl && r.ubl[1]!=null).slice(-1)[0].d;   // последний день с данными
-let mon = MONS[MONS.length-1], day = null;
-let mode = "day", pfrom = null, pto = null;
+const MG = ["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+const isoWeek = d => { const x=new Date(Date.UTC(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8,10))); const day=x.getUTCDay()||7;
+  x.setUTCDate(x.getUTCDate()+4-day); const y0=new Date(Date.UTC(x.getUTCFullYear(),0,1)); return Math.ceil((((x-y0)/864e5)+1)/7); };
+const WEEKS = (()=>{ const w={}; for(const r of ALL){ if(r.d>LAST) continue; const n=isoWeek(r.d); (w[n]=w[n]||[]).push(r); }
+  return Object.keys(w).map(Number).sort((a,b)=>a-b).filter(n=>w[n].some(r=>r.ubl&&r.ubl[1]!=null))
+    .map(n=>{ const rs=w[n]; const a=rs[0].d,b=rs[rs.length-1].d; const da=+a.slice(8,10), db=+b.slice(8,10);
+      const lab = a.slice(5,7)===b.slice(5,7) ? `${da}–${db} ${MG[+b.slice(5,7)-1]}` : `${da} ${MG[+a.slice(5,7)-1]} – ${db} ${MG[+b.slice(5,7)-1]}`;
+      return {n, from:a, to:b, lab}; }); })();
+const MONTHS = MONS.map(name=>{ const rs=DATA[name].filter(r=>r.d<=LAST); return {name, from:rs[0].d, to:rs[rs.length-1].d,
+  has: rs.some(r=>r.ubl&&r.ubl[1]!=null)}; }).filter(m=>m.has);
+
+let mode = "day", mon = MONS[MONS.length-1], day = null;
+let week = WEEKS[WEEKS.length-1].n, moSel = MONTHS[MONTHS.length-1].name, pfrom = null, pto = null;
 
 const nf = (v,d=0)=> v==null ? "—" :
   v.toLocaleString("ru-RU",{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -181,7 +206,8 @@ const pctOf = (p,f)=> (p&&f!=null) ? f/p*100 : null;
 function status(m, p, f){
   if(m.mode==="stock"){ if(p==null) return "none"; return p<80?"good":p<90?"warn":"crit"; }
   if(m.abs){ if(f==null) return "none"; return f<m.abs[0]?"crit":f<m.abs[1]?"warn":"good"; }
-  const r = pctOf(p,f); if(r==null) return "none";
+  const r = pctOf(p,f);
+  if(r==null) return (m.mode==="pct" && !m.inv && !p && f>0) ? "good" : "none";   // сверх плана при нулевом плане
   if(m.inv) return r<=100?"good":r<120?"warn":"crit";
   const b = m.bands || [90, 98];
   return r<b[0]?"crit":r<b[1]?"warn":"good";
@@ -192,14 +218,13 @@ function primary(m, rec){
   if(m.mode==="val") return {num:f, plan:p, fact:f};
   return {num:pctOf(p,f), plan:p, fact:f};
 }
+function rangeRows(){ return mode==="day" ? DATA[mon] : ALL.filter(r=>r.d>=pfrom && r.d<=pto); }
 function seriesOf(m){
-  const src = mode==="per" ? ALL.filter(r=>r.d>=pfrom && r.d<=pto) : DATA[mon];
-  return src.map(r=>{
+  return rangeRows().map(r=>{
     const q = primary(m,r);
     return {d:r.d, v:q.num, st:status(m, m.mode==="stock"?q.num:q.plan, m.mode==="stock"?null:q.fact)};
   });
 }
-
 function sparkline(m, sel){
   const all = seriesOf(m), pts = all.filter(x=>x.v!=null);
   if(pts.length<2) return '<svg class="spark" aria-hidden="true"></svg>';
@@ -211,7 +236,7 @@ function sparkline(m, sel){
   const si = pts.findIndex(x=>x.d===sel);
   const dot = si>=0 ? `<circle class="sel" cx="${xs(si).toFixed(1)}" cy="${ys(pts[si].v).toFixed(1)}" r="3.8"></circle>` : "";
   const hits = pts.map((x,i)=>
-    `<rect x="${(xs(i)-5).toFixed(1)}" y="0" width="10" height="${H}" fill="transparent" data-d="${x.d}"><title>${new Date(x.d).getDate()} — ${nf(x.v,1)}</title></rect>`).join("");
+    `<rect x="${(xs(i)-5).toFixed(1)}" y="0" width="10" height="${H}" fill="transparent" data-d="${x.d}"><title>${+x.d.slice(8,10)} ${MG[+x.d.slice(5,7)-1]} — ${nf(x.v,1)}</title></rect>`).join("");
   return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Динамика">
     <path d="${dpath}" fill="none" stroke="var(--spark)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"></path>${dot}${hits}</svg>`;
 }
@@ -224,12 +249,11 @@ function aggregate(from,to){
     const k = m.k;
     if(m.mode==="pct"){
       const p = rs.reduce((a,r)=>a+(r[k][0]||0),0), f = rs.reduce((a,r)=>a+(r[k][1]||0),0);
-      const any = rs.some(r=>r[k][1]!=null);
-      out[k] = [p||null, any?f:null];
+      out[k] = [p||null, rs.some(r=>r[k][1]!=null)?f:null];
     } else if(m.mode==="val"){
       const fs = rs.filter(r=>r[k][1]!=null);
       out[k] = [k==="us" ? 98 : mean(fs.map(r=>r[k][0]).filter(v=>v!=null)), mean(fs.map(r=>r[k][1]))];
-    } else {   // остатки — на конец периода
+    } else {
       const lastSk = rs.filter(r=>r.sk && r.sk[1]!=null).slice(-1)[0];
       out[k] = lastSk ? lastSk.sk : [null,null];
     }
@@ -247,113 +271,108 @@ const PRESETS = [
   ["с начала года",   ()=>[FIRST, LAST]],
 ];
 
-function renderPeriod(){
-  const warn = document.getElementById("pwarn"); warn.hidden = true;
-  if(!pfrom || !pto){ [pfrom,pto] = PRESETS[2][1](); }
-  if(pfrom > pto){ [pfrom,pto] = [pto,pfrom]; }
-  if(pfrom < FIRST) pfrom = FIRST;
-  if(pto > LAST){ pto = LAST; warn.textContent = "Данные есть по " + fmtD(LAST) + " — конец периода сдвинут."; warn.hidden = false; }
-  document.getElementById("from").value = pfrom; document.getElementById("to").value = pto;
-  const agg = aggregate(pfrom, pto);
-  document.getElementById("pcur").textContent = fmtD(pfrom) + " — " + fmtD(pto) + " · " + agg.n + " дн. с данными";
-  document.getElementById("days").innerHTML = "";
+function rowHtml(m, q, agg, sel){
+  const st = status(m, m.mode==="stock"?q.num:q.plan, m.mode==="stock"?null:q.fact);
+  const shown = q.num, scale = m.mode==="stock" ? 100 : 140;
+  const over = m.mode==="pct" && !m.inv && shown==null && !q.plan && q.fact>0;      // сверх плана
+  const w = shown==null ? (over?100:0) : Math.max(1.5, Math.min(shown,scale)/scale*100);
+  const sub = m.mode==="stock" ? `${nf(CAP)} / ${nf(q.fact,0)} т${agg?" на "+fmtD(agg.d):""}`
+            : m.mode==="val"   ? `${agg?"в среднем ":""}${nf(q.plan, m.dec||0)} / ${nf(q.fact, m.dec||0)} ${m.u}`
+            : over             ? `план не задан · сверх плана`
+            :                    `${nf(q.plan, 0)} / ${nf(q.fact, 0)} ${m.u}${agg?" за период":""}`;
+  const numTxt = shown==null
+    ? (m.mode==="pct" && q.fact!=null ? nf(q.fact,0)+`<i> ${m.u}</i>` : "—")
+    : (m.mode==="val" ? nf(shown,m.dec||1)+`<i> ${m.u}</i>` : nf(shown,0)+"<i>%</i>");
+  const ref = m.mode==="stock" ? "" : `<div class="ref" style="left:${(100/scale*100).toFixed(1)}%"></div>`;
+  return `<div class="row st-${st}">
+    <div class="nm">${m.n}<span>${sub}</span></div>
+    <div class="val">${numTxt}</div>
+    <div class="track"><div class="fill" style="width:${w.toFixed(1)}%"></div>${ref}</div>
+    ${sparkline(m, sel)}
+  </div>`;
+}
 
-  document.getElementById("rows").innerHTML = METRICS.map(m=>{
-    const q = primary(m,agg);
-    const st = status(m, m.mode==="stock"?q.num:q.plan, m.mode==="stock"?null:q.fact);
-    const shown = q.num, scale = m.mode==="stock" ? 100 : 140;
-    const w = shown==null ? 0 : Math.max(1.5, Math.min(shown,scale)/scale*100);
-    const sub = m.mode==="stock" ? `${nf(CAP)} / ${nf(q.fact,0)} т на ${fmtD(agg.d)}`
-              : m.mode==="val"   ? `в среднем ${nf(q.plan, m.dec||0)} / ${nf(q.fact, m.dec||0)} ${m.u}`
-              :                    `${nf(q.plan, 0)} / ${nf(q.fact, 0)} ${m.u} за период`;
-    const numTxt = shown==null
-      ? (m.mode==="pct" && q.fact!=null ? nf(q.fact,0)+`<i> ${m.u}</i>` : "—")
-      : (m.mode==="val" ? nf(shown,m.dec||1)+`<i> ${m.u}</i>` : nf(shown,0)+"<i>%</i>");
-    const ref = m.mode==="stock" ? "" : `<div class="ref" style="left:${(100/scale*100).toFixed(1)}%"></div>`;
-    return `<div class="row st-${st}">
-      <div class="nm">${m.n}<span>${sub}</span></div>
-      <div class="val">${numTxt}</div>
-      <div class="track"><div class="fill" style="width:${w.toFixed(1)}%"></div>${ref}</div>
-      ${sparkline(m, null)}
-    </div>`;
-  }).join("");
+function renderRange(from, to, header){
+  pfrom = from; pto = to;
+  const agg = aggregate(from, to);
+  document.getElementById("cur").textContent = header + " · " + agg.n + " дн. с данными";
+  document.getElementById("rows").innerHTML = METRICS.map(m=>rowHtml(m, primary(m,agg), agg, null)).join("");
 }
 
 function render(){
-  if(mode==="per"){ renderPeriod(); return; }
+  const warn = document.getElementById("pwarn"); warn.hidden = true;
+  document.getElementById("daynav").hidden = mode!=="day";
+  if(mode==="week"){
+    const w = WEEKS.find(x=>x.n===week) || WEEKS[WEEKS.length-1]; week = w.n;
+    document.getElementById("weekchips").innerHTML = [...WEEKS].reverse().map(x=>
+      `<button class="wchip" data-w="${x.n}" aria-pressed="${x.n===week}"><b>${x.n}</b><span>${x.lab}</span></button>`).join("");
+    renderRange(w.from, w.to, `Неделя ${w.n} · ${fmtD(w.from)} — ${fmtD(w.to)}`); return;
+  }
+  if(mode==="month"){
+    const mo = MONTHS.find(x=>x.name===moSel) || MONTHS[MONTHS.length-1]; moSel = mo.name;
+    document.getElementById("monthchips").innerHTML = [...MONTHS].reverse().map(x=>
+      `<button class="mon" data-mo="${x.name}" aria-pressed="${x.name===moSel}">${x.name}</button>`).join("");
+    const part = mo.to===LAST && DATA[mo.name].length>DATA[mo.name].filter(r=>r.d<=LAST).length ? " · по "+fmtD(LAST) : "";
+    renderRange(mo.from, mo.to, `${mo.name}${part}`); return;
+  }
+  if(mode==="year"){ renderRange(FIRST, LAST, `2026 год · ${fmtD(FIRST)} — ${fmtD(LAST)}`); return; }
+  if(mode==="per"){
+    if(!pfrom || !pto || mode!=="per"){ [pfrom,pto] = PRESETS[2][1](); }
+    if(pfrom > pto){ [pfrom,pto] = [pto,pfrom]; }
+    if(pfrom < FIRST) pfrom = FIRST;
+    if(pto > LAST){ pto = LAST; warn.textContent = "Данные есть по " + fmtD(LAST) + " — конец периода сдвинут."; warn.hidden = false; }
+    document.getElementById("from").value = pfrom; document.getElementById("to").value = pto;
+    renderRange(pfrom, pto, `${fmtD(pfrom)} — ${fmtD(pto)}`); return;
+  }
+  // режим «Дни»
   const days = DATA[mon];
   if(!day || !days.some(r=>r.d===day)){
     const filled = days.filter(r=>r.ubl && r.ubl[1]!=null);
     day = (filled.length?filled[filled.length-1]:days[days.length-1]).d;
   }
+  document.getElementById("monchips").innerHTML = [...MONS].reverse().map(m=>
+    `<button class="mon" data-m="${m}" aria-pressed="${m===mon}">${m}</button>`).join("");
   const rec = days.find(r=>r.d===day);
   const dt = new Date(day);
   document.getElementById("cur").textContent =
-    dt.toLocaleDateString("ru-RU",{day:"numeric",month:"long"}) + ", " +
-    dt.toLocaleDateString("ru-RU",{weekday:"long"});
-
+    dt.toLocaleDateString("ru-RU",{day:"numeric",month:"long"}) + ", " + dt.toLocaleDateString("ru-RU",{weekday:"long"});
   document.getElementById("days").innerHTML = days.map(r=>{
     const has = r.ubl && r.ubl[1]!=null;
     return `<button class="day" data-d="${r.d}" ${has?"":"data-empty"} aria-pressed="${r.d===day}">${new Date(r.d).getDate()}</button>`;
   }).join("");
-
-  document.getElementById("rows").innerHTML = METRICS.map(m=>{
-    const q = primary(m,rec);
-    const st = status(m, m.mode==="stock"?q.num:q.plan, m.mode==="stock"?null:q.fact);
-    const shown = m.mode==="stock" ? q.num : q.num;
-    const scale = m.mode==="stock" ? 100 : 140;
-    const w = shown==null ? 0 : Math.max(1.5, Math.min(shown,scale)/scale*100);
-    const sub = m.mode==="stock"
-      ? `${nf(CAP)} / ${nf(q.fact,0)} т`
-      : `${nf(q.plan, m.dec||0)} / ${nf(q.fact, m.dec||0)} ${m.u}`;
-    const numTxt = shown==null
-      ? (m.mode==="pct" && q.fact!=null ? nf(q.fact,0)+`<i> ${m.u}</i>` : "—")
-      : (m.mode==="val" ? nf(shown,m.dec||1)+`<i> ${m.u}</i>` : nf(shown,0)+"<i>%</i>");
-    const ref = m.mode==="stock" ? "" : `<div class="ref" style="left:${(100/scale*100).toFixed(1)}%"></div>`;
-    return `<div class="row st-${st}">
-      <div class="nm">${m.n}<span>${sub}</span></div>
-      <div class="val">${numTxt}</div>
-      <div class="track"><div class="fill" style="width:${w.toFixed(1)}%"></div>${ref}</div>
-      ${sparkline(m, day)}
-    </div>`;
-  }).join("");
-
+  document.getElementById("rows").innerHTML = METRICS.map(m=>rowHtml(m, primary(m,rec), null, day)).join("");
   const idx = days.findIndex(r=>r.d===day);
   document.getElementById("prev").disabled = idx<=0;
   document.getElementById("next").disabled = idx>=days.length-1;
 }
 
-const sel = document.getElementById("mon");
-sel.innerHTML = MONS.map(m=>`<option${m===mon?" selected":""}>${m}</option>`).join("");
-sel.onchange = e => { mon = e.target.value; day = null; render(); };
-document.getElementById("prev").onclick = ()=>{ const d=DATA[mon]; const i=d.findIndex(r=>r.d===day); if(i>0){day=d[i-1].d;render();} };
-document.getElementById("next").onclick = ()=>{ const d=DATA[mon]; const i=d.findIndex(r=>r.d===day); if(i<d.length-1){day=d[i+1].d;render();} };
-document.addEventListener("click", e=>{
-  const b = e.target.closest(".day"); if(b && !b.hasAttribute("data-empty")){ day=b.dataset.d; render(); return; }
-  const r = e.target.closest("rect[data-d]"); if(r){ day=r.dataset.d; mon = MONS.find(m=>DATA[m].some(x=>x.d===day)) || mon;
-    document.getElementById("mon").value = mon; if(mode==="per") setMode("day"); else render(); }
-});
 function setMode(m){
   mode = m;
-  document.getElementById("mode-day").setAttribute("aria-pressed", m==="day");
-  document.getElementById("mode-per").setAttribute("aria-pressed", m==="per");
-  document.getElementById("dayctl").hidden = m!=="day";
-  document.getElementById("perctl").hidden = m!=="per";
-  document.getElementById("days").hidden = m!=="day";
-  if(m==="day") document.getElementById("pwarn").hidden = true;
+  for(const b of document.querySelectorAll(".vtab")) b.setAttribute("aria-pressed", b.dataset.mode===m);
+  for(const [id,mm] of [["dayctl","day"],["weekctl","week"],["monthctl","month"],["perctl","per"]])
+    document.getElementById(id).hidden = mm!==m;
+  if(m==="per" && !(pfrom && pto && document.getElementById("from").value)) { [pfrom,pto] = PRESETS[2][1](); }
   render();
 }
-document.getElementById("mode-day").onclick = ()=>setMode("day");
-document.getElementById("mode-per").onclick = ()=>setMode("per");
+document.querySelector(".vtabs").onclick = e => { const b=e.target.closest(".vtab"); if(b) setMode(b.dataset.mode); };
+document.getElementById("monchips").onclick = e => { const b=e.target.closest(".mon"); if(b){ mon=b.dataset.m; day=null; render(); } };
+document.getElementById("weekchips").onclick = e => { const b=e.target.closest(".wchip"); if(b){ week=+b.dataset.w; render(); } };
+document.getElementById("monthchips").onclick = e => { const b=e.target.closest(".mon"); if(b){ moSel=b.dataset.mo; render(); } };
+document.getElementById("prev").onclick = ()=>{ const d=DATA[mon]; const i=d.findIndex(r=>r.d===day); if(i>0){day=d[i-1].d;render();} };
+document.getElementById("next").onclick = ()=>{ const d=DATA[mon]; const i=d.findIndex(r=>r.d===day); if(i<d.length-1){day=d[i+1].d;render();} };
 const fromEl = document.getElementById("from"), toEl = document.getElementById("to");
 fromEl.min = toEl.min = FIRST; fromEl.max = toEl.max = LAST;
 fromEl.onchange = ()=>{ if(fromEl.value){ pfrom = fromEl.value; render(); } };
 toEl.onchange   = ()=>{ if(toEl.value){ pto = toEl.value; render(); } };
 document.getElementById("chips").innerHTML = PRESETS.map((p,i)=>`<button class="chip" data-p="${i}">${p[0]}</button>`).join("");
 document.getElementById("chips").onclick = e=>{ const c=e.target.closest(".chip"); if(c){ [pfrom,pto] = PRESETS[+c.dataset.p][1](); render(); } };
+document.addEventListener("click", e=>{
+  const b = e.target.closest(".day"); if(b && !b.hasAttribute("data-empty")){ day=b.dataset.d; render(); return; }
+  const r = e.target.closest("rect[data-d]"); if(r){ day=r.dataset.d; mon = MONS.find(m=>DATA[m].some(x=>x.d===day)) || mon;
+    if(mode!=="day") setMode("day"); else render(); }
+});
 document.addEventListener("keydown", e=>{
-  if(mode==="per") return;
-  if(e.target.tagName==="SELECT") return;
+  if(mode!=="day" || e.target.tagName==="INPUT") return;
   if(e.key==="ArrowLeft") document.getElementById("prev").click();
   if(e.key==="ArrowRight") document.getElementById("next").click();
 });
