@@ -336,7 +336,7 @@ function render(){
   const dt = new Date(day);
   document.getElementById("cur").textContent =
     dt.toLocaleDateString("ru-RU",{day:"numeric",month:"long"}) + ", " + dt.toLocaleDateString("ru-RU",{weekday:"long"});
-  document.getElementById("days").innerHTML = days.map(r=>{
+  document.getElementById("days").innerHTML = [...days].reverse().map(r=>{
     const has = r.ubl && r.ubl[1]!=null;
     return `<button class="day" data-d="${r.d}" ${has?"":"data-empty"} aria-pressed="${r.d===day}">${new Date(r.d).getDate()}</button>`;
   }).join("");
