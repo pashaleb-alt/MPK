@@ -378,6 +378,7 @@ document.addEventListener("keydown", e=>{
   if(e.key==="ArrowLeft") document.getElementById("prev").click();
   if(e.key==="ArrowRight") document.getElementById("next").click();
 });
+(()=>{ const h=location.hash.slice(1); if(/^\d{4}-\d{2}-\d{2}$/.test(h)){ const m=MONS.find(mm=>DATA[mm].some(r=>r.d===h)); if(m){ mon=m; day=h; } } })();
 render();
 </script>
 
