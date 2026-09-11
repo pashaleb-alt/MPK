@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Показатели МПК 2026 — директор</title>
+<style>
+:root{
+  --ground:#f2f5f9; --surface:#fff; --line:#e3e9f2; --line-soft:#eef2f7;
+  --ink:#0f1722; --ink-2:#5a6b80; --ink-3:#8b9aad;
+  --accent:#2a78d6; --accent-soft:#e8f1fd; --accent-2:#a9c8ef;
+  --good:#0ca30c; --good-t:#0a7c0a; --good-bg:#e7f5e7;
+  --warn:#fab219; --warn-t:#8a5f08; --warn-bg:#fdf3de;
+  --crit:#d03b3b; --crit-t:#b02a2a; --crit-bg:#fbe9e9;
+  --track:#edf1f6;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#12161c; --surface:#191f27; --line:#2a333f; --line-soft:#222a34;
+  --ink:#eef3f9; --ink-2:#9fb0c4; --ink-3:#748498;
+  --accent:#4a92e8; --accent-soft:#17293f; --accent-2:#2f5a8f;
+  --good:#22b422; --good-t:#5cd45c; --good-bg:#162a16;
+  --warn:#e5a416; --warn-t:#f0c153; --warn-bg:#2e2413;
+  --crit:#e05555; --crit-t:#f08585; --crit-bg:#2e1818;
+  --track:#232b36;}}
+:root[data-theme="dark"]{
+  --ground:#12161c; --surface:#191f27; --line:#2a333f; --line-soft:#222a34;
+  --ink:#eef3f9; --ink-2:#9fb0c4; --ink-3:#748498;
+  --accent:#4a92e8; --accent-soft:#17293f; --accent-2:#2f5a8f;
+  --good:#22b422; --good-t:#5cd45c; --good-bg:#162a16;
+  --warn:#e5a416; --warn-t:#f0c153; --warn-bg:#2e2413;
+  --crit:#e05555; --crit-t:#f08585; --crit-bg:#2e1818;
+  --track:#232b36;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font:15px/1.4 -apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 18px 48px}
+h1{font-size:26px;font-weight:700;letter-spacing:-.4px;margin:0}
+.sub{color:var(--ink-3);font-size:13px;margin:4px 0 16px}
+.strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;scrollbar-width:thin}
+.mon{flex:0 0 auto;font:inherit;padding:7px 13px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink-2);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.mon[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.mon.year{margin-left:auto}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.ph{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.ph h2{font-size:17px;font-weight:700;margin:0}
+.ph .note{font-size:12.5px;color:var(--ink-3)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.tile{background:var(--ground);border-radius:11px;padding:11px 13px}
+.tile .l{font-size:12px;color:var(--ink-2);font-weight:600}
+.tile .v{font-size:26px;font-weight:700;letter-spacing:-.6px;font-variant-numeric:tabular-nums;line-height:1.15;margin-top:2px}
+.tile .s{font-size:12px;color:var(--ink-3);margin-top:2px;font-variant-numeric:tabular-nums}
+.st-good .v{color:var(--good-t)} .st-warn .v{color:var(--warn-t)} .st-crit .v{color:var(--crit-t)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:1px}
+.st-good .dot{background:var(--good)} .st-warn .dot{background:var(--warn)} .st-crit .dot{background:var(--crit)} .st-none .dot{background:var(--ink-3)}
+/* строки производства */
+.rows{display:grid;gap:8px}
+.row{display:grid;grid-template-columns:150px 74px 1fr 200px;align-items:center;gap:12px;padding:6px 0;border-top:1px solid var(--line-soft)}
+.row:first-child{border-top:0}
+.row .nm{font-weight:600;font-size:14px} .row .nm small{display:block;font-weight:400;color:var(--ink-3);font-size:11.5px;font-variant-numeric:tabular-nums}
+.row .val{font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;text-align:right}
+.st-good .val{color:var(--good-t)} .st-warn .val{color:var(--warn-t)} .st-crit .val{color:var(--crit-t)} .st-none .val{color:var(--ink-3)}
+.bar{height:10px;border-radius:4px;background:var(--track);position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--ink-3)}
+.st-good .bar i{background:var(--good)} .st-warn .bar i{background:var(--warn)} .st-crit .bar i{background:var(--crit)}
+.bar .ref{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink-3);opacity:.6}
+/* мини-столбики по месяцам */
+.spark{display:flex;align-items:flex-end;gap:2px;height:34px}
+.spark b{flex:1;min-width:6px;border-radius:3px 3px 0 0;background:var(--ink-3);opacity:.45;position:relative}
+.spark b.sel{opacity:1;outline:2px solid var(--ink);outline-offset:1px}
+.spark b.g{background:var(--good)} .spark b.w{background:var(--warn)} .spark b.c{background:var(--crit)}
+.spark b.empty{background:transparent;border-bottom:2px dotted var(--line)}
+/* столбчатая диаграмма по месяцам */
+.chart{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;align-items:end;height:150px;padding-top:18px;position:relative}
+.col{display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative;cursor:pointer}
+.col .lab{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.col .seg{border-radius:3px;margin-top:2px;min-height:0}
+.col .a{background:var(--accent)} .col .b{background:var(--accent-2)}
+.col.g .seg{background:var(--good)} .col.w .seg{background:var(--warn)} .col.c .seg{background:var(--crit)}
+.col.sel .seg{outline:2px solid var(--ink);outline-offset:1px}
+.col.dim .seg{opacity:.55}
+.xl{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;margin-top:6px;font-size:11.5px;color:var(--ink-3);text-align:center}
+.xl span.sel{color:var(--ink);font-weight:700}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px}
+.hl{display:grid;gap:5px}
+.hl h3{font-size:13px;color:var(--ink-2);margin:0 0 4px;font-weight:700}
+.hr{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px}
+.hr .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hr .hb{height:8px;border-radius:3px;background:var(--track);position:relative;grid-column:1/-1;margin-top:-2px}
+.hr .hb i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--accent-2)}
+.hr .hb i.o{background:var(--accent)}
+.hr .n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink-2)} .hr .n b{color:var(--ink)}
+.cehs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
+.ceh h3{font-size:13px;color:var(--ink-2);margin:0 0 6px;font-weight:700}
+.ceh .big{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.4px}
+.ceh .big small{font-size:12px;color:var(--ink-3);font-weight:500;margin-left:6px}
+.st-good .big{color:var(--good-t)} .st-warn .big{color:var(--warn-t)} .st-crit .big{color:var(--crit-t)}
+.foot{font-size:12px;color:var(--ink-3);line-height:1.5;margin-top:8px}
+.empty{color:var(--ink-3);font-size:14px;padding:12px 0}
+@media (max-width:720px){
+  .row{grid-template-columns:1fr 84px;grid-template-rows:auto auto;row-gap:4px} .row .val{white-space:nowrap}
+  .row .bar{grid-column:1/-1} .row .spark{grid-column:1/-1;height:26px}
+  .two{grid-template-columns:1fr} .cehs{grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .mon.year{margin-left:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Показатели МПК 2026</h1>
+  <div class="sub" id="sub"></div>
+  <div class="strip" id="strip"></div>
+
+  <section class="panel" id="p-prod">
+    <div class="ph"><h2>Производство</h2><span class="note" id="prod-note"></span></div>
+    <div class="rows" id="prod-rows"></div>
+    <div class="legend"><span><i style="background:var(--good)"></i>норма</span><span><i style="background:var(--warn)"></i>внимание</span><span><i style="background:var(--crit)"></i>критично</span><span>мини-столбики — % плана по месяцам, выбранный обведён</span></div>
+  </section>
+
+  <section class="panel" id="p-claims">
+    <div class="ph"><h2>Претензии</h2><span class="note" id="cl-note"></span></div>
+    <div class="tiles" id="cl-tiles"></div>
+    <div class="chart" id="cl-chart"></div><div class="xl" id="cl-xl"></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>обоснованные и частично</span><span><i style="background:var(--accent-2)"></i>необоснованные</span><span>щёлкните по столбику — выбрать месяц</span></div>
+    <div class="two"><div class="hl" id="cl-vid"></div><div class="hl" id="cl-ceh"></div></div>
+  </section>
+
+  <section class="panel" id="p-san">
+    <div class="ph"><h2>Санитария: смывы</h2><span class="note" id="sm-note"></span></div>
+    <div class="tiles" id="sm-tiles"></div>
+    <div class="chart" id="sm-chart"></div><div class="xl" id="sm-xl"></div>
+    <div class="legend"><span><i style="background:var(--good)"></i>до 5 %</span><span><i style="background:var(--warn)"></i>5–30 %</span><span><i style="background:var(--crit)"></i>свыше 30 %</span><span>доля несоответствующих смывов</span></div>
+    <div class="cehs" id="sm-cehs"></div>
+  </section>
+
+  <div class="foot" id="foot"></div>
+</div>
+<script>
+const DATA={"prod": {"1": {"ubl": [69930, 67105], "obv": [59081, 60369], "crp": [0, 0], "mkm": [0, 0], "jir": [0, 0], "pad": [0, 0], "us": [98.0, null], "ves": [null, null], "vyh": [75.40000000000005, null], "days": 28}, "2": {"ubl": [59940, 57943], "obv": [59941, 55438], "crp": [1435249.1999999997, 1110238.2000000002], "mkm": [275917.2000000001, 301686.5], "jir": [230261.2000000001, 250220.0], "pad": [378323.4000000001, 221032.2], "us": [98.0, null], "ves": [116.0, 112.58], "vyh": [75.40000000000005, 73.851], "days": 24}, "3": {"ubl": [81215, 80198], "obv": [81535, 72924], "crp": [1703710.3999999992, 1462810.9], "mkm": [381098.5, 376592.5], "jir": [335959.4000000001, 317360.0], "pad": [370567.7999999998, 214113.7], "us": [98.0, null], "ves": [112.0, 115.08133333333333], "vyh": [75.40000000000005, 74.26933333333332], "days": 30}, "4": {"ubl": [75295, 73173], "obv": [68591, 64034], "crp": [1737425.999999999, 1594473.3], "mkm": [379232.4, 369589.5], "jir": [325923.1, 308840.0], "pad": [445860.0, 252463.00000000003], "us": [98.0, null], "ves": [116.80000000000005, 118.37678571428572], "vyh": [75.40000000000005, 74.42392857142856], "days": 30}, "5": {"ubl": [80290, 80195], "obv": [73250, 70459], "crp": [2110524.0, 1639788.0999999996], "mkm": [415426.09999999986, 418267.5], "jir": [358585.60000000015, 335310.0], "pad": [404550.0, 376885.8999999999], "us": [98.0, null], "ves": [120.0, 119.54366666666667], "vyh": [75.37233333333337, 74.61500000000001], "days": 31}, "6": {"ubl": [80290, 76846], "obv": [68400, 64067], "crp": [1753860.0, 1482960.4000000001], "mkm": [401756.4000000001, 274174.5], "jir": [362717.89999999997, 258060.0], "pad": [472095.0, 217513.20000000004], "us": [98.0, null], "ves": [122.73999999999991, 116.82344827586208], "vyh": [75.40000000000005, 74.37724137931035], "days": 29}, "7": {"ubl": [85840, 83906], "obv": [78885, 76312], "crp": [1946259.0, 1569384.0], "mkm": [451366.9, 311013.0], "jir": [396643.7, 245390.0], "pad": [446640.0, 450891.30000000005], "us": [98.0, null], "ves": [121.30000000000007, 113.97766666666669], "vyh": [75.40000000000005, 74.1], "days": 31}, "8": {"ubl": [86025, 85845], "obv": [76692, 75786], "crp": [1844689.100000001, 1260514.9999999998], "mkm": [432451.2, 386102.0], "jir": [380009.0999999999, 327350.0], "pad": [423831.00000000023, 594995.4], "us": [98.0, null], "ves": [115.80000000000007, 111.32733333333331], "vyh": [75.40000000000005, 73.781], "days": 31}, "9": {"ubl": [26270, 25212], "obv": [24494, 22846], "crp": [523450.0, 408352.49999999994], "mkm": [121544.0, 100464.5], "jir": [109150.2, 93170.0], "pad": [143786.7, 149403.09999999998], "us": [98.0, 98.63199999999999], "ves": [114.90000000000006, 114.06777777777776], "vyh": [75.39999999999999, 73.34555555555556], "days": 10}}, "claims": {"1": {"n": 14, "ob": 5, "part": 0, "open": 0, "vid": [["жирность", 5], ["органолептика", 3], ["несоответствие массы", 2], ["несоответствие упаковки", 2], ["категорийность", 1], ["развакуум", 1]], "ceh": [["ЦРиО", 7], ["ЦГП", 5], ["ЦРП", 2]], "vid_ob": [["жирность", 3], ["развакуум", 1], ["органолептика", 1]], "ceh_ob": [["ЦРиО", 4], ["ЦРП", 1]]}, "2": {"n": 7, "ob": 5, "part": 0, "open": 0, "vid": [["органолептика", 3], ["жирность", 2], ["несоответствие упаковки", 1], ["несоответствие массы", 1]], "ceh": [["ЦРиО", 3], ["ЦГП", 3], ["ЦУиППЖ", 1]], "vid_ob": [["органолептика", 3], ["жирность", 2]], "ceh_ob": [["ЦРиО", 3], ["ЦУиППЖ", 1], ["ЦГП", 1]]}, "3": {"n": 28, "ob": 6, "part": 2, "open": 0, "vid": [["органолептика", 7], ["категорийность", 7], ["несоответствие массы", 5], ["несоответствие упаковки", 3], ["микробиология", 2], ["не указан", 1], ["посторонний предмет", 1], ["жирность", 1], ["несоответствие температуры", 1]], "ceh": [["ЦГП", 17], ["ЦРП", 4], ["ЦУиППЖ", 4], ["ЦРиО", 3]], "vid_ob": [["категорийность", 4], ["не указан", 1], ["посторонний предмет", 1], ["несоответствие массы", 1], ["жирность", 1]], "ceh_ob": [["ЦГП", 5], ["ЦРП", 2], ["ЦРиО", 1]]}, "4": {"n": 36, "ob": 4, "part": 0, "open": 0, "vid": [["категорийность", 9], ["несоответствие массы", 6], ["органолептика", 6], ["посторонний предмет", 4], ["жирность", 4], ["несоответствие упаковки", 3], ["антибиотики", 2], ["микробиология", 1], ["пересорт", 1]], "ceh": [["ЦГП", 14], ["ЦРиО", 7], ["ЦРП", 6], ["ЦУиППЖ", 5], ["не указан", 4]], "vid_ob": [["посторонний предмет", 2], ["жирность", 1], ["пересорт", 1]], "ceh_ob": [["ЦРиО", 2], ["ЦГП", 1], ["ЦРП", 1]]}, "5": {"n": 21, "ob": 5, "part": 3, "open": 0, "vid": [["органолептика", 7], ["жирность", 3], ["несоответствие упаковки", 3], ["не указан", 2], ["посторонний предмет", 2], ["несоответствие температуры", 1], ["категорийность", 1], ["пересорт", 1], ["несоответствие массы", 1]], "ceh": [["ЦГП", 9], ["ЦРиО", 7], ["ЦРП", 4], ["ЦУиППЖ", 1]], "vid_ob": [["органолептика", 4], ["жирность", 2], ["пересорт", 1], ["не указан", 1]], "ceh_ob": [["ЦРиО", 5], ["ЦРП", 2], ["ЦГП", 1]]}, "6": {"n": 30, "ob": 14, "part": 2, "open": 0, "vid": [["органолептика", 13], ["посторонний предмет", 4], ["некорректный штрих-код", 4], ["несоответствие температуры", 3], ["несоответствие массы", 2], ["несоответствие упаковки", 2], ["пересорт", 2]], "ceh": [["ЦРП", 13], ["ЦГП", 9], ["ЦРиО", 5], ["ЦУиППЖ", 2], ["не указан", 1]], "vid_ob": [["органолептика", 7], ["некорректный штрих-код", 4], ["несоответствие температуры", 2], ["посторонний предмет", 2], ["несоответствие массы", 1]], "ceh_ob": [["ЦГП", 5], ["ЦРП", 5], ["ЦРиО", 4], ["ЦУиППЖ", 2]]}, "7": {"n": 32, "ob": 10, "part": 1, "open": 0, "vid": [["органолептика", 14], ["несоответствие массы", 5], ["жирность", 5], ["посторонний предмет", 3], ["некорректный штрих-код", 2], ["несоответствие температуры", 2], ["несоответствие упаковки", 1]], "ceh": [["ЦГП", 10], ["ЦРиО", 8], ["ЦРП", 8], ["ЦУиППЖ", 6]], "vid_ob": [["органолептика", 4], ["несоответствие массы", 4], ["некорректный штрих-код", 2], ["посторонний предмет", 1]], "ceh_ob": [["ЦГП", 4], ["ЦРП", 4], ["ЦУиППЖ", 3]]}, "8": {"n": 12, "ob": 5, "part": 0, "open": 0, "vid": [["жирность", 5], ["органолептика", 2], ["посторонний предмет", 1], ["некорректный штрих-код", 1], ["несоответствие массы", 1], ["некорректная этикетка (маркировка)", 1], ["пересорт", 1]], "ceh": [["ЦРиО", 7], ["ЦРП", 4], ["ЦУиППЖ", 1]], "vid_ob": [["жирность", 3], ["органолептика", 1], ["пересорт", 1]], "ceh_ob": [["ЦРиО", 3], ["ЦУиППЖ", 1], ["ЦРП", 1]]}, "9": {"n": 3, "ob": 1, "part": 0, "open": 1, "vid": [["несоответствие температуры", 1], ["несоответствие массы", 1], ["жирность", 1]], "ceh": [["ЦРП", 2], ["ЦГП и ЦУиППЖ", 1]], "vid_ob": [["несоответствие температуры", 1]], "ceh_ob": [["ЦГП и ЦУиППЖ", 1]]}}, "smyv": {"7": {"ubl": {"n": 100, "bad": 20}, "obv": {"n": 143, "bad": 53}, "crp": {"n": 29, "bad": 6}}, "2": {"ubl": {"n": 99, "bad": 13}, "obv": {"n": 150, "bad": 2}, "crp": {"n": 28, "bad": 4}}, "4": {"ubl": {"n": 100, "bad": 7}, "obv": {"n": 135, "bad": 3}, "crp": {"n": 32, "bad": 1}}, "8": {"ubl": {"n": 100, "bad": 25}, "obv": {"n": 137, "bad": 35}, "crp": {"n": 29, "bad": 6}}, "3": {"ubl": {"n": 100, "bad": 20}, "obv": {"n": 135, "bad": 4}, "crp": {"n": 30, "bad": 1}}, "5": {"ubl": {"n": 98, "bad": 40}, "obv": {"n": 135, "bad": 32}, "crp": {"n": 29, "bad": 4}}, "6": {"ubl": {"n": 100, "bad": 29}, "obv": {"n": 135, "bad": 13}, "crp": {"n": 30, "bad": 2}}, "1": {"ubl": {"n": 100, "bad": 20}, "obv": {"n": 150, "bad": 3}, "crp": {"n": 30, "bad": 0}}}, "last_day": "2026-09-10", "claims_last": "2026-09-07", "built": "11.09.2026 22:22"};
+const M=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+const MS=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+const MG=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const fmt=(x,d=0)=>x==null?"—":x.toLocaleString("ru-RU",{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=(p,f)=>(!p||f==null)?null:f/p*100;
+const stNorm=x=>x==null?"none":x<90?"crit":x<98?"warn":"good";
+const stUs=x=>x==null?"none":x<95?"crit":x<98?"warn":"good";
+const stPad=x=>x==null?"none":x<=100?"good":x<120?"warn":"crit";
+const stSm=x=>x==null?"none":x<=5?"good":x<=30?"warn":"crit";
+const cls={good:"g",warn:"w",crit:"c",none:""};
+const dd=s=>{const [y,m,d]=s.split("-");return `${d}.${m}.${y}`};
+const months=[...new Set([...Object.keys(DATA.prod),...Object.keys(DATA.claims),...Object.keys(DATA.smyv)].map(Number))].sort((a,b)=>a-b);
+let sel=Math.max(...Object.keys(DATA.prod).map(Number));   // по умолчанию — последний месяц с производством
+const q=new URLSearchParams(location.search).get("m"); if(q==="year") sel="year"; else if(q&&months.includes(+q)) sel=+q;
+
+function period(){return sel==="year"?"2026 год":M[sel-1]+" 2026"}
+function prodOf(m){ if(m!=="year") return DATA.prod[m]||null;
+  const ks=["ubl","obv","crp","mkm","jir","pad"], out={days:0}; const ms=Object.values(DATA.prod);
+  ks.forEach(k=>out[k]=[ms.reduce((s,x)=>s+x[k][0],0),ms.reduce((s,x)=>s+x[k][1],0)]);
+  ["us","ves","vyh"].forEach(k=>{const v=ms.map(x=>x[k][1]).filter(x=>x!=null),p=ms.map(x=>x[k][0]).filter(x=>x!=null);
+    out[k]=[p.length?p.reduce((a,b)=>a+b)/p.length:null,v.length?v.reduce((a,b)=>a+b)/v.length:null]});
+  out.days=ms.reduce((s,x)=>s+x.days,0); return out}
+function claimsOf(m){ if(m!=="year") return DATA.claims[m]||null;
+  const ms=Object.values(DATA.claims); if(!ms.length) return null;
+  const sum=(k)=>ms.reduce((s,x)=>s+x[k],0), merge=k=>{const c={};ms.forEach(x=>x[k].forEach(([a,n])=>c[a]=(c[a]||0)+n));return Object.entries(c).sort((a,b)=>b[1]-a[1])};
+  return {n:sum("n"),ob:sum("ob"),part:sum("part"),open:sum("open"),vid:merge("vid"),ceh:merge("ceh"),vid_ob:merge("vid_ob"),ceh_ob:merge("ceh_ob")}}
+function smOf(m){ if(m!=="year") return DATA.smyv[m]||null;
+  const ms=Object.values(DATA.smyv); if(!ms.length) return null; const out={};
+  ["ubl","obv","crp"].forEach(k=>out[k]={n:ms.reduce((s,x)=>s+(x[k]?x[k].n:0),0),bad:ms.reduce((s,x)=>s+(x[k]?x[k].bad:0),0)}); return out}
+const smTot=r=>{const n=Object.values(r).reduce((s,x)=>s+x.n,0),b=Object.values(r).reduce((s,x)=>s+x.bad,0);return {n,bad:b,p:n?b/n*100:null}};
+
+function renderStrip(){
+  const s=document.getElementById("strip"); s.innerHTML="";
+  months.forEach(m=>{const b=document.createElement("button");b.className="mon";b.textContent=M[m-1];b.setAttribute("aria-pressed",sel===m);
+    b.onclick=()=>{sel=m;render()};s.appendChild(b)});
+  const y=document.createElement("button");y.className="mon year";y.textContent="Год";y.setAttribute("aria-pressed",sel==="year");y.onclick=()=>{sel="year";render()};s.appendChild(y);
+}
+function sparkHtml(getter,stf,selKey){
+  return '<div class="spark">'+months.map(m=>{const v=getter(m);
+    if(v==null) return `<b class="empty" title="${M[m-1]}: нет данных"></b>`;
+    const h=Math.max(4,Math.min(100,v/140*100)); const st=stf(v);
+    return `<b class="${cls[st]} ${m===selKey?"sel":""}" style="height:${h}%" title="${M[m-1]}: ${fmt(v,1)} %"></b>`}).join("")+'</div>'}
+function renderProd(){
+  const P=prodOf(sel), rows=document.getElementById("prod-rows"); rows.innerHTML="";
+  document.getElementById("prod-note").textContent=P?`${period()} · ${P.days} дн. с данными`:"";
+  if(!P){rows.innerHTML='<div class="empty">Нет данных по производству за этот период.</div>';return}
+  const items=[
+    ["Убой","гол","ubl",stNorm],["Обвалка","гол","obv",stNorm],["Розничная продукция","кг","crp",stNorm],
+    ["Мясокостная мука","кг","mkm",stNorm],["Жир","кг","jir",stNorm],["Падёж","гол","pad",stPad]];
+  items.forEach(([nm,u,k,stf])=>{
+    const [p,f]=P[k]; const v=pct(p,f); const over=!p&&f>0; const st=over?"good":stf(v); const w=over?100:Math.min(100,(v||0)/140*100);
+    rows.insertAdjacentHTML("beforeend",`<div class="row st-${st}"><div class="nm">${nm}<small>${fmt(f)} из ${fmt(p)} ${u}</small></div>
+      <div class="val">${over?"сверх плана":v==null?"—":fmt(v,1)+" %"}</div>
+      <div class="bar"><i style="width:${w}%"></i><span class="ref" style="left:${100/140*100}%"></span></div>
+      ${sparkHtml(m=>{const r=DATA.prod[m];if(!r)return null;const [pp,ff]=r[k];return pct(pp,ff)},stf,sel)}</div>`)});
+  const us=P.us[1]; const stU=stUs(us);
+  rows.insertAdjacentHTML("beforeend",`<div class="row st-${stU}"><div class="nm">Уровень сервиса<small>среднее за период, план ${fmt(P.us[0],0)} %</small></div>
+    <div class="val">${us==null?"—":fmt(us,1)+" %"}</div><div class="bar"><i style="width:${Math.min(100,(us||0)/140*100)}%"></i><span class="ref" style="left:${100/140*100}%"></span></div>
+    ${sparkHtml(m=>{const r=DATA.prod[m];return r?r.us[1]:null},stUs,sel)}</div>`);
+}
+function tile(l,v,s,st){return `<div class="tile st-${st||"none"}"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s||""}</div></div>`}
+function renderClaims(){
+  const C=claimsOf(sel), T=document.getElementById("cl-tiles"), ch=document.getElementById("cl-chart"), xl=document.getElementById("cl-xl");
+  document.getElementById("cl-note").textContent=`${period()} · журнал претензий по ${dd(DATA.claims_last)}`;
+  if(!C){T.innerHTML='<div class="empty">Претензий за этот период не зарегистрировано.</div>'}else{
+    const ob=C.ob+C.part, share=C.n?ob/C.n*100:0;
+    let cmp="";
+    if(sel!=="year"){const prev=DATA.claims[sel-1]; if(prev){const d=C.n-prev.n; cmp=(d>0?"+":"")+d+" к "+MS[sel-2]+" ("+prev.n+")"}}
+    else cmp=`в среднем ${fmt(C.n/Object.keys(DATA.claims).length,1)} в месяц`;
+    T.innerHTML=tile("Всего претензий",fmt(C.n),cmp)+tile("Обоснованных",fmt(ob),`${fmt(share,0)} % · из них частично ${C.part}`,share>40?"crit":share>25?"warn":"good")
+      +tile("Необоснованных",fmt(C.n-ob-C.open),C.open?`ещё ${C.open} на рассмотрении`:"")}
+  const mx=Math.max(1,...Object.values(DATA.claims).map(x=>x.n));
+  ch.innerHTML=""; xl.innerHTML="";
+  for(let m=1;m<=12;m++){const c=DATA.claims[m]; const col=document.createElement("div");
+    if(!c){col.className="col";xl.insertAdjacentHTML("beforeend",`<span>${MS[m-1]}</span>`);ch.appendChild(col);continue}
+    const ob=c.ob+c.part, ho=ob/mx*100, hn=(c.n-ob)/mx*100;
+    col.className="col"+(sel===m?" sel":(sel!=="year"?" dim":"")); col.title=`${M[m-1]}: ${c.n} претензий, обоснованных ${ob}`;
+    col.innerHTML=`<span class="lab">${c.n}</span><div class="seg b" style="height:${hn}%"></div><div class="seg a" style="height:${ho}%"></div>`;
+    col.onclick=()=>{sel=m;render()}; ch.appendChild(col);
+    xl.insertAdjacentHTML("beforeend",`<span class="${sel===m?"sel":""}">${MS[m-1]}</span>`)}
+  const list=(el,title,all,ob,limit)=>{el.innerHTML=`<h3>${title}</h3>`; if(!all||!all.length){el.innerHTML+='<div class="empty">—</div>';return}
+    const obm=Object.fromEntries(ob||[]); const mx=all[0][1];
+    all.slice(0,limit).forEach(([k,n])=>{const o=obm[k]||0;
+      el.insertAdjacentHTML("beforeend",`<div class="hr"><span class="t">${k}</span><span class="n"><b>${n}</b> · обосн. ${o}</span>
+        <div class="hb" title="${k}: ${n}, обоснованных ${o}"><i style="width:${n/mx*100}%"></i><i class="o" style="width:${o/mx*100}%"></i></div></div>`)})};
+  list(document.getElementById("cl-vid"),"По видам несоответствий",C&&C.vid,C&&C.vid_ob,7);
+  list(document.getElementById("cl-ceh"),"По цехам-виновникам",C&&C.ceh,C&&C.ceh_ob,6);
+}
+function renderSm(){
+  const S=smOf(sel), T=document.getElementById("sm-tiles"), ch=document.getElementById("sm-chart"), xl=document.getElementById("sm-xl"), cehs=document.getElementById("sm-cehs");
+  const lastM=Math.max(...Object.keys(DATA.smyv).map(Number));
+  document.getElementById("sm-note").textContent=`${period()} · отчёты лаборатории по ${M[lastM-1].toLowerCase().replace(/ь$/,"ь")} включительно`;
+  if(!S){T.innerHTML=`<div class="empty">Отчёта по смывам за ${sel==="year"?"год":M[sel-1].toLowerCase()} ещё нет — последний за ${M[lastM-1].toLowerCase()}.</div>`;cehs.innerHTML=""}
+  else{const t=smTot(S); let cmp="";
+    if(sel!=="year"){const prev=DATA.smyv[sel-1]; if(prev){const pp=smTot(prev).p; cmp=`${MS[sel-2]}: ${fmt(pp,1)} %`}}
+    T.innerHTML=tile("Несоответствующих смывов",fmt(t.p,1)+" %",cmp,stSm(t.p))+tile("Смывов отобрано",fmt(t.n),`несоответствий ${t.bad}`)+tile("Патогены","0","сальмонелла, листерия не выявлены","good");
+    cehs.innerHTML=[["Убой и первичная переработка","ubl"],["Обвалка, п/ф, упаковка","obv"],["Цех розничной продукции","crp"]].map(([nm,k])=>{
+      const r=S[k]; const p=r&&r.n?r.bad/r.n*100:null;
+      return `<div class="ceh st-${stSm(p)}"><h3>${nm}</h3><div class="big"><span class="dot"></span>${fmt(p,1)} %<small>${r?r.bad+" из "+r.n:"—"}</small></div></div>`}).join("")}
+  ch.innerHTML=""; xl.innerHTML="";
+  for(let m=1;m<=12;m++){const r=DATA.smyv[m]; const col=document.createElement("div");
+    if(!r){col.className="col";xl.insertAdjacentHTML("beforeend",`<span>${MS[m-1]}</span>`);ch.appendChild(col);continue}
+    const t=smTot(r); const st=stSm(t.p);
+    col.className="col "+cls[st]+(sel===m?" sel":(sel!=="year"?" dim":"")); col.title=`${M[m-1]}: ${fmt(t.p,1)} % (${t.bad} из ${t.n})`;
+    col.innerHTML=`<span class="lab">${fmt(t.p,0)}</span><div class="seg" style="height:${Math.max(2,t.p/50*100)}%"></div>`;
+    col.onclick=()=>{sel=m;render()}; ch.appendChild(col);
+    xl.insertAdjacentHTML("beforeend",`<span class="${sel===m?"sel":""}">${MS[m-1]}</span>`)}
+}
+function render(){
+  document.getElementById("sub").textContent=`Дашборд директора · ${period()} · производство по ${dd(DATA.last_day)}`;
+  renderStrip(); renderProd(); renderClaims(); renderSm();
+  history.replaceState(null,"","?m="+sel);
+  document.getElementById("foot").innerHTML=`Источники: «Сводный отчет, общий 2026» (Облако Mail.ru), «Журнал по претензиям 2026», месячные отчёты лаборатории по смывам. `+
+   `Производство: % плана = Σфакт / Σплан за период; уровень сервиса — среднее по дням. Претензии — по дате регистрации; обоснованные включают частично обоснованные. `+
+   `Смывы: несоответствующий смыв считается один раз, строки без даты отбора (в т.ч. свиновозы 2025 г.) исключены. Пороги: производство &lt;90 / 90–98 / ≥98 %, падёж ≤100 / 100–120 / ≥120 %, смывы ≤5 / 5–30 / &gt;30 %. Собрано ${DATA.built}.`;
+}
+render();
+</script>
+</body>
+</html>
