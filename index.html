@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 12.09.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913150536">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913152004">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913150536">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913152004">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -136,7 +136,8 @@ input[type=date]:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .tile{background:var(--ground);border-radius:11px;padding:11px 13px} .tile .l{font-size:12px;color:var(--ink-2);font-weight:600}
 .tile .v{font-size:24px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.15;margin-top:2px} .tile .s{font-size:12px;color:var(--ink-3);margin-top:2px;font-variant-numeric:tabular-nums}
-.tile.sostav .v{display:flex;gap:14px;font-size:22px} .tile.sostav .v span{display:flex;flex-direction:column;line-height:1.1} .tile.sostav .v small{font-size:11px;font-weight:500;color:var(--ink-3)}
+.tile.sostav .v{display:flex;gap:10px;font-size:20px;letter-spacing:-.3px} .tile.sostav .v span{display:flex;flex-direction:column;line-height:1.1;min-width:0} .tile.sostav .v small{font-size:10.5px;font-weight:500;color:var(--ink-3);white-space:nowrap}
+@media (max-width:720px){.tile.sostav{grid-column:1/-1}}
 .tile.st-good .v{color:var(--good-t)} .tile.st-warn .v{color:var(--warn-t)} .tile.st-crit .v{color:var(--crit-t)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:18px} .sf-h{font-size:13px;color:var(--ink-2);margin:0 0 4px;font-weight:700}
 .chart.sfc{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;align-items:end;height:120px;padding-top:18px;position:relative}
