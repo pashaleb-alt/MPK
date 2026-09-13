@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 12.09.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913143733">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913145024">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913143733">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913145024">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -326,7 +326,14 @@ function rowHtml(m, q, agg, sel){
   const st = status(m, m.mode==="stock"?q.num:q.plan, m.mode==="stock"?null:q.fact);
   const shown = q.num, scale = m.mode==="stock" ? 100 : 140;
   const over = m.mode==="pct" && !m.inv && shown==null && !q.plan && q.fact>0;      // сверх плана
-  const w = shown==null ? (over?100:0) : Math.max(1.5, Math.min(shown,scale)/scale*100);
+  // ширина шкалы: для «% плана» — сам процент на шкале 0–140; для показателей «по значению» — так же, как в картинке:
+  // средний вес — факт к плану в %; выход и уровень сервиса — положение в окне (низ, верх), риска на пороге
+  const WIN = {vyh:[70,78,74.39], us:[90,100,98]};
+  let w, refPos = 100/scale*100;
+  if(shown==null) w = over?100:0;
+  else if(m.mode==="val" && WIN[m.k]){ const [lo,hi,rf]=WIN[m.k]; w=Math.max(1.5, Math.min(Math.max((shown-lo)/(hi-lo),0),1)*100); refPos=(rf-lo)/(hi-lo)*100; }
+  else if(m.mode==="val"){ const r=pctOf(q.plan,q.fact); w = r==null?0:Math.max(1.5, Math.min(r,scale)/scale*100); }
+  else w = Math.max(1.5, Math.min(shown,scale)/scale*100);
   const sub = m.mode==="stock" ? `${nf(CAP)} / ${nf(q.fact,0)} т${agg?" на "+fmtD(agg.d):""}`
             : m.mode==="val"   ? `${agg?"в среднем ":""}${nf(q.plan, m.dec||0)} / ${nf(q.fact, m.dec||0)} ${m.u}`
             : over             ? `план не задан · сверх плана`
@@ -334,7 +341,7 @@ function rowHtml(m, q, agg, sel){
   const numTxt = shown==null
     ? (m.mode==="pct" && q.fact!=null ? nf(q.fact,0)+`<i> ${m.u}</i>` : "—")
     : (m.mode==="val" ? nf(shown,m.dec||1)+`<i> ${m.u}</i>` : nf(shown,0)+"<i>%</i>");
-  const ref = m.mode==="stock" ? "" : `<div class="ref" style="left:${(100/scale*100).toFixed(1)}%"></div>`;
+  const ref = m.mode==="stock" ? "" : `<div class="ref" style="left:${refPos.toFixed(1)}%"></div>`;
   return `<div class="row st-${st}">
     <div class="nm">${m.n}<span>${sub}</span></div>
     <div class="val">${numTxt}</div>
