@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 12.09.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913145107">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913150004">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913145107">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260913150004">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -121,7 +121,7 @@ input[type=date]:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 .labor{padding:16px 18px;margin-top:14px} .labor .ph{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px} .labor h2{font-size:17px;font-weight:700;margin:0} .labor .note{font-size:12.5px;color:var(--ink-3)}
 .labor .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin-top:8px} .labor .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .lb3{display:grid;gap:14px} .lb-one{border-top:1px solid var(--line-soft);padding-top:10px} .lb-one:first-child{border-top:0;padding-top:0}
-.lb-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap} .lb-head h3{font-size:14px;margin:0;color:var(--ink);min-width:70px}
+.lb-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap} .lb-head h3{font-size:24px;font-weight:700;letter-spacing:-.5px;margin:0;color:var(--ink);min-width:70px}
 .lb-v{font-size:24px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.1} .lb-v small{font-size:12px;font-weight:500;color:var(--ink-3);margin-left:6px}
 .lb-s{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .lb-svg{width:100%;height:auto;display:block;overflow:visible}
@@ -130,9 +130,9 @@ input[type=date]:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 .lb-svg .pt{cursor:pointer} .lb-svg circle{fill:var(--surface);stroke:var(--accent);stroke-width:2.5;vector-effect:non-scaling-stroke} .lb-svg .pt.sel circle:not(.hit){fill:var(--accent)}
 .lb-svg circle.hit{fill:transparent;stroke:none}
 .lb-svg text{font-size:13px;font-weight:600;fill:var(--ink);font-variant-numeric:tabular-nums} .lb-svg .pt.sel text{font-weight:700}
-.lb-svg text.x{font-size:12px;font-weight:500;fill:var(--ink-2)} .lb-svg text.x.no{fill:var(--ink-3);opacity:.6} .lb-svg text.x.sel{font-weight:700;fill:var(--ink)}
-.lb-svg text.m{font-size:12px} .lb-svg text.x.m{font-size:11px} .lb-svg circle{r:5}
-@media (max-width:720px){.lb-head h3{min-width:0} .lb-v{font-size:22px}}
+.lb-svg text.x{font-size:14px;font-weight:600;fill:var(--ink-2)} .lb-svg text.x.no{fill:var(--ink-3);opacity:.6} .lb-svg text.x.sel{font-weight:700;fill:var(--ink)}
+.lb-svg text.m{font-size:12px} .lb-svg text.x.m{font-size:13px} .lb-svg circle{r:5}
+@media (max-width:720px){.lb-head h3{min-width:0;font-size:22px} .lb-v{font-size:22px}}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .tile{background:var(--ground);border-radius:11px;padding:11px 13px} .tile .l{font-size:12px;color:var(--ink-2);font-weight:600}
 .tile .v{font-size:24px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.15;margin-top:2px} .tile .s{font-size:12px;color:var(--ink-3);margin-top:2px;font-variant-numeric:tabular-nums}
@@ -475,7 +475,7 @@ function renderLabor(){
   const all=Object.keys(LABOR).map(Number).sort((a,b)=>a-b); if(!all.length){box.innerHTML='<div class="empty">Лист «Удельные, мес» пуст.</div>';return}
   const lastL=all[all.length-1]; const MN=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
   let selM=lastL; if(mode==="month"){const i=MONS.indexOf(moSel); if(i>=0&&LABOR[i+1]) selM=i+1}
-  document.getElementById("lb-note").textContent=`${MN[selM-1]} 2026 · лист заполнен по ${MN[lastL-1].toLowerCase()}`;
+  document.getElementById("lb-note").textContent=`${MN[selM-1]} 2026`;
   const fx=(v,d)=>v==null?"—":v.toLocaleString("ru-RU",{minimumFractionDigits:d,maximumFractionDigits:d});
   [["ЦУиППЖ","ubl"],["ЦРиО","obv"],["ЦРП","crp"]].forEach(([nm,k])=>{
     const ser=all.map(m=>[m,LABOR[m][k]]).filter(x=>x[1]); if(!ser.length) return;
