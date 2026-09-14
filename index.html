@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 13.09.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914223101">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914225356">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914223101">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914225356">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -166,6 +166,7 @@ input[type=date]:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","light")}})();</script>
 <div class="wrap">
   <nav class="dashnav" aria-label="Дашборды"><a href="/MPK/?full=1" class="on">Производство</a><a href="/MPK/quality/">Качество</a><a href="/MPK/safety/">Безопасность</a></nav>
+<script>document.querySelectorAll(".dashnav a").forEach(a=>a.addEventListener("click",()=>{const u=new URL(a.href);u.searchParams.set("v",Date.now());a.href=u.toString()}));</script>
   <div class="top">
     <h1>Показатели МПК 2026 · производство</h1>
   </div>
@@ -409,7 +410,7 @@ function render(){
   }).join("");
   document.getElementById("rows").innerHTML = METRICS.map(m=>rowHtml(m, primary(m,rec), null, day)).join("");
   // выбранный день — в поле зрения ленты (при выборе точки на графике)
-  const selBtn=document.querySelector('#days .day[aria-pressed="true"]'); if(selBtn) selBtn.scrollIntoView({block:"nearest",inline:"center"});
+  const selBtn=document.querySelector('#days .day[aria-pressed="true"]'); if(selBtn) selBtn.scrollIntoView({block:"nearest",inline:"nearest"});   // подтянуть в кадр, не сдвигая в центр
 }
 
 function setMode(m){
