@@ -1,2 +1,12 @@
+# Роботам превью мессенджеров — можно (иначе MAX/VK не строит карточку ссылки); поисковикам — нельзя.
+User-agent: vkShare
+Allow: /
+
+User-agent: MaxBot
+Allow: /
+
+User-agent: OdklBot
+Allow: /
+
 User-agent: *
 Disallow: /
