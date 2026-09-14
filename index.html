@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 13.09.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914221036">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914223101">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914221036">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914223101">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -188,10 +188,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
       <div class="dates">с <input type="date" id="from" aria-label="Начало периода"> по <input type="date" id="to" aria-label="Конец периода"></div>
       <div class="chips" id="chips"></div>
     </div>
-    <div class="selrow"><div class="nav" id="daynav">
-        <button id="prev" aria-label="Предыдущий день">‹</button>
-        <button id="next" aria-label="Следующий день">›</button>
-      </div><div class="today">Выбрано: <b id="cur">—</b></div></div>
+    <div class="selrow"><div class="today">Выбрано: <b id="cur">—</b></div></div>
     <div class="warn" id="pwarn" hidden></div>
   </div>
 
@@ -370,7 +367,6 @@ function render(){
   const warn = document.getElementById("pwarn"); warn.hidden = true;
   if(FULL&&typeof renderLabor==="function") setTimeout(renderLabor,0);
   if(FULL&&typeof renderStaff==="function") setTimeout(renderStaff,0);
-  document.getElementById("daynav").hidden = mode!=="day";
   if(mode==="week"){
     const w = WEEKS.find(x=>x.n===week) || WEEKS[WEEKS.length-1]; week = w.n;
     document.getElementById("weekchips").innerHTML = [...WEEKS].reverse().map(x=>
@@ -412,9 +408,8 @@ function render(){
     return `<button class="day" data-d="${r.d}" ${has?"":"data-empty"} aria-pressed="${r.d===day}">${new Date(r.d).getDate()}</button>`;
   }).join("");
   document.getElementById("rows").innerHTML = METRICS.map(m=>rowHtml(m, primary(m,rec), null, day)).join("");
-  const idx = days.findIndex(r=>r.d===day);
-  document.getElementById("prev").disabled = idx<=0;
-  document.getElementById("next").disabled = idx>=days.length-1;
+  // выбранный день — в поле зрения ленты (при выборе точки на графике)
+  const selBtn=document.querySelector('#days .day[aria-pressed="true"]'); if(selBtn) selBtn.scrollIntoView({block:"nearest",inline:"center"});
 }
 
 function setMode(m){
@@ -429,8 +424,6 @@ document.querySelector(".vtabs").onclick = e => { const b=e.target.closest(".vta
 document.getElementById("monchips").onclick = e => { const b=e.target.closest(".mon"); if(b){ mon=b.dataset.m; day=null; render(); } };
 document.getElementById("weekchips").onclick = e => { const b=e.target.closest(".wchip"); if(b){ week=+b.dataset.w; render(); } };
 document.getElementById("monthchips").onclick = e => { const b=e.target.closest(".mon"); if(b){ moSel=b.dataset.mo; render(); } };
-document.getElementById("prev").onclick = ()=>{ const d=DATA[mon]; const i=d.findIndex(r=>r.d===day); if(i>0){day=d[i-1].d;render();} };
-document.getElementById("next").onclick = ()=>{ const d=DATA[mon]; const i=d.findIndex(r=>r.d===day); if(i<d.length-1){day=d[i+1].d;render();} };
 const fromEl = document.getElementById("from"), toEl = document.getElementById("to");
 fromEl.min = toEl.min = FIRST; fromEl.max = toEl.max = LAST;
 fromEl.onchange = ()=>{ if(fromEl.value){ pfrom = fromEl.value; render(); } };
@@ -444,8 +437,9 @@ document.addEventListener("click", e=>{
 });
 document.addEventListener("keydown", e=>{
   if(mode!=="day" || e.target.tagName==="INPUT") return;
-  if(e.key==="ArrowLeft") document.getElementById("prev").click();
-  if(e.key==="ArrowRight") document.getElementById("next").click();
+  const d=DATA[mon]; const i=d.findIndex(r=>r.d===day);
+  if(e.key==="ArrowLeft"&&i>0){day=d[i-1].d;render()}
+  if(e.key==="ArrowRight"&&i<d.length-1&&d[i+1].ubl&&d[i+1].ubl[1]!=null){day=d[i+1].d;render()}
 });
 (()=>{ const h=location.hash.slice(1); if(/^\d{4}-\d{2}-\d{2}$/.test(h)){ const m=MONS.find(mm=>DATA[mm].some(r=>r.d===h)); if(m){ mon=m; day=h; } } })();
 // ---- персонал МПК (месяцы; выбранный месяц — как в блоке производительности) ----
