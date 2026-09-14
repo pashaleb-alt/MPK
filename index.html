@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 13.09.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914120712">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914143441">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914120712">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260914143441">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -161,6 +161,9 @@ input[type=date]:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 }
 </style>
 
+<script>/* тема: ?theme=light|dark запоминается на устройстве; без параметра — как в системе */
+(()=>{try{const q=new URLSearchParams(location.search).get("theme"); if(q==="light"||q==="dark") localStorage.setItem("mpkTheme",q); if(q==="auto") localStorage.removeItem("mpkTheme");
+const t=localStorage.getItem("mpkTheme"); if(t) document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <div class="wrap">
   <nav class="dashnav" aria-label="Дашборды"><a href="/MPK/?full=1" class="on">Производство</a><a href="/MPK/quality/">Качество</a><a href="/MPK/safety/">Безопасность</a></nav>
   <div class="top">
