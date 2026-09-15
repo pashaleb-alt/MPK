@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 14.09.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260915112306">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260915113257">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260915112306">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260915113257">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -339,7 +339,7 @@ function rowHtml(m, q, agg, sel){
   const WIN = {vyh:[71,79,75.39], us:[90,100,98]};
   let w, refPos = 100/scale*100;
   if(shown==null) w = over?100:0;
-  else if(m.mode==="val" && WIN[m.k]){ const [lo,hi,rf]=WIN[m.k]; w=Math.max(1.5, Math.min(Math.max((shown-lo)/(hi-lo),0),1)*100); refPos=(rf-lo)/(hi-lo)*100; }
+  else if(m.mode==="val" && WIN[m.k]){ const rf=WIN[m.k][2]; w=Math.max(1.5, Math.min(shown/rf*100,scale)/scale*100); }   // факт к норме, риска на 100 % — как у остальных строк (Павел, 15.09.2026)
   else if(m.mode==="val"){ const r=pctOf(q.plan,q.fact); w = r==null?0:Math.max(1.5, Math.min(r,scale)/scale*100); }
   else w = Math.max(1.5, Math.min(shown,scale)/scale*100);
   const sub = m.mode==="stock" ? `${nf(CAP)} / ${nf(q.fact,0)} т${agg?" на "+fmtD(agg.d):""}`
