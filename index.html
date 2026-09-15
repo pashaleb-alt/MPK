@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 14.09.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260915115528">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260915125819">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260915115528">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260915125819">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -476,7 +476,9 @@ function renderStaff(){
   document.getElementById("sf-fill").innerHTML=c1; document.getElementById("sf-fill-x").innerHTML=x1; document.getElementById("sf-move").innerHTML=c2; document.getElementById("sf-move-x").innerHTML=x2;
   const U=[...S.units].filter(u=>u.plan).sort((a,b)=>a.fill-b.fill);
   document.getElementById("sf-units").innerHTML=`<h3 class="sf-h">Укомплектованность по подразделениям на ${dd(S.d)}</h3>`+
-    U.map(u=>`<div class="su"><div class="su-t"><span class="su-n">${u.name}</span><span class="su-v" style="color:${cls[stF(u.fill)]}">${fx(u.fill,0)} %</span></div><div class="su-b"><i style="width:${Math.min(100,u.fill)}%;background:${cls[stF(u.fill)]}"></i></div><div class="su-s">факт ${fx(u.fact,0)} из ${fx(u.plan,0)} · вакансий ${fx(u.vac,0)}</div></div>`).join("");
+    // факт выше штата — это не вакансии, а переизбыток: цифра красным (Павел, 15.09.2026)
+    U.map(u=>{const over=u.vac<0; const col=over?"var(--crit)":cls[stF(u.fill)];
+      return `<div class="su"><div class="su-t"><span class="su-n">${u.name}</span><span class="su-v" style="color:${col}">${fx(u.fill,0)} %</span></div><div class="su-b"><i style="width:${Math.min(100,u.fill)}%;background:${col}"></i></div><div class="su-s">факт ${fx(u.fact,0)} из ${fx(u.plan,0)} · ${over?`<b style="color:var(--crit)">переизбыток ${fx(-u.vac,0)}</b>`:`вакансий ${fx(u.vac,0)}`}</div></div>`}).join("");
   document.querySelectorAll("#staff .col[data-m]").forEach(c=>c.onclick=()=>{const m=+c.dataset.m; if(MONS[m-1]){mode="month"; moSel=MONS[m-1]; render()}});
 }
 
