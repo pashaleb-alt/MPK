@@ -49,3 +49,5 @@ function addResultsSheet(ss, n) {
     SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo("Не сдан").setBackground("#ffc7ce").setRanges([sh.getRange("G2:G")]).build()];
   sh.setConditionalFormatRules(rules);
 }
+
+function myFunction() { createQuiz(); }
