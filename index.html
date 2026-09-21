@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 20.09.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260921111804">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260921133620">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260921111804">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20260921133620">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -423,6 +423,8 @@ function render(){
     if(sc&&sc!==document.body){const b=selBtn.getBoundingClientRect(),c=sc.getBoundingClientRect(); if(b.left<c.left) sc.scrollLeft-=c.left-b.left+6; else if(b.right>c.right) sc.scrollLeft+=b.right-c.right+6}}
 }
 
+// перерисовка с сохранением положения элемента на экране: смена режима меняет высоту блоков выше, страница «улетала» (Павел, 21.09.2026)
+function renderKeep(get,fn){const g=typeof get==="function"?get:()=>get; const y0=g().getBoundingClientRect().top; fn(); const fix=()=>{const el=g(); if(!el) return; const dy=el.getBoundingClientRect().top-y0; if(dy) window.scrollBy(0,dy)}; fix(); setTimeout(fix,0)}
 function setMode(m){
   mode = m;
   for(const b of document.querySelectorAll(".vtab")) b.setAttribute("aria-pressed", b.dataset.mode===m);
@@ -444,7 +446,7 @@ document.getElementById("chips").onclick = e=>{ const c=e.target.closest(".chip"
 document.addEventListener("click", e=>{
   const b = e.target.closest(".day"); if(b && !b.hasAttribute("data-empty")){ day=b.dataset.d; render(); return; }
   const r = e.target.closest("rect[data-d]"); if(r){ day=r.dataset.d; mon = MONS.find(m=>DATA[m].some(x=>x.d===day)) || mon;
-    if(mode!=="day") setMode("day"); else render(); }
+    const R=document.getElementById("rows"), i=[...R.children].indexOf(r.closest(".row")); renderKeep(()=>i>=0?R.children[i]:R,()=>{ if(mode!=="day") setMode("day"); else render(); }); }
 });
 document.addEventListener("keydown", e=>{
   if(mode!=="day" || e.target.tagName==="INPUT") return;
@@ -485,7 +487,7 @@ function renderStaff(){
       const det=pos.length?`<div class="su-pos" hidden>${pos.sort((a,b)=>b[3]-a[3]).map(p=>`<div class="su-p"><span>${p[0].includes(" · ")?`<small style="grid-column:1;display:block;margin:0 0 1px">${p[0].split(" · ")[0]}</small>${p[0].split(" · ").slice(1).join(" · ")}`:p[0]}</span><b style="color:${p[3]<0?"var(--crit)":"var(--ink)"}">${p[3]<0?"переизбыток "+fx(-p[3],p[3]%1?1:0):"вакансий "+fx(p[3],p[3]%1?1:0)}</b><small>штат ${fx(p[1],p[1]%1?1:0)} · факт ${fx(p[2],p[2]%1?1:0)}</small></div>`).join("")}</div>`:"";
       return `<div class="su${pos.length?" tap":""}"><div class="su-t"><span class="su-n">${u.name}${pos.length?' <i class="su-arr">▸</i>':""}</span><span class="su-v" style="color:${col}">${fx(u.fill,0)} %</span></div><div class="su-b"><i style="width:${Math.min(100,u.fill)}%;background:${col}"></i></div><div class="su-s">${u.ext?"вне штата МПК · ":""}факт ${fx(u.fact,0)} из ${fx(u.plan,0)} · ${over?`<b style="color:var(--crit)">переизбыток ${fx(-u.vac,0)}</b>`:`вакансий ${fx(u.vac,0)}`}${pos.length?` · <span style="color:var(--accent)">по должностям</span>`:""}</div>${det}</div>`}).join("");
   document.querySelectorAll("#sf-units .su.tap").forEach(el=>el.onclick=()=>{const d=el.querySelector(".su-pos"); d.hidden=!d.hidden; el.classList.toggle("open",!d.hidden)});
-  document.querySelectorAll("#staff .col[data-m]").forEach(c=>c.onclick=()=>{const m=+c.dataset.m; if(MONS[m-1]){mode="month"; moSel=MONS[m-1]; render()}});
+  document.querySelectorAll("#staff .col[data-m]").forEach(c=>c.onclick=()=>{const m=+c.dataset.m; if(MONS[m-1]){renderKeep(document.getElementById("staff"),()=>{moSel=MONS[m-1]; setMode("month")})}});
 }
 
 // ---- производительность труда (месяцы; выбранный месяц — по текущему выбору в режиме «Месяцы», иначе последний) ----
@@ -512,7 +514,7 @@ function renderLabor(){
     const dots=pts.map(([x,y,m,v])=>`<g class="pt${selM===m?" sel":""}" data-m="${m}"><circle class="hit" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="14"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${selM===m?6:5}"/><text x="${x.toFixed(1)}" y="${(y-(MOB?11:13)).toFixed(1)}" text-anchor="middle" class="${MOB?"m":""}">${fx(v,v<10?2:1)}</text><title>${MN[m-1]}: ${fx(v,2)} ${unit}</title></g>`).join("");
     const xl=Array.from({length:12},(_,i)=>`<text x="${X(i+1).toFixed(1)}" y="${H-4}" text-anchor="middle" class="x ${MOB?"m ":""}${selM===i+1?"sel":""}${LABOR[i+1]&&LABOR[i+1][k]?"":" no"}">${MG[i]}</text>`).join("");
     box.insertAdjacentHTML("beforeend",`<div class="lb-one"><div class="lb-head"><h3>${nm}</h3>${head}</div><svg class="lb-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${nm}, ${unit} по месяцам"><path class="area" d="${area}"/><path class="line" d="${path}"/>${dots}${xl}</svg></div>`)});
-  box.querySelectorAll(".lb-svg .pt").forEach(c=>c.onclick=()=>{const m=+c.dataset.m; if(MONS[m-1]){mode="month"; moSel=MONS[m-1]; render()}});
+  box.querySelectorAll(".lb-svg .pt").forEach(c=>c.onclick=()=>{const m=+c.dataset.m; if(MONS[m-1]){renderKeep(box,()=>{moSel=MONS[m-1]; setMode("month")})}});
 }
 render();
 let _rw=window.innerWidth<720; window.addEventListener("resize",()=>{const m=window.innerWidth<720; if(m!==_rw){_rw=m; render()}});
