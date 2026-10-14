@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 13.10.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261014061128">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261014061332">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261014061128">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261014061332">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if(/tgWebApp/.test(location.hash)){var s=document.createElement("script");s.src="https://telegram.org/js/telegram-web-app.js";s.onload=function(){try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}};document.head.appendChild(s)}</script>
@@ -325,8 +325,8 @@ function aggregate(from,to){
   out.n = withFact.length; out.d = to;
   return out;
 }
-const fmtD = d => new Date(d).toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
-const addDays = (d,n) => { const x=new Date(d); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); };
+const fmtD = d => new Date(d).toLocaleDateString("ru-RU",{day:"numeric",month:"long",timeZone:"UTC"});
+const addDays = (d,n) => { const x=new Date(d); x.setUTCDate(x.getUTCDate()+n); return x.toISOString().slice(0,10); };
 const PRESETS = [
   ["7 дней",   ()=>[addDays(LAST,-6), LAST]],
   ["14 дней",  ()=>[addDays(LAST,-13), LAST]],
@@ -410,12 +410,12 @@ function render(){
   const rec = days.find(r=>r.d===day);
   const dt = new Date(day);
   document.getElementById("cur").textContent =
-    dt.toLocaleDateString("ru-RU",{day:"numeric",month:"long"}) + ", " + dt.toLocaleDateString("ru-RU",{weekday:"long"});
+    dt.toLocaleDateString("ru-RU",{day:"numeric",month:"long",timeZone:"UTC"}) + ", " + dt.toLocaleDateString("ru-RU",{weekday:"long",timeZone:"UTC"});
   // свежие дни первыми; дни без данных (будущие) — в конец ленты
   const ordered = [...days.filter(r=>r.ubl&&r.ubl[1]!=null).reverse(), ...days.filter(r=>!(r.ubl&&r.ubl[1]!=null))];
   document.getElementById("days").innerHTML = ordered.map(r=>{
     const has = r.ubl && r.ubl[1]!=null;
-    return `<button class="day" data-d="${r.d}" ${has?"":"data-empty"} aria-pressed="${r.d===day}">${new Date(r.d).getDate()}</button>`;
+    return `<button class="day" data-d="${r.d}" ${has?"":"data-empty"} aria-pressed="${r.d===day}">${new Date(r.d).getUTCDate()}</button>`;
   }).join("");
   document.getElementById("rows").innerHTML = METRICS.map(m=>rowHtml(m, primary(m,rec), null, day)).join("");
   // выбранный день — в поле зрения ленты (при выборе точки на графике)
