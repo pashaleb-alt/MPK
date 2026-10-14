@@ -1,0 +1,15 @@
+{
+  "name": "Показатели МПК",
+  "short_name": "МПК",
+  "description": "Ежедневные показатели мясоперерабатывающего комплекса: производство, качество, безопасность",
+  "lang": "ru",
+  "start_url": "/MPK/",
+  "scope": "/MPK/",
+  "display": "standalone",
+  "background_color": "#13294b",
+  "theme_color": "#13294b",
+  "icons": [
+    {"src": "/MPK/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/MPK/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ]
+}
