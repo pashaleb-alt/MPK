@@ -1,5 +1,5 @@
 // Показатели МПК: сначала сеть (данные всегда свежие), при отсутствии связи — последняя сохранённая версия.
-const CACHE = "mpk-v1";
+const CACHE = "mpk-v2";
 self.addEventListener("install", e => { self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", e => {
