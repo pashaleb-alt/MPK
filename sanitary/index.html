@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html lang="ru" data-theme="light" class="ready"><head>
+<!doctype html>
+<html lang="ru">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
@@ -40,16 +41,18 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 
 .dashnav{display:flex;gap:6px;margin:0 0 14px} .dashnav a{font-size:13px;font-weight:600;padding:7px 13px;border:1px solid var(--line);border-radius:9px;color:var(--ink-2);text-decoration:none;background:var(--surface)} .dashnav a.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 .dashnav a svg{display:none} .dashnav a[hidden]{display:none}
-/* вкладки — компактная панель вверху экрана, закреплена; на телефоне иконка над подписью, на компьютере в строку (Павел, 17.10.2026) */
-.dashnav{position:fixed;left:0;right:0;top:0;z-index:50;margin:0;gap:6px;justify-content:center;padding:6px 8px;background:var(--ground);border-bottom:1px solid var(--line)}
-.dashnav a{flex:1 1 0;max-width:170px;min-width:0;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);box-shadow:0 1px 2px rgba(20,30,50,.10);padding:7px 6px;font-size:13px;font-weight:700;color:var(--ink-2);-webkit-tap-highlight-color:transparent;white-space:nowrap;transition:transform .08s}
+/* вкладки — компактная панель вверху экрана, закреплена; 8 кнопок: при нехватке места лента прокручивается вбок; на телефоне иконка над подписью (Павел, 17.10.2026) */
+.dashnav{position:fixed;left:0;right:0;top:0;z-index:50;margin:0;gap:6px;justify-content:flex-start;padding:6px 8px;background:var(--ground);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.dashnav::-webkit-scrollbar{display:none}
+.dashnav a:first-child{margin-left:auto} .dashnav a:last-child{margin-right:auto}
+.dashnav a{flex:0 0 auto;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);box-shadow:0 1px 2px rgba(20,30,50,.10);padding:7px 12px;font-size:13px;font-weight:700;color:var(--ink-2);-webkit-tap-highlight-color:transparent;white-space:nowrap;transition:transform .08s}
 .dashnav a:hover{border-color:var(--accent-2)} .dashnav a:active{transform:translateY(1px);box-shadow:none}
 .dashnav a svg{display:block;width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .dashnav a.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 6px rgba(42,120,214,.35)}
 .wrap{padding-top:64px}
 @media (max-width:640px){
   .dashnav{gap:4px;padding:5px 5px}
-  .dashnav a{flex-direction:column;gap:2px;padding:5px 1px 4px;font-size:10px;font-weight:700;letter-spacing:-.1px;border-radius:9px}
+  .dashnav a{flex-direction:column;gap:2px;padding:5px 9px 4px;min-width:62px;font-size:10px;font-weight:700;letter-spacing:-.1px;border-radius:9px}
   .dashnav a svg{width:20px;height:20px}
   .wrap{padding-top:68px}
 }
@@ -215,7 +218,7 @@ svg.ln text{font-size:13px;font-weight:600;fill:var(--ink);font-variant-numeric:
 (()=>{try{const q=new URLSearchParams(location.search).get("theme"); if(q==="light"||q==="dark") localStorage.setItem("mpkTheme",q); if(q==="auto") localStorage.setItem("mpkTheme","auto");
 const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","light")}})();</script>
 <div class="wrap">
-  <nav class="dashnav" aria-label="Дашборды"><a href="/MPK/" data-p="prod"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10l5 3V10l5 3V6h6v14z"></path><path d="M4 20h16"></path></svg><span>Производство</span></a><a href="/MPK/quality/" data-p="quality"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.7 2.7L16 9.8"></path></svg><span>Качество</span></a><a href="/MPK/safety/" data-p="safety"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.3-2.9 7.7-7 9.5-4.1-1.8-7-5.2-7-9.5V6z"></path><path d="M9 12l2.2 2.2L15.2 10"></path></svg><span>Безопасность</span></a><a href="/MPK/sanitary/" data-p="sanitary" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.2 4 6 7 6 11a6 6 0 0 1-12 0c0-4 2.8-7 6-11z"></path><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"></path></svg><span>Санитария</span></a><a href="/MPK/claims/" data-p="claims"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9.5L5 20v-4H4z"></path><path d="M12 8.5v3.2"></path><path d="M12 13.6v.1"></path></svg><span>Претензии</span></a></nav>
+  <nav class="dashnav" aria-label="Дашборды"><a href="/MPK/" data-p="prod"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10l5 3V10l5 3V6h6v14z"/><path d="M4 20h16"/></svg><span>Производство</span></a><a href="/MPK/quality/" data-p="quality"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg><span>Качество</span></a><a href="/MPK/safety/" data-p="safety"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.3-2.9 7.7-7 9.5-4.1-1.8-7-5.2-7-9.5V6z"/><path d="M9 12l2.2 2.2L15.2 10"/></svg><span>Безопасность</span></a><a href="/MPK/sanitary/" data-p="sanitary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.2 4 6 7 6 11a6 6 0 0 1-12 0c0-4 2.8-7 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></svg><span>Санитария</span></a><a href="/MPK/claims/" data-p="claims"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9.5L5 20v-4H4z"/><path d="M12 8.5v3.2"/><path d="M12 13.6v.1"/></svg><span>Претензии</span></a><a href="/MPK/labor/" data-p="labor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-5"/><path d="M12 8v1.5"/></svg><span>Производительность</span></a><a href="/MPK/returns/" data-p="returns"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h9a6 6 0 0 1 0 12h-3"/></svg><span>Возвраты</span></a><a href="/MPK/staff/" data-p="staff"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.3"/><path d="M17 14.2c2.4 0 4 1.8 4 4.3"/></svg><span>Персонал</span></a></nav>
 <script>(()=>{try{if(!navigator.standalone&&!matchMedia("(display-mode: standalone)").matches&&!/tgWebApp/.test(location.hash)&&/iPhone|iPad/.test(navigator.userAgent))document.documentElement.classList.add("inbrowser")}catch(e){}})();</script>
   <div class="top">
     <h1>Показатели МПК 2026 ·<span class="h1s"> санитария</span></h1>
@@ -223,26 +226,26 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
 
   <div class="panel picker">
     <div class="vtabs" role="tablist" aria-label="Режим">
-      <button class="vtab" data-mode="day" aria-pressed="true">Дни</button>
-      <button class="vtab" data-mode="week" aria-pressed="false">Недели</button>
-      <button class="vtab" data-mode="month" aria-pressed="false">Месяцы</button>
-      <button class="vtab" data-mode="year" aria-pressed="false">Год</button>
-      <button class="vtab" data-mode="per" aria-pressed="false">Период</button>
+      <button class="vtab" data-mode="day">Дни</button>
+      <button class="vtab" data-mode="week">Недели</button>
+      <button class="vtab" data-mode="month">Месяцы</button>
+      <button class="vtab" data-mode="year">Год</button>
+      <button class="vtab" data-mode="per">Период</button>
     </div>
     <div class="ctl" id="c-day">
-      <div class="chips strip" id="monchips"><button class="mon" data-m="10" aria-pressed="true">Октябрь</button><button class="mon" data-m="9" aria-pressed="false">Сентябрь</button><button class="mon" data-m="8" aria-pressed="false">Август</button><button class="mon" data-m="7" aria-pressed="false">Июль</button><button class="mon" data-m="6" aria-pressed="false">Июнь</button><button class="mon" data-m="5" aria-pressed="false">Май</button><button class="mon" data-m="4" aria-pressed="false">Апрель</button><button class="mon" data-m="3" aria-pressed="false">Март</button><button class="mon" data-m="2" aria-pressed="false">Февраль</button><button class="mon" data-m="1" aria-pressed="false">Январь</button></div>
-      <div class="days" id="daychips" role="group" aria-label="Дни месяца"><button class="day" data-d="2026-10-15" aria-pressed="true">15</button><button class="day" data-d="2026-10-14" aria-pressed="false">14</button><button class="day" data-d="2026-10-13" aria-pressed="false">13</button><button class="day" data-d="2026-10-12" aria-pressed="false">12</button><button class="day" data-d="2026-10-11" aria-pressed="false">11</button><button class="day" data-d="2026-10-10" aria-pressed="false">10</button><button class="day" data-d="2026-10-09" aria-pressed="false">9</button><button class="day" data-d="2026-10-08" aria-pressed="false">8</button><button class="day" data-d="2026-10-07" aria-pressed="false">7</button><button class="day" data-d="2026-10-06" aria-pressed="false">6</button><button class="day" data-d="2026-10-05" aria-pressed="false">5</button><button class="day" data-d="2026-10-04" aria-pressed="false">4</button><button class="day" data-d="2026-10-03" aria-pressed="false">3</button><button class="day" data-d="2026-10-02" aria-pressed="false">2</button><button class="day" data-d="2026-10-01" aria-pressed="false">1</button><button class="day" data-empty="" data-d="2026-10-16" aria-pressed="false">16</button><button class="day" data-empty="" data-d="2026-10-17" aria-pressed="false">17</button><button class="day" data-empty="" data-d="2026-10-18" aria-pressed="false">18</button><button class="day" data-empty="" data-d="2026-10-19" aria-pressed="false">19</button><button class="day" data-empty="" data-d="2026-10-20" aria-pressed="false">20</button><button class="day" data-empty="" data-d="2026-10-21" aria-pressed="false">21</button><button class="day" data-empty="" data-d="2026-10-22" aria-pressed="false">22</button><button class="day" data-empty="" data-d="2026-10-23" aria-pressed="false">23</button><button class="day" data-empty="" data-d="2026-10-24" aria-pressed="false">24</button><button class="day" data-empty="" data-d="2026-10-25" aria-pressed="false">25</button><button class="day" data-empty="" data-d="2026-10-26" aria-pressed="false">26</button><button class="day" data-empty="" data-d="2026-10-27" aria-pressed="false">27</button><button class="day" data-empty="" data-d="2026-10-28" aria-pressed="false">28</button><button class="day" data-empty="" data-d="2026-10-29" aria-pressed="false">29</button><button class="day" data-empty="" data-d="2026-10-30" aria-pressed="false">30</button><button class="day" data-empty="" data-d="2026-10-31" aria-pressed="false">31</button></div>
+      <div class="chips strip" id="monchips"></div>
+      <div class="days" id="daychips" role="group" aria-label="Дни месяца"></div>
     </div>
-    <div class="ctl" id="c-week" hidden=""><div class="chips strip" id="weekchips"></div></div>
-    <div class="ctl" id="c-month" hidden=""><div class="chips strip" id="monthchips"></div></div>
-    <div class="ctl" id="c-per" hidden="">
+    <div class="ctl" id="c-week" hidden><div class="chips strip" id="weekchips"></div></div>
+    <div class="ctl" id="c-month" hidden><div class="chips strip" id="monthchips"></div></div>
+    <div class="ctl" id="c-per" hidden>
       <div class="dates">с <input type="date" id="from" aria-label="Начало периода"> по <input type="date" id="to" aria-label="Конец периода"></div>
       <div class="chips" id="chips"></div>
     </div>
-    <div class="selrow"><div class="today">Выбрано: <b id="cur">15 октября, четверг</b></div></div>
+    <div class="selrow"><div class="today">Выбрано: <b id="cur">—</b></div></div>
   </div>
 
-  <section class="panel" id="p-pt" hidden="">
+  <section class="panel" id="p-pt" hidden>
     <div class="ph"><h2>Качество полутуш ЦУиППЖ</h2><span class="note" id="pt-note"></span></div>
     <div class="tiles" id="pt-tiles"></div>
     <h3 class="ch-t" id="pt-ct"></h3><div class="chart auto" id="pt-chart"></div><div class="xl auto" id="pt-xl"></div>
@@ -250,7 +253,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="hl" id="pt-def" style="margin-top:12px"></div>
   </section>
 
-  <section class="panel" id="p-tech" hidden="">
+  <section class="panel" id="p-tech" hidden>
     <div class="ph"><h2>Соблюдение технологии ЦУиППЖ</h2><span class="note" id="th-note"></span></div>
     <div class="tiles" id="th-tiles"></div>
     <h3 class="ch-t" id="th-ct"></h3><div class="chart auto" id="th-chart"></div><div class="xl auto" id="th-xl"></div>
@@ -258,14 +261,14 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="two"><div class="hl" id="th-dev"></div><div class="hl" id="th-par"></div></div>
   </section>
 
-  <section class="panel" id="p-gkt" hidden="">
+  <section class="panel" id="p-gkt" hidden>
     <div class="ph"><h2>Превышение по содержимому ЖКТ</h2><span class="note" id="gk-note"></span></div>
     <div class="tiles" id="gk-tiles"></div>
     <h3 class="ch-t" id="gk-ct"></h3><div class="chart auto" id="gk-chart"></div><div class="xl auto" id="gk-xl"></div>
     <div class="legend"><span>содержимое ЖКТ сверх нормы 6,36 % живого веса, кг</span></div>
   </section>
 
-  <section class="panel" id="p-crp" hidden="">
+  <section class="panel" id="p-crp" hidden>
     <div class="ph"><h2>Контроль качества обвалки для ЦРП</h2><span class="note" id="cr-note"></span></div>
     <div class="tiles" id="cr-tiles"></div>
     <h3 class="ch-t" id="cr-ct"></h3><div class="chart auto" id="cr-chart"></div><div class="xl auto" id="cr-xl"></div>
@@ -273,7 +276,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="two"><div class="hl" id="cr-cut"></div><div class="hl" id="cr-def"></div></div>
   </section>
 
-  <section class="panel" id="p-pod" hidden="">
+  <section class="panel" id="p-pod" hidden>
     <div class="ph"><h2>Качество обвалки</h2><span class="note" id="pd-note"></span></div>
     <div class="tiles" id="pd-tiles"></div>
     <h3 class="ch-t" id="pd-ct"></h3><div class="chart auto" id="pd-chart"></div><div class="xl auto" id="pd-xl"></div>
@@ -281,7 +284,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="two"><div class="hl" id="pd-cut"></div><div class="hl" id="pd-def"></div></div>
   </section>
 
-  <section class="panel" id="p-cgp" hidden="">
+  <section class="panel" id="p-cgp" hidden>
     <div class="ph"><h2>Осмотр продукции ЦГП</h2><span class="note" id="cg-note"></span></div>
     <div class="tiles" id="cg-tiles"></div>
     <h3 class="ch-t" id="cg-ct"></h3><div class="chart auto" id="cg-chart"></div><div class="xl auto" id="cg-xl"></div>
@@ -289,7 +292,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="hl" id="cg-crit" style="margin-top:12px"></div>
   </section>
 
-  <section class="panel" id="p-crp2" hidden="">
+  <section class="panel" id="p-crp2">
     <div class="ph"><h2>Осмотр продукции ЦРП</h2><span class="note" id="c2-note"></span></div>
     <div class="tiles" id="c2-tiles"></div>
     <h3 class="ch-t" id="c2-ct"></h3><div class="chart auto" id="c2-chart"></div><div class="xl auto" id="c2-xl"></div>
@@ -297,7 +300,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="hl" id="c2-crit" style="margin-top:12px"></div>
   </section>
 
-  <section class="panel" id="p-germ" hidden="">
+  <section class="panel" id="p-germ" hidden>
     <div class="ph"><h2>Герметичность упаковки ЦРП</h2><span class="note" id="gm-note"></span></div>
     <div class="tiles" id="gm-tiles"></div>
     <h3 class="ch-t" id="gm-ct"></h3><div class="chart auto" id="gm-chart"></div><div class="xl auto" id="gm-xl"></div>
@@ -305,7 +308,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="two"><div class="hl" id="gm-cause"></div><div class="hl" id="gm-prod"></div></div>
   </section>
 
-  <section class="panel" id="p-temp" hidden="">
+  <section class="panel" id="p-temp" hidden>
     <div class="ph"><h2>Температурный режим ЦРиО</h2><span class="note" id="tp-note"></span></div>
     <div class="tiles" id="tp-tiles"></div>
     <h3 class="ch-t" id="tp-ct"></h3><div class="chart auto" id="tp-chart"></div><div class="xl auto" id="tp-xl"></div>
@@ -313,16 +316,16 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="two"><div class="hl" id="tp-sec"></div><div class="hl" id="tp-items"></div></div>
   </section>
 
-  <section class="panel" id="p-claims" hidden="">
+  <section class="panel" id="p-claims" hidden>
     <div class="ph"><h2>Претензии</h2><span class="note" id="cl-note"></span></div>
     <div class="tiles" id="cl-tiles"></div>
     <h3 class="ch-t" id="cv-ct"></h3><div class="chart auto" id="cv-chart"></div><div class="xl auto" id="cv-xl"></div>
     <div class="legend" id="cv-legend"></div>
-    <div class="hl" id="cv-list" style="margin-top:12px" hidden=""></div>
+    <div class="hl" id="cv-list" style="margin-top:12px" hidden></div>
     <div class="two"><div class="hl" id="cl-vid"></div><div class="hl" id="cl-ceh"></div></div>
   </section>
 
-  <section class="panel" id="p-voz" hidden="">
+  <section class="panel" id="p-voz" hidden>
     <div class="ph"><h2>Возвраты продукции</h2><span class="note" id="vz-note"></span></div>
     <div class="tiles" id="vz-tiles"></div>
     <h3 class="ch-t" id="vz-ct"></h3><div class="chart auto" id="vz-chart"></div><div class="xl auto" id="vz-xl"></div>
@@ -332,33 +335,33 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
   </section>
 
   <section class="panel" id="p-san">
-    <div class="ph"><h2>Санитария: уровень чистоты</h2><span class="note" id="sm-note">Сентябрь 2026 — последний отчёт лаборатории</span></div>
-    <div class="tiles" id="sm-tiles"><div class="tile st-warn"><div class="l">Уровень чистоты завода</div><div class="v">85,6 %</div><div class="s">авг: 75,2 %</div></div><div class="tile "><div class="l">Смывов отобрано</div><div class="v">264</div><div class="s">соответствуют 226, не соответствуют 38</div></div><div class="tile st-good"><div class="l">Патогены</div><div class="v">0</div><div class="s">сальмонелла, листерия не выявлены</div></div></div>
-    <h3 class="ch-t">Уровень чистоты по месяцам, %</h3><div class="chart" id="sm-chart"><div class="col w"><span class="lab">92 %</span><div class="seg" style="height:91.78571428571428%"></div></div><div class="col w"><span class="lab">93 %</span><div class="seg" style="height:93.14079422382672%"></div></div><div class="col w"><span class="lab">91 %</span><div class="seg" style="height:90.56603773584906%"></div></div><div class="col g"><span class="lab">96 %</span><div class="seg" style="height:95.88014981273409%"></div></div><div class="col w"><span class="lab">71 %</span><div class="seg" style="height:70.99236641221374%"></div></div><div class="col w"><span class="lab">83 %</span><div class="seg" style="height:83.39622641509435%"></div></div><div class="col w"><span class="lab">71 %</span><div class="seg" style="height:70.95588235294117%"></div></div><div class="col w"><span class="lab">75 %</span><div class="seg" style="height:75.18796992481202%"></div></div><div class="col w sel"><span class="lab">86 %</span><div class="seg" style="height:85.60606060606061%"></div></div><div class="col"></div><div class="col"></div><div class="col"></div></div><div class="xl" id="sm-xl"><span class="">янв</span><span class="">фев</span><span class="">мар</span><span class="">апр</span><span class="">май</span><span class="">июн</span><span class="">июл</span><span class="">авг</span><span class="sel">сен</span><span>окт</span><span>ноя</span><span>дек</span></div>
+    <div class="ph"><h2>Санитария: уровень чистоты</h2><span class="note" id="sm-note"></span></div>
+    <div class="tiles" id="sm-tiles"></div>
+    <h3 class="ch-t">Уровень чистоты по месяцам, %</h3><div class="chart" id="sm-chart"></div><div class="xl" id="sm-xl"></div>
     <div class="legend"><span><i style="background:var(--good)"></i>95 % и выше</span><span><i style="background:var(--warn)"></i>70–95 %</span><span><i style="background:var(--crit)"></i>ниже 70 %</span><span>уровень чистоты = соответствующие смывы / все смывы · отчёт лаборатории раз в месяц</span></div>
-    <div class="cehs" id="sm-cehs"><div class="ceh click st-warn open" data-k="all"><h3>Завод</h3><div class="big"><span class="dot"></span>85,6 %<small>чистых 226 из 264</small></div></div><div class="ceh click st-warn" data-k="ubl"><h3>ЦУиППЖ</h3><div class="big"><span class="dot"></span>82,0 %<small>чистых 82 из 100</small></div></div><div class="ceh click st-warn" data-k="obv"><h3>ЦРиО</h3><div class="big"><span class="dot"></span>88,9 %<small>чистых 120 из 135</small></div></div><div class="ceh click st-warn" data-k="crp"><h3>ЦРП</h3><div class="big"><span class="dot"></span>82,8 %<small>чистых 24 из 29</small></div></div></div>
-    <div class="hl" id="sm-grp" style="margin-top:14px"><h3>Чистота по группам объектов — завод<small>нажмите на группу, чтобы увидеть несоответствия</small></h3><div class="hr st-warn"><span class="t"><span class="dot"></span><b>Всего по заводу</b></span><span class="n"><b>85,6 %</b> · чистых 226 из 264</span><div class="hb"><i class="w" style="width:85.60606060606061%"></i></div></div><div class="hr click st-good"><span class="t"><span class="dot"></span>Руки</span><span class="n"><b>96,7 %</b> · чистых 58 из 60</span><div class="hb"><i class="g" style="width:96.66666666666667%"></i></div></div><div class="hr click st-good"><span class="t"><span class="dot"></span>Перчатки, нарукавники, фартуки</span><span class="n"><b>95,0 %</b> · чистых 57 из 60</span><div class="hb"><i class="g" style="width:95%"></i></div></div><div class="hr click st-warn"><span class="t"><span class="dot"></span>Оборудование</span><span class="n"><b>85,4 %</b> · чистых 76 из 89</span><div class="hb"><i class="w" style="width:85.39325842696628%"></i></div></div><div class="hr click st-crit"><span class="t"><span class="dot"></span>Тара</span><span class="n"><b>50,0 %</b> · чистых 20 из 40</span><div class="hb"><i class="c" style="width:50%"></i></div></div><div class="hr click st-good"><span class="t"><span class="dot"></span>Вентиляция</span><span class="n"><b>100,0 %</b> · чистых 15 из 15</span><div class="hb"><i class="g" style="width:100%"></i></div></div></div>
+    <div class="cehs" id="sm-cehs"></div>
+    <div class="hl" id="sm-grp" style="margin-top:14px"></div>
   </section>
 
-  <section class="panel" id="p-bb" hidden="">
+  <section class="panel" id="p-bb" hidden>
     <div class="ph"><h2>Биобезопасность</h2><span class="note" id="bb-note"></span></div>
     <div class="tiles" id="bb-tiles"></div>
     <h3 class="ch-t" id="bb-ct"></h3><div class="chart auto" id="bb-chart"></div><div class="xl auto" id="bb-xl"></div>
     <div class="legend"><span><i style="background:var(--good)"></i>А · от 90 %</span><span><i style="background:var(--warn)"></i>Б · 80–90 %</span><span><i style="background:var(--crit)"></i>В/Г · ниже 80 %</span></div>
     <div class="hl" id="bb-items" style="margin-top:12px"></div>
   </section>
-  <section class="panel" id="p-ot" hidden="">
+  <section class="panel" id="p-ot" hidden>
     <div class="ph"><h2>Охрана труда: травмы</h2><span class="note" id="ot-note"></span></div>
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=acdf4e2c2e"></script>
+<script src="/MPK/director-data.js?v=290bb64832"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="sanitary";
 // Отчёт №2 (Павел, 18.09.2026): вкладка «Качество» — полутуши, ЖКТ, обвалка для ЦРП, претензии, возвраты. Отчёт №3 (?full=1 или уже открывали в сессии) — все модули.
-const SECTIONS={quality:["p-pt","p-gkt","p-crp","p-pod","p-voz"],safety:["p-bb","p-ot"],sanitary:["p-san"],claims:["p-claims"]};
-const SECTIONS_FULL={quality:["p-pt","p-gkt","p-crp","p-pod","p-cgp","p-crp2","p-temp","p-voz"],safety:["p-bb","p-ot"],sanitary:["p-san"],claims:["p-claims"]};
+const SECTIONS={quality:["p-pt","p-gkt","p-crp","p-pod"],safety:["p-bb","p-ot"],sanitary:["p-san"],claims:["p-claims"],returns:["p-voz"]};
+const SECTIONS_FULL={quality:["p-pt","p-gkt","p-crp","p-pod","p-cgp","p-crp2","p-temp"],safety:["p-bb","p-ot"],sanitary:["p-san"],claims:["p-claims"],returns:["p-voz"]};
 const FULL3=(()=>{try{const q=new URLSearchParams(location.search).get("full"); if(q==="0"){sessionStorage.removeItem("mpkFull");return false}
   const f=q==="1"||sessionStorage.getItem("mpkFull")==="1"; if(f) sessionStorage.setItem("mpkFull","1"); return f}catch(e){return new URLSearchParams(location.search).get("full")==="1"}})();
 const SECT=(FULL3?SECTIONS_FULL:SECTIONS)[PAGE];
@@ -368,6 +371,7 @@ document.querySelectorAll(".dashnav a").forEach(a=>a.classList.toggle("on",a.dat
   document.querySelectorAll('.dashnav a[data-p="quality"],.dashnav a[data-p="safety"],.dashnav a[data-p="sanitary"],.dashnav a[data-p="claims"]').forEach(a=>{a.hidden=false; if(FULL3) a.href=a.getAttribute("href").split("?")[0]+"?full=1"})}catch(e){}})();
 // переходы между вкладками — всегда свежая страница (телефон кэширует старую версию)
 document.querySelectorAll(".dashnav a").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const u=new URL(a.getAttribute("href"),location.origin);u.searchParams.set("v",Date.now());location.assign(u.toString())}));
+<script>(()=>{try{const n=document.querySelector(".dashnav"),a=n.querySelector("a.on");if(a)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2}catch(e){}})();</script>
 
 const M=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
 const MS=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
@@ -847,12 +851,11 @@ const IDLE=new Set(DATA.idle_days||[]);
 const idleNote=()=>(mode==="day"&&IDLE.has(day))?" · завод не работал":"";
 function render(){
   const [f,t,lab]=range(); document.getElementById("cur").textContent=lab+idleNote(); renderPicker();
-  if(PAGE==="quality"){renderPt(f,t,lab);renderGkt(f,t,lab);renderCrp(f,t,lab);renderPod(f,t,lab);renderMon("cgp","cg",f,t,lab);renderMon("crp2","c2",f,t,lab);renderTemp(f,t,lab);renderVoz(f,t,lab)} else if(PAGE==="claims") renderClaims(f,t,lab); else if(PAGE==="sanitary") renderSm(f,t,lab); else renderSafety(f,t,lab);
+  if(PAGE==="quality"){renderPt(f,t,lab);renderGkt(f,t,lab);renderCrp(f,t,lab);renderPod(f,t,lab);renderMon("cgp","cg",f,t,lab);renderMon("crp2","c2",f,t,lab);renderTemp(f,t,lab)} else if(PAGE==="returns") renderVoz(f,t,lab); else if(PAGE==="claims") renderClaims(f,t,lab); else if(PAGE==="sanitary") renderSm(f,t,lab); else renderSafety(f,t,lab);
 }
 render();
 document.documentElement.classList.add("ready");
 let _rw=window.innerWidth<720; window.addEventListener("resize",()=>{const m=window.innerWidth<720; if(m!==_rw){_rw=m; render()}});
 </script>
-
-
-</body></html>
+</body>
+</html>
