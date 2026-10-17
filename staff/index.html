@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 15.10.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261017063214">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261017063531">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261017063214">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261017063531">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if(/tgWebApp/.test(location.hash)){var s=document.createElement("script");s.src="https://telegram.org/js/telegram-web-app.js";s.onload=function(){try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}};document.head.appendChild(s)}</script>
@@ -67,10 +67,16 @@ select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outlin
 .nav button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
 .nav button:disabled{opacity:.35;cursor:default}
 .vtabs{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:12px}
-.vtab,.ptab{flex:1;font:inherit;font-size:13px;font-weight:600;padding:9px 2px;min-width:0;border:0;border-right:1px solid var(--line);
+.vtab{flex:1;font:inherit;font-size:13px;font-weight:600;padding:9px 2px;min-width:0;border:0;border-right:1px solid var(--line);
   background:var(--surface);color:var(--ink-2);cursor:pointer}
-.vtab:last-child,.ptab:last-child{border-right:0} .vtab[aria-pressed="true"],.ptab[aria-pressed="true"]{background:var(--accent);color:#fff}
-.ptabs{margin-top:-2px} .ptabs[hidden],.pnote[hidden]{display:none} .pnote{font-size:12px;color:var(--ink-3);margin:-4px 2px 12px;line-height:1.4}
+.vtab:last-child{border-right:0} .vtab[aria-pressed="true"]{background:var(--accent);color:#fff}
+.plrow{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin:-2px 0 12px} .plrow[hidden]{display:none}
+.plsw{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.pll{font:inherit;font-size:12.5px;font-weight:600;padding:2px 0;border:0;background:transparent;color:var(--ink-3);cursor:pointer} .pll[aria-pressed="true"]{color:var(--accent);font-weight:700}
+.swb{position:relative;width:34px;height:20px;padding:0;border:0;border-radius:999px;background:var(--line);cursor:pointer;transition:background .15s}
+.swb i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .15s}
+.swb[aria-checked="true"]{background:var(--accent)} .swb[aria-checked="true"] i{transform:translateX(14px)}
+.pnote{font-size:12px;color:var(--ink-3)}
 .strip{display:flex;flex-wrap:nowrap!important;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
 .mon{flex:0 0 auto;font:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);
   color:var(--ink-2);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
@@ -208,11 +214,14 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
       <button class="vtab" data-mode="year" aria-pressed="false">Год</button>
       <button class="vtab" data-mode="per" aria-pressed="false">Период</button>
     </div>
-    <div class="vtabs ptabs" role="tablist" aria-label="Сравнение с планом">
-      <button class="ptab" data-plan="op" aria-pressed="true">Оперплан</button>
-      <button class="ptab" data-plan="pf" aria-pressed="false">ПФХД</button>
+    <div class="plrow" id="plrow">
+      <span class="plsw" role="group" aria-label="Сравнение с планом">
+        <button type="button" class="pll" data-plan="op">Оперплан</button>
+        <button type="button" class="swb" role="switch" aria-checked="false" aria-label="Переключить оперплан / ПФХД"><i></i></button>
+        <button type="button" class="pll" data-plan="pf">ПФХД</button>
+      </span>
+      <span class="pnote" id="pnote"></span>
     </div>
-    <div class="pnote" id="pnote"></div>
     <div class="ctl" id="dayctl">
       <div class="chips strip" id="monchips"></div>
       <div class="days" id="days" role="group" aria-label="Дни месяца"></div>
@@ -344,9 +353,9 @@ let PLAN = (()=>{ try{ return localStorage.getItem("mpkPlan")==="pf" ? "pf" : "o
 let PLANACT = "op";   // действующий план: ПФХД только в режимах «Месяцы», «Год», «Период»; в «Днях» и «Неделях» всегда оперплан (Павел, 17.10.2026)
 const planOf = (r,k) => PLANACT==="pf" ? ((r.pf && r.pf[k]!=null) ? r.pf[k] : null) : r[k][0];
 function syncPlan(){
-  for(const b of document.querySelectorAll(".ptab")) b.setAttribute("aria-pressed", b.dataset.plan===PLAN);
-  const n = document.getElementById("pnote");
-  if(n) n.textContent = PLAN==="pf" ? "Факт сравнивается с ПФХД: месячный план финансово-хозяйственной деятельности, по дням — пропорционально плану убоя." : "Факт сравнивается с оперативным планом (оперплан).";
+  for(const b of document.querySelectorAll(".pll")) b.setAttribute("aria-pressed", b.dataset.plan===PLAN);
+  const sw = document.querySelector(".swb"); if(sw) sw.setAttribute("aria-checked", PLAN==="pf");
+  const n = document.getElementById("pnote"); if(n) n.textContent = PLAN==="pf" ? "Факт сравнивается с ПФХД" : "Факт сравнивается с оперпланом";
 }
 const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : null;
 function aggregate(from,to){
@@ -418,7 +427,7 @@ function renderRange(from, to, header){
 
 function render(){
   const usePlan = mode==="month"||mode==="year"||mode==="per"; PLANACT = usePlan ? PLAN : "op";
-  { const pt=document.querySelector(".ptabs"), pn=document.getElementById("pnote"); if(pt) pt.hidden=!usePlan; if(pn) pn.hidden=!usePlan; }
+  { const pr=document.getElementById("plrow"); if(pr) pr.hidden=!usePlan; }
   const warn = document.getElementById("pwarn"); warn.hidden = true;
   if(PGP==="labor"&&typeof renderLabor==="function") setTimeout(renderLabor,0);
   if(PGP==="staff"&&typeof renderStaff==="function") setTimeout(renderStaff,0);
@@ -479,7 +488,7 @@ function setMode(m){
   if(m==="per" && !(pfrom && pto && document.getElementById("from").value)) { [pfrom,pto] = PRESETS[2][1](); }
   render();
 }
-document.querySelector(".ptabs").onclick = e => { const b=e.target.closest(".ptab"); if(!b) return; PLAN=b.dataset.plan; try{ localStorage.setItem("mpkPlan",PLAN) }catch(err){} syncPlan(); render(); };
+document.getElementById("plrow").onclick = e => { const l=e.target.closest(".pll"), w=e.target.closest(".swb"); if(!l && !w) return; PLAN = l ? l.dataset.plan : (PLAN==="pf" ? "op" : "pf"); try{ localStorage.setItem("mpkPlan",PLAN) }catch(err){} syncPlan(); render(); };
 document.querySelector(".vtabs").onclick = e => { const b=e.target.closest(".vtab"); if(b) setMode(b.dataset.mode); };
 document.getElementById("monchips").onclick = e => { const b=e.target.closest(".mon"); if(b){ mon=b.dataset.m; day=null; render(); } };
 document.getElementById("weekchips").onclick = e => { const b=e.target.closest(".wchip"); if(b){ week=+b.dataset.w; render(); } };
