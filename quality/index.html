@@ -355,7 +355,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=290bb64832"></script>
+<script src="/MPK/director-data.js?v=951d4d5692"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -371,7 +371,7 @@ document.querySelectorAll(".dashnav a").forEach(a=>a.classList.toggle("on",a.dat
   document.querySelectorAll('.dashnav a[data-p="quality"],.dashnav a[data-p="safety"],.dashnav a[data-p="sanitary"],.dashnav a[data-p="claims"]').forEach(a=>{a.hidden=false; if(FULL3) a.href=a.getAttribute("href").split("?")[0]+"?full=1"})}catch(e){}})();
 // переходы между вкладками — всегда свежая страница (телефон кэширует старую версию)
 document.querySelectorAll(".dashnav a").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const u=new URL(a.getAttribute("href"),location.origin);u.searchParams.set("v",Date.now());location.assign(u.toString())}));
-<script>(()=>{try{const n=document.querySelector(".dashnav"),a=n.querySelector("a.on");if(a)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2}catch(e){}})();</script>
+<script>(()=>{const c=()=>{try{const n=document.querySelector(".dashnav"),a=n.querySelector("a.on");if(a)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2}catch(e){}};addEventListener("DOMContentLoaded",c);addEventListener("load",c);setTimeout(c,60);setTimeout(c,400)})();</script>
 
 const M=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
 const MS=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
