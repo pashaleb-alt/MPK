@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 15.10.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261017065157">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261017065426">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261017065157">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261017065426">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if(/tgWebApp/.test(location.hash)){var s=document.createElement("script");s.src="https://telegram.org/js/telegram-web-app.js";s.onload=function(){try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}};document.head.appendChild(s)}</script>
@@ -79,8 +79,6 @@ html .dashnav{flex-wrap:wrap;justify-content:center;gap:4px}
 .dashnav .plsw{padding:3px 12px}
 html .wrap{padding-top:calc(var(--navh,64px) + 14px)}   /* высота шторки измеряется скриптом (--navh): ряд кнопок может переноситься */
 @media (max-width:640px){.dashnav .plrow{grid-column:1/-1}}
-/* автоскрытие: при прокрутке вниз кнопки вкладок уезжают вверх, остаётся полоса с тумблером; при прокрутке вверх шторка возвращается (Павел, 17.10.2026) */
-html .dashnav{transition:transform .22s ease,box-shadow .22s} html .dashnav.min{transform:translateY(calc(var(--hide,0px) * -1));box-shadow:0 2px 8px rgba(20,30,50,.12)}
 .plsw{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
 .pll{font:inherit;font-size:12.5px;font-weight:600;padding:2px 0;border:0;background:transparent;color:var(--ink-3);cursor:pointer} .pll[aria-pressed="true"]{color:var(--accent);font-weight:700}
 .swb{position:relative;width:34px;height:20px;padding:0;border:0;border-radius:999px;background:var(--line);cursor:pointer;transition:background .15s}
@@ -211,11 +209,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
   <nav class="dashnav" aria-label="Дашборды"><a href="/MPK/" class="on" data-p="prod"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10l5 3V10l5 3V6h6v14z"/><path d="M4 20h16"/></svg><span>Производство</span></a><a href="/MPK/safety/" data-p="safety"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.3-2.9 7.7-7 9.5-4.1-1.8-7-5.2-7-9.5V6z"/><path d="M9 12l2.2 2.2L15.2 10"/></svg><span>Безопасность</span></a><a href="/MPK/labor/" data-p="labor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-5"/><path d="M12 8v1.5"/></svg><span><span class="lf">Производительность</span><span class="ls">Произв. труда</span></span></a><a href="/MPK/staff/" data-p="staff"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.3"/><path d="M17 14.2c2.4 0 4 1.8 4 4.3"/></svg><span>Персонал</span></a><a href="/MPK/quality/" data-p="quality"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg><span>Качество</span></a><a href="/MPK/claims/" data-p="claims"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9.5L5 20v-4H4z"/><path d="M12 8.5v3.2"/><path d="M12 13.6v.1"/></svg><span>Претензии</span></a><a href="/MPK/sanitary/" data-p="sanitary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.2 4 6 7 6 11a6 6 0 0 1-12 0c0-4 2.8-7 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></svg><span>Санитария</span></a><a href="/MPK/returns/" data-p="returns"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h9a6 6 0 0 1 0 12h-3"/></svg><span>Возвраты</span></a><div class="plrow" id="plrow"><span class="plsw" role="group" aria-label="Сравнение с планом"><button type="button" class="pll" data-plan="op">Оперплан</button><button type="button" class="swb" role="switch" aria-checked="false" aria-label="Переключить оперплан / ПФХД"><i></i></button><button type="button" class="pll" data-plan="pf">ПФХД</button></span></div></nav>
 <script>(()=>{try{if(!navigator.standalone&&!matchMedia("(display-mode: standalone)").matches&&!/tgWebApp/.test(location.hash)&&/iPhone|iPad/.test(navigator.userAgent))document.documentElement.classList.add("inbrowser")}catch(e){}})();</script>
 <script>document.querySelectorAll(".dashnav a").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const u=new URL(a.getAttribute("href"),location.origin);u.searchParams.set("v",Date.now());location.assign(u.toString())}));</script>
-<script>(()=>{const c=()=>{try{const n=document.querySelector(".dashnav"),a=n.querySelector("a.on");if(a)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2}catch(e){}};addEventListener("DOMContentLoaded",c);addEventListener("load",c);setTimeout(c,60);setTimeout(c,400)})();(()=>{const f=()=>{try{document.documentElement.style.setProperty("--navh",document.querySelector(".dashnav").offsetHeight+"px")}catch(e){}};f();addEventListener("DOMContentLoaded",f);addEventListener("load",f);addEventListener("resize",f);setTimeout(f,300)})();(()=>{const nav=document.querySelector(".dashnav"),pr=document.getElementById("plrow");if(!nav||!pr)return;let last=scrollY,tick=false;
-const meas=()=>{try{nav.classList.remove("min");document.documentElement.style.setProperty("--hide",Math.max(0,pr.offsetTop-4)+"px")}catch(e){}};
-const upd=()=>{tick=false;if(pr.hidden){nav.classList.remove("min");return}const y=scrollY,d=y-last;if(y<60||d<-6)nav.classList.remove("min");else if(d>6)nav.classList.add("min");if(Math.abs(d)>6||y<60)last=y};
-addEventListener("scroll",()=>{if(!tick){tick=true;requestAnimationFrame(upd)}},{passive:true});
-addEventListener("resize",meas);addEventListener("load",meas);setTimeout(meas,350);meas()})();</script>
+<script>(()=>{const c=()=>{try{const n=document.querySelector(".dashnav"),a=n.querySelector("a.on");if(a)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2}catch(e){}};addEventListener("DOMContentLoaded",c);addEventListener("load",c);setTimeout(c,60);setTimeout(c,400)})();(()=>{const f=()=>{try{document.documentElement.style.setProperty("--navh",document.querySelector(".dashnav").offsetHeight+"px")}catch(e){}};f();addEventListener("DOMContentLoaded",f);addEventListener("load",f);addEventListener("resize",f);setTimeout(f,300)})();</script>
   <div class="top">
     <h1>Показатели МПК 2026 ·<span class="h1s"> производство</span></h1>
   </div>
