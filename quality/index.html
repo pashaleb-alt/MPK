@@ -49,11 +49,12 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .dashnav a svg{display:block;width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .dashnav a.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 6px rgba(42,120,214,.35)}
 .wrap{padding-top:64px}
-@media (max-width:640px){
-  .dashnav{gap:4px;padding:5px 5px}
-  .dashnav a{flex-direction:column;gap:2px;padding:5px 9px 4px;min-width:62px;font-size:10px;font-weight:700;letter-spacing:-.1px;border-radius:9px}
-  .dashnav a svg{width:20px;height:20px}
-  .wrap{padding-top:68px}
+@media (max-width:640px){ /* на телефоне — два ряда по четыре кнопки */
+  .dashnav{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:5px 5px;overflow:visible}
+  .dashnav a,.dashnav a:first-child,.dashnav a:last-child{margin:0;min-width:0;flex-direction:column;gap:2px;padding:5px 1px 4px;font-size:9.5px;font-weight:700;letter-spacing:-.2px;border-radius:9px}
+  .dashnav a span{max-width:100%;overflow:hidden;text-overflow:clip}
+  .dashnav a svg{width:19px;height:19px}
+  .wrap{padding-top:116px}
 }
 .sf{display:block} .sf>*+*{margin-top:8px} .sf .hr{grid-template-columns:1fr auto} .sf .tw{overflow-x:auto} .sf table{width:100%;border-collapse:collapse;font-size:13px} .sf th,.sf td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line-soft)} .sf th{color:var(--ink-2);font-weight:600;font-size:12px} .sf td.n{text-align:right;font-variant-numeric:tabular-nums}
 .todo{font-size:13px;color:var(--ink-2);background:var(--ground);border-radius:10px;padding:10px 12px;line-height:1.5} .todo b{color:var(--ink)}
@@ -354,7 +355,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=5ea03fecce"></script>
+<script src="/MPK/director-data.js?v=138df4cbf2"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
