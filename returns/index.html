@@ -50,6 +50,8 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .dashnav a svg{display:block;width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .dashnav a.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 6px rgba(42,120,214,.35)}
 .wrap{padding-top:64px}
+/* вкладки на компьютере выровнены по левому краю содержимого страницы и тянутся до его правого края (Павел, 19.10.2026) */
+@media (min-width:641px){html .dashnav{justify-content:flex-start;gap:5px;padding-left:max(8px,calc((100% - 1080px)/2 + 20px));padding-right:max(8px,calc((100% - 1080px)/2 + 20px))} html .dashnav a,html .dashnav a:first-child,html .dashnav a:last-child{margin:0;flex:1 0 auto;padding:7px 8px;gap:5px;font-size:12.5px} html .dashnav .plrow{padding-left:0}}
 @media (max-width:640px){ /* на телефоне — два ряда по четыре кнопки */
   .dashnav{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:5px 5px;overflow:visible}
   .dashnav a,.dashnav a:first-child,.dashnav a:last-child{margin:0;min-width:0;flex-direction:column;gap:2px;padding:5px 1px 4px;font-size:9.5px;font-weight:700;letter-spacing:-.2px;border-radius:9px}
@@ -356,7 +358,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=0794397ad4"></script>
+<script src="/MPK/director-data.js?v=6686924e75"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="returns";
