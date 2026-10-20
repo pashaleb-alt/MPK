@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 19.10.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020042201">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020043107">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020042201">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020043107">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if(/tgWebApp/.test(location.hash)){var s=document.createElement("script");s.src="https://telegram.org/js/telegram-web-app.js";s.onload=function(){try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}};document.head.appendChild(s)}</script>
@@ -595,7 +595,7 @@ function renderStaff(){
   const tile=(l,v,s2,st)=>`<div class="tile ${st?"st-"+st:""}"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s2||""}</div></div>`;
   box.innerHTML=tile("Укомплектованность",fx(S.fill,0)+" %",`факт ${fx(S.fact,0)} из ${fx(S.plan,0)} по штату`,stF(S.fill))
     +tile("Вакансий",fx(S.vac,0),`декрет ${fx(S.decree)} · СВО ${fx(S.svo)}`,S.vac>60?"crit":S.vac>40?"warn":"good")
-    +tile("Принято / уволено",`${fx(hS)} / ${fx(fS)}`,`за период${(STAFFE.hire.length||STAFFE.fire.length)&&((hv&&hv.partial)||(fv&&fv.partial)||hS==null||fS==null)?" · данные 1С — по "+dd(STAFFE.hireEnd||STAFFE.fireEnd):""} · с начала года ${fx(yHs)} / ${fx(yFs)}`,(fS!=null&&hS!=null&&fS>hS)?"warn":"good")
+    +tile("Принято / уволено",`${fx(hS)} / ${fx(fS)}`,`за период · с начала года ${fx(yHs)} / ${fx(yFs)}`,(fS!=null&&hS!=null&&fS>hS)?"warn":"good")
     +tile("Текучесть",fx(turn,1)+" %","уволено к средней численности",turn>2?"crit":turn>1?"warn":"good")
     +`<div class="tile sostav"><div class="l">Состав</div><div class="v"><span>${fx(S.staff,0)}<small>штат</small></span><span>${fx(S.kndr,0)}<small>КНДР</small></span><span>${fx(S.outs,0)}<small>аутсорс</small></span></div></div>`;
   const MG2=MG; let c1="",x1="",c2="",x2=""; const pad2=n=>String(n).padStart(2,'0'); const mh=(m,kind)=>{ const r=evCount(kind,`2026-${pad2(m)}-01`,`2026-${pad2(m)}-31`); if(r) return r.n; if(STAFFE[kind].length) return null; const x=STAFF[m]; if(!x||(x.weeks<=1&&!x.hired&&!x.fired)) return null; return kind==='hire'?x.hired:x.fired };
