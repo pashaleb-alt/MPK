@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 19.10.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020045324">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020045644">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020045324">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020045644">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if(/tgWebApp/.test(location.hash)){var s=document.createElement("script");s.src="https://telegram.org/js/telegram-web-app.js";s.onload=function(){try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}};document.head.appendChild(s)}</script>
@@ -603,11 +603,13 @@ function renderStaff(){
   const dd=s=>s.slice(8,10)+"."+s.slice(5,7)+"."+s.slice(0,4);
   document.getElementById("sf-note").textContent=`${rng[2]} · штатная расстановка на ${dd(S.d)}${only?" · только штатные сотрудники":""}${S.stale?" (выгрузок за период нет — последняя доступная)":""} · движение за ${S.weeks} нед.`;
   const tile=(l,v,s2,st)=>`<div class="tile ${st?"st-"+st:""}"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s2||""}</div></div>`;
-  // «только штатные»: места штатных = штатная расстановка за вычетом мест, занятых КНДР и аутсорсом; укомплектованность считается как для всех категорий (факт / места)
-  const Ps=S.plan-(S.kndr||0)-(S.outs||0), fillS=Ps>0?S.staff/Ps*100:null;
-  box.innerHTML=(only?tile("Укомплектованность штатными",fx(fillS,0)+" %",`штатных ${fx(S.staff,0)} из ${fx(Ps,0)} мест · расстановка ${fx(S.plan,0)} − КНДР ${fx(S.kndr)} − аутсорс ${fx(S.outs)}`,fillS==null?null:stF(fillS))
+  // «только штатные» (Павел, 20.10.2026): в идеале все места штатной расстановки занимают штатные сотрудники — поэтому «справедливая» укомплектованность = штатные / вся штатная расстановка;
+  // всё, что занято КНДР и аутсорсом или свободно, — это не заполненные штатными места
+  const Ps=S.plan, fillS=Ps>0?S.staff/Ps*100:null, noSt=S.plan-S.staff;
+  box.innerHTML=(only?tile("Укомплектованность штатными",fx(fillS,0)+" %",`штатных ${fx(S.staff,0)} из ${fx(Ps,0)} мест по штатной расстановке`,fillS==null?null:stF(fillS))
                      :tile("Укомплектованность",fx(S.fill,0)+" %",`факт ${fx(S.fact,0)} из ${fx(S.plan,0)} по штату`,stF(S.fill)))
-    +tile("Вакансий",fx(S.vac,0),`декрет ${fx(S.decree)} · СВО ${fx(S.svo)}`,S.vac>60?"crit":S.vac>40?"warn":"good")
+    +(only?tile("Вакансий (места без штатных)",fx(noSt,0),`КНДР ${fx(S.kndr)} · аутсорс ${fx(S.outs)} · свободных ${fx(S.vac)}`,noSt>60?"crit":noSt>40?"warn":"good")
+          :tile("Вакансий",fx(S.vac,0),`декрет ${fx(S.decree)} · СВО ${fx(S.svo)}`,S.vac>60?"crit":S.vac>40?"warn":"good"))
     +tile("Принято / уволено (штатные)",`${fx(hS)} / ${fx(fS)}`,`за период · с начала года ${fx(yHs)} / ${fx(yFs)}`,(fS!=null&&hS!=null&&fS>hS)?"warn":"good")
     +tile("Текучесть штатных",fx(turn,1)+" %","уволено к средней численности штатных",turn>2?"crit":turn>1?"warn":"good")
     +`<div class="tile sostav"><div class="l">Состав</div><div class="v"><span>${fx(S.staff,0)}<small>штат</small></span>${only?"":`<span>${fx(S.kndr,0)}<small>КНДР</small></span><span>${fx(S.outs,0)}<small>аутсорс</small></span>`}</div></div>`;
@@ -617,8 +619,8 @@ function renderStaff(){
   const mxM=Math.max(1,...all.map(m=>Math.max(mh(m,'hire')||0,mh(m,'fire')||0)));
   for(let m=1;m<=12;m++){const x=STAFF[m]; const hh=m in STAFF?mh(m,'hire'):0, ff=m in STAFF?mh(m,'fire'):0; const on=selM===m?" sel":(mode==="month"?" dim":"");
     if(!x){c1+='<div class="col"></div>';c2+='<div class="col"></div>';x1+=`<span>${MG2[m-1]}</span>`;x2+=`<span>${MG2[m-1]}</span>`;continue}
-    const pS=(x.plan-(x.kndr||0)-(x.outs||0)), fS_=pS>0?x.staff/pS*100:null;
-    c1+=only?`<div class="col${on}" data-m="${m}" title="${MN[m-1]}: штатных ${fx(x.staff,0)} из ${fx(pS,0)} мест${fS_==null?"":", "+fx(fS_,0)+" %"}"><span class="lab">${fS_==null?"—":fx(fS_,0)}</span><div class="seg" style="height:${fS_==null?3:Math.max(3,(fS_-70)/30*100)}%;background:${fS_==null?"var(--line)":cls[stF(fS_)]}"></div></div>`
+    const pS=x.plan, fS_=pS>0?x.staff/pS*100:null;
+    c1+=only?`<div class="col${on}" data-m="${m}" title="${MN[m-1]}: штатных ${fx(x.staff,0)} из ${fx(pS,0)} мест по расстановке${fS_==null?"":", "+fx(fS_,0)+" %"}"><span class="lab">${fS_==null?"—":fx(fS_,0)}</span><div class="seg" style="height:${fS_==null?3:Math.max(3,fS_)}%;background:${fS_==null?"var(--line)":cls[stF(fS_)]}"></div></div>`
       :`<div class="col${on}" data-m="${m}" title="${MN[m-1]}: ${fx(x.fill,0)} %, факт ${fx(x.fact,0)} из ${fx(x.plan,0)}"><span class="lab">${fx(x.fill,0)}</span><div class="seg" style="height:${Math.max(3,(x.fill-70)/30*100)}%;background:${cls[stF(x.fill)]}"></div></div>`;
     c2+=`<div class="col${on}" data-m="${m}" title="${MN[m-1]}: принято ${nz(hh)}, уволено ${nz(ff)}"><span class="lab">${window.innerWidth<720?"":nz(hh)+"/"+nz(ff)}</span><div class="pair"><div class="seg" style="height:${(hh||0)/mxM*100}%;background:var(--good)"></div><div class="seg" style="height:${(ff||0)/mxM*100}%;background:var(--crit)"></div></div></div>`;
     x1+=`<span class="${selM===m?"sel":""}">${MG2[m-1]}</span>`; x2+=`<span class="${selM===m?"sel":""}">${MG2[m-1]}${window.innerWidth<720?`<br><b style="color:var(--good)">${nz(hh)}</b><br><b style="color:var(--crit)">${nz(ff)}</b>`:""}</span>`}
@@ -629,10 +631,10 @@ function renderStaff(){
     // в неполных выгрузках ШР разбивки по категориям у подразделений может не быть — берём последнюю выгрузку периода, где она есть
     const hasCat=u=>(u.staff||u.kndr||u.outs); let SU=S;
     if(!S.units.some(hasCat)){ const alt=[...STAFFW].filter(x=>x.d<=rng[1]&&x.units.some(hasCat)).slice(-1)[0]; if(alt) SU=alt; }
-    const rowsU=[...SU.units].filter(u=>u.plan&&!u.ext).map(u=>{ const P=u.plan-(u.kndr||0)-(u.outs||0); return {u,P,f:P>0?(u.staff||0)/P*100:null} }).sort((a,b)=>(a.f==null)-(b.f==null)||(a.f||0)-(b.f||0));
+    const rowsU=[...SU.units].filter(u=>u.plan&&!u.ext).map(u=>{ const P=u.plan; return {u,P,f:P>0?(u.staff||0)/P*100:null} }).sort((a,b)=>(a.f==null)-(b.f==null)||(a.f||0)-(b.f||0));
     document.getElementById("sf-units").innerHTML=`<h3 class="sf-h">Укомплектованность штатными по подразделениям на ${dd(SU.d)}${SU!==S?" (последняя выгрузка ШР с разбивкой по категориям)":""}</h3>`+rowsU.map(({u,P,f})=>{
       const col=f==null?"var(--ink-3)":cls[stF(f)];
-      return `<div class="su"><div class="su-t"><span class="su-n">${u.name}</span><span class="su-v" style="color:${col}">${f==null?"—":fx(f,0)+" %"}</span></div><div class="su-b"><i style="width:${f==null?0:Math.min(100,f)}%;background:${col}"></i></div><div class="su-s">штатных ${fx(u.staff||0,0)} из ${fx(Math.max(P,0),0)} мест · КНДР ${fx(u.kndr||0,0)} · аутсорс ${fx(u.outs||0,0)}${u.vac>0?` · вакансий ${fx(u.vac,0)}`:""}${f==null?" · места заняты КНДР и аутсорсом":""}</div></div>`}).join("");
+      return `<div class="su"><div class="su-t"><span class="su-n">${u.name}</span><span class="su-v" style="color:${col}">${f==null?"—":fx(f,0)+" %"}</span></div><div class="su-b"><i style="width:${f==null?0:Math.min(100,f)}%;background:${col}"></i></div><div class="su-s">штатных ${fx(u.staff||0,0)} из ${fx(P,0)} мест · КНДР ${fx(u.kndr||0,0)} · аутсорс ${fx(u.outs||0,0)}${u.vac>0?` · свободных ${fx(u.vac,0)}`:""}</div></div>`}).join("");
   } else
   document.getElementById("sf-units").innerHTML=`<h3 class="sf-h">Укомплектованность по подразделениям на ${dd(S.d)}</h3>`+
     // факт выше штата — это не вакансии, а переизбыток: цифра красным (Павел, 15.09.2026)
