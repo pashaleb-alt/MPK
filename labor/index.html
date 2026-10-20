@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 19.10.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020065530">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020072616">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020065530">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020072616">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if(/tgWebApp/.test(location.hash)){var s=document.createElement("script");s.src="https://telegram.org/js/telegram-web-app.js";s.onload=function(){try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}};document.head.appendChild(s)}</script>
@@ -524,7 +524,7 @@ function setMode(m){
   if(m==="per" && !(pfrom && pto && document.getElementById("from").value)) { [pfrom,pto] = PRESETS[2][1](); }
   render();
 }
-document.getElementById("stcat").onclick = e => { const l=e.target.closest(".stl"), w=e.target.closest(".swb"); if(!l && !w) return; STCAT = l ? l.dataset.c : (STCAT==="staff" ? "all" : "staff"); try{ localStorage.setItem("mpkStaffCat",STCAT) }catch(err){} syncStaffCat(); if(typeof renderStaff==="function") renderStaff(); };
+document.getElementById("stcat").onclick = e => { const l=e.target.closest(".stl"), w=e.target.closest(".swb"); if(!l && !w) return; STCAT = l ? l.dataset.c : (STCAT==="staff" ? "all" : "staff"); syncStaffCat(); if(typeof renderStaff==="function") renderStaff(); };
 document.getElementById("plrow").onclick = e => { const l=e.target.closest(".pll"), w=e.target.closest(".swb"); if(!l && !w) return; PLAN = l ? l.dataset.plan : (PLAN==="pf" ? "op" : "pf"); try{ localStorage.setItem("mpkPlan",PLAN) }catch(err){} syncPlan(); render(); };
 document.querySelector(".vtabs").onclick = e => { const b=e.target.closest(".vtab"); if(b) setMode(b.dataset.mode); };
 document.getElementById("monchips").onclick = e => { const b=e.target.closest(".mon"); if(b){ mon=b.dataset.m; day=null; render(); } };
@@ -564,7 +564,7 @@ function staffRange(){
   const i=Math.max(0,MONS.indexOf(moSel)); const m=pad(i+1), last=new Date(Date.UTC(2026,i+1,0)).getUTCDate();
   return [`2026-${m}-01`,`2026-${m}-${pad(last)}`,`${MONS[i]} 2026`];
 }
-let STCAT = (()=>{ try{ return localStorage.getItem("mpkStaffCat")==="staff" ? "staff" : "all" }catch(e){ return "all" } })();   // «все категории» (по умолчанию) или «только штатные»
+let STCAT = "all";   // при каждом открытии — «все категории» (Павел, 20.10.2026: по умолчанию все категории; выбор не запоминается); второй вариант — «только штатные»
 function syncStaffCat(){
   for(const b of document.querySelectorAll(".stl")) b.setAttribute("aria-pressed", b.dataset.c===STCAT);
   const sw=document.getElementById("stsw"); if(sw) sw.setAttribute("aria-checked", STCAT==="staff");
