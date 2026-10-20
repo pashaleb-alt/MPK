@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 19.10.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020043547">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020043946">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020043547">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261020043946">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if(/tgWebApp/.test(location.hash)){var s=document.createElement("script");s.src="https://telegram.org/js/telegram-web-app.js";s.onload=function(){try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}};document.head.appendChild(s)}</script>
@@ -597,7 +597,7 @@ function renderStaff(){
   const hv=evCount('hire',rng[0],rng[1]), fv=evCount('fire',rng[0],rng[1]);
   const unk=S.weeks<=1&&!S.hired&&!S.fired;   // одна выгрузка ШР с нулями — движение в ней не ведётся, это не «ноль»
   const hS=hv?hv.n:(STAFFE.hire.length||unk?null:S.hired), fS=fv?fv.n:(STAFFE.fire.length||unk?null:S.fired);
-  const turn=((only?S.avgStaff:S.avg)&&fS!=null)?fS/(only?S.avgStaff:S.avg)*100:null; const yF=all.reduce((a,m)=>a+STAFF[m].fired,0), yH=all.reduce((a,m)=>a+STAFF[m].hired,0), yAvg=all.reduce((a,m)=>a+STAFF[m].avg,0)/all.length;
+  const turn=(S.avgStaff&&fS!=null)?fS/S.avgStaff*100:null;   // принято/уволено (1С) — только штатные, поэтому текучесть всегда к средней численности штатных const yF=all.reduce((a,m)=>a+STAFF[m].fired,0), yH=all.reduce((a,m)=>a+STAFF[m].hired,0), yAvg=all.reduce((a,m)=>a+STAFF[m].avg,0)/all.length;
   const yh=evCount('hire','2026-01-01','2026-12-31'), yf=evCount('fire','2026-01-01','2026-12-31'); const yHs=yh?yh.n:yH, yFs=yf?yf.n:yF;
   const dd=s=>s.slice(8,10)+"."+s.slice(5,7)+"."+s.slice(0,4);
   document.getElementById("sf-note").textContent=`${rng[2]} · штатная расстановка на ${dd(S.d)}${only?" · только штатные сотрудники":""}${S.stale?" (выгрузок за период нет — последняя доступная)":""} · движение за ${S.weeks} нед.`;
@@ -606,12 +606,12 @@ function renderStaff(){
                      :tile("Укомплектованность",fx(S.fill,0)+" %",`факт ${fx(S.fact,0)} из ${fx(S.plan,0)} по штату`,stF(S.fill)))
     +(only?tile("Места не штатных сотрудников",fx(S.plan-S.staff,0),`КНДР ${fx(S.kndr)} · аутсорс ${fx(S.outs)} · вакансий ${fx(S.vac)}`,null)
           :tile("Вакансий",fx(S.vac,0),`декрет ${fx(S.decree)} · СВО ${fx(S.svo)}`,S.vac>60?"crit":S.vac>40?"warn":"good"))
-    +tile("Принято / уволено",`${fx(hS)} / ${fx(fS)}`,`за период · с начала года ${fx(yHs)} / ${fx(yFs)}`,(fS!=null&&hS!=null&&fS>hS)?"warn":"good")
-    +tile("Текучесть",fx(turn,1)+" %","уволено к средней численности",turn>2?"crit":turn>1?"warn":"good")
+    +tile("Принято / уволено (штатные)",`${fx(hS)} / ${fx(fS)}`,`за период · с начала года ${fx(yHs)} / ${fx(yFs)}`,(fS!=null&&hS!=null&&fS>hS)?"warn":"good")
+    +tile("Текучесть штатных",fx(turn,1)+" %","уволено к средней численности штатных",turn>2?"crit":turn>1?"warn":"good")
     +`<div class="tile sostav"><div class="l">Состав</div><div class="v"><span>${fx(S.staff,0)}<small>штат</small></span>${only?"":`<span>${fx(S.kndr,0)}<small>КНДР</small></span><span>${fx(S.outs,0)}<small>аутсорс</small></span>`}</div></div>`;
   const MG2=MG; let c1="",x1="",c2="",x2=""; const pad2=n=>String(n).padStart(2,'0'); const mh=(m,kind)=>{ const r=evCount(kind,`2026-${pad2(m)}-01`,`2026-${pad2(m)}-31`); if(r) return r.n; if(STAFFE[kind].length) return null; const x=STAFF[m]; if(!x||(x.weeks<=1&&!x.hired&&!x.fired)) return null; return kind==='hire'?x.hired:x.fired };
   const nz=v=>v==null?'—':v; const mxS=Math.max(1,...all.map(m=>STAFF[m].staff||0));
-  { const h=document.querySelector('#staff .two .sf-h'); if(h) h.textContent=only?'Штатные сотрудники по месяцам, чел.':'Укомплектованность по месяцам, %'; }
+  { const h=document.querySelector('#staff .two .sf-h'); if(h) h.textContent=only?'Штатные сотрудники по месяцам, чел.':'Укомплектованность по месяцам, %'; const h2=document.querySelectorAll('#staff .two .sf-h')[1]; if(h2) h2.textContent='Принято и уволено штатных по месяцам'; }
   const mxM=Math.max(1,...all.map(m=>Math.max(mh(m,'hire')||0,mh(m,'fire')||0)));
   for(let m=1;m<=12;m++){const x=STAFF[m]; const hh=m in STAFF?mh(m,'hire'):0, ff=m in STAFF?mh(m,'fire'):0; const on=selM===m?" sel":(mode==="month"?" dim":"");
     if(!x){c1+='<div class="col"></div>';c2+='<div class="col"></div>';x1+=`<span>${MG2[m-1]}</span>`;x2+=`<span>${MG2[m-1]}</span>`;continue}
@@ -620,7 +620,7 @@ function renderStaff(){
     c2+=`<div class="col${on}" data-m="${m}" title="${MN[m-1]}: принято ${nz(hh)}, уволено ${nz(ff)}"><span class="lab">${window.innerWidth<720?"":nz(hh)+"/"+nz(ff)}</span><div class="pair"><div class="seg" style="height:${(hh||0)/mxM*100}%;background:var(--good)"></div><div class="seg" style="height:${(ff||0)/mxM*100}%;background:var(--crit)"></div></div></div>`;
     x1+=`<span class="${selM===m?"sel":""}">${MG2[m-1]}</span>`; x2+=`<span class="${selM===m?"sel":""}">${MG2[m-1]}${window.innerWidth<720?`<br><b style="color:var(--good)">${nz(hh)}</b><br><b style="color:var(--crit)">${nz(ff)}</b>`:""}</span>`}
   document.getElementById("sf-fill").innerHTML=c1; document.getElementById("sf-fill-x").innerHTML=x1; document.getElementById("sf-move").innerHTML=c2; document.getElementById("sf-move-x").innerHTML=x2;
-  evBlock('sf-hires','Принятые за период по подразделениям','hire',hv,dd); evBlock('sf-fires','Уволенные за период по подразделениям','fire',fv,dd);
+  evBlock('sf-hires','Принятые штатные сотрудники за период по подразделениям','hire',hv,dd); evBlock('sf-fires','Уволенные штатные сотрудники за период по подразделениям','fire',fv,dd);
   const U=[...S.units].filter(u=>u.plan).sort((a,b)=>a.fill-b.fill);
   if(only){
     // в неполных выгрузках ШР (21.09, 19.10) разбивки по категориям нет — берём последнюю выгрузку периода, где она есть
