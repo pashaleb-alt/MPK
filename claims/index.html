@@ -253,7 +253,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="tiles" id="pt-tiles"></div>
     <h3 class="ch-t" id="pt-ct"></h3><div class="chart auto" id="pt-chart"></div><div class="xl auto" id="pt-xl"></div>
     <h3 class="ch-t" id="pt-ct2" style="margin-top:14px"></h3><div class="chart auto" id="pt-chart2"></div><div class="xl auto" id="pt-xl2"></div>
-    <div class="legend"><span><i style="background:var(--good)"></i>97 % и выше</span><span><i style="background:var(--warn)"></i>95–97 %</span><span><i style="background:var(--crit)"></i>ниже 95 %</span><span>цвет — по оценке с весами несоответствий (как раньше), высота — доля туш без единого несоответствия («туша целиком»); внизу — доля туш с серьёзным несоответствием (вес 10 % и выше)</span></div>
+    <div class="legend"><span><i style="background:var(--good)"></i>97 % и выше</span><span><i style="background:var(--warn)"></i>95–97 %</span><span><i style="background:var(--crit)"></i>ниже 95 %</span></div>
     <div class="hl" id="pt-def" style="margin-top:12px"></div>
   </section>
 
@@ -359,7 +359,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=e4de7cf949"></script>
+<script src="/MPK/director-data.js?v=0185bcdd70"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -486,14 +486,14 @@ function renderPt(f,t,lab){
   const _sl=(mode==="day"&&DATA.pt[f]&&DATA.pt[f].slaughter)?` · убой ${DATA.pt[f].slaughter}`:"";
   document.getElementById("pt-note").textContent=lab+_sl+idleNote();
   const ax=axis(f,t); document.getElementById("pt-ct").textContent=ax.kind==="day"?"Уровень качества по дням убоя, %":"Уровень качества по месяцам, %";
-  document.getElementById("pt-ct2").textContent=ax.kind==="day"?"Туши с серьёзным (критическим) несоответствием по дням убоя, %":"Туши с серьёзным (критическим) несоответствием по месяцам, %";
+  document.getElementById("pt-ct2").textContent=ax.kind==="day"?"Туши с критическим несоответствием по дням убоя, %":"Туши с критическим несоответствием по месяцам, %";
   const srMx=Math.max(1,...ax.items.map(it=>{const a=ptSr(it.f,it.t);return a&&a.rate!=null?a.rate:0}));   // гистограмма критических несоответствий (Павел, 21.10.2026), высота — к максимуму периода
-  bars(document.getElementById("pt-chart2"),document.getElementById("pt-xl2"),ax,it=>{const a=ptSr(it.f,it.t);return a?a.rate:null},null,{dec:0,unit:"%",h:v=>Math.max(2,v/srMx*100),stIt:it=>stPtW(ptW(it.f,it.t))});
-  bars(document.getElementById("pt-chart"),document.getElementById("pt-xl"),ax,it=>{const a=ptAgg(it.f,it.t);return a?a.score:null},stPt,{dec:1,line:true,stIt:it=>stPtW(ptW(it.f,it.t))});
+  bars(document.getElementById("pt-chart2"),document.getElementById("pt-xl2"),ax,it=>{const a=ptSr(it.f,it.t);return a?a.rate:null},null,{dec:0,unit:"",h:v=>Math.max(2,v/srMx*100),stIt:it=>stPtW(ptW(it.f,it.t))});
+  bars(document.getElementById("pt-chart"),document.getElementById("pt-xl"),ax,it=>{const a=ptAgg(it.f,it.t);return a?a.score:null},stPt,{dec:0,line:true,stIt:it=>stPtW(ptW(it.f,it.t))});
   if(!A){T.innerHTML='<div class="empty">Проверок за этот период нет.</div>';L.innerHTML="";return}
   const defs={};A.ds.forEach(d=>Object.entries(DATA.pt[d].defects).forEach(([k,v])=>{const o=defs[k]||(defs[k]={w:v.w,n:0});o.n+=v.n}));
   const top=Object.entries(defs).sort((a,b)=>b[1].n-a[1].n)[0]; const srN=A.ds.reduce((a,d)=>a+(DATA.pt[d].serious||0),0); const pr=prevRange(f,t); const P=pr&&ptAgg(pr[0],pr[1]);
-  T.innerHTML=tile("Уровень качества",fmt(A.score,1)+" %",P?`${pr[2]}: ${fmt(P.score,1)} %`:"",stPtW(ptW(f,t)))+tile("Туш проверено",fmt(A.n),`${A.ds.length} дн. · по 100 в день`)+tile("С серьёзным несоответствием",fmt(srN/A.n*100,1)+" %",`${fmt(srN)} туш из ${fmt(A.n)}`)
+  T.innerHTML=tile("Уровень качества",fmt(A.score,1)+" %",P?`${pr[2]}: ${fmt(P.score,1)} %`:"",stPtW(ptW(f,t)))+tile("Туш проверено",fmt(A.n),`${A.ds.length} дн. · по 100 в день`)+tile("С критическим несоответствием",fmt(srN/A.n*100,1)+" %",`${fmt(srN)} туш из ${fmt(A.n)}`)
     +`<div class="tile"><div class="l">Главное несоответствие</div><div class="v" style="font-size:18px;line-height:1.2">${top?top[0]:"—"}</div><div class="s">${top?`у ${fmt(top[1].n/A.n*100,0)} % туш`:""}</div></div>`;
   const dl=Object.entries(defs).filter(([k,v])=>v.n).sort((a,b)=>b[1].n-a[1].n); const dmx=dl[0]?dl[0][1].n:1;
   L.innerHTML=`<h3>Несоответствия<small>доля туш с несоответствием</small></h3>`+dl.map(([k,v])=>`<div class="hr"><span class="t" style="white-space:normal">${k}</span><span class="n"><b>${fmt(v.n/A.n*100,1)} %</b> · ${v.n} туш</span><div class="hb"><i class="o" style="width:${v.n/dmx*100}%;background:${v.w>=0.1?"var(--crit)":"#1e88ff"}"></i></div></div>`).join("");
