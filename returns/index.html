@@ -284,7 +284,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="ph"><h2>Качество обвалки</h2><span class="note" id="pd-note"></span></div>
     <div class="tiles" id="pd-tiles"></div>
     <h3 class="ch-t" id="pd-ct"></h3><div class="chart auto" id="pd-chart"></div><div class="xl auto" id="pd-xl"></div>
-    <div class="legend"><span>оценка соответствия = доля отрубов без единого замечания: одно замечание — весь отруб несоответствующий (расчёт «отруб целиком», с 21.10.2026)</span></div>
+    <div class="legend"><span><i style="background:var(--good)"></i>95 % и выше</span><span><i style="background:var(--warn)"></i>90–95 %</span><span><i style="background:var(--crit)"></i>ниже 90 %</span><span>уровень соответствия = отрубы без дефектов / проверенные (отруб целиком: один дефект — весь отруб несоответствующий)</span></div>
     <div class="two"><div class="hl" id="pd-cut"></div><div class="hl" id="pd-def"></div></div>
   </section>
 
@@ -359,7 +359,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=14758fe6e1"></script>
+<script src="/MPK/director-data.js?v=a9864553b4"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="returns";
@@ -519,34 +519,36 @@ function renderCrp(f,t,lab){
   defEl.innerHTML="<h3>По видам дефектов (все отрубы)</h3>"+dl.map(([k,v])=>`<div class="hr"><span class="t">${k}</span><span class="n"><b>${fmt(v)}</b> · ${fmt(v/A.n*100,2)} % отрубов</span><div class="hb"><i class="o" style="width:${v/dmx*100}%"></i></div></div>`).join("");
 }
 // ---------- подготовка полуфабрикатов в обвалке (книга «Результаты производственного контроля подготовки», Павел, 09.10.2026) ----------
-const stPd=v=>"none";   // «отруб целиком» (21.10.2026): шкалы нет — нейтральная окраска
+const stPd=v=>v==null?"none":v>=95?"good":v>=90?"warn":"crit";   // как у «Контроля качества обвалки для ЦРП» (21.10.2026)
 function pdAgg(f,t){
   const rs=DATA.pod.filter(r=>inR(r.d,f,t)); if(!rs.length) return null;
   const cuts={}; let n=0,sc=0;
   rs.forEach(r=>Object.entries(r.cuts).forEach(([k,c])=>{const o=cuts[k]||(cuts[k]={n:0,score:0,defs:{}});o.n+=c.n;o.score+=c.score;n+=c.n;sc+=c.score;Object.entries(c.defs).forEach(([d,x])=>o.defs[d]=(o.defs[d]||0)+x)}));
   return {rs,cuts,n,rate:n?sc/n*100:null,days:rs.length};
 }
+// названия дефектов — как в «Контроле качества обвалки для ЦРП» (Павел, 21.10.2026: «дефекты должны выглядеть аналогично»)
+const PDN={"Жировой полив в норме":"жировой полив","Отсутствие глубоких повреждений мышечной ткани":"повреждения мышц","Отсутствие лимфатических узлов":"лимфоузлы","Отсутствие остатков шкуры":"остатки шкуры","Отсутствие прирези грудинки":"прирезь грудинки","Отсутствие хрящевой и костной ткани, надкостницы":"хрящ/кость","Прирезь хребтового шпика в норме":"прирезь шпика"};
+const pdn=k=>PDN[k]||k.replace(/^Отсутствие /,"");
 function renderPod(f,t,lab){
   const T=document.getElementById("pd-tiles"); let A=pdAgg(f,t);
   if(!A){const fb=lastDayBefore(DATA.pod.map(r=>r.d),f,lab); if(fb){[f,t,lab]=fb; A=pdAgg(f,t)}}
   document.getElementById("pd-note").textContent=lab+idleNote();
-  const ax=axis(f,t); document.getElementById("pd-ct").textContent=ax.kind==="day"?"Оценка соответствия по дням, %":"Оценка соответствия по месяцам, %";
+  const ax=axis(f,t); document.getElementById("pd-ct").textContent=ax.kind==="day"?"Уровень соответствия по дням, %":"Уровень соответствия по месяцам, %";
   bars(document.getElementById("pd-chart"),document.getElementById("pd-xl"),ax,it=>{const a=pdAgg(it.f,it.t);return a?a.rate:null},stPd,{dec:1,line:true});
   const cutEl=document.getElementById("pd-cut"),defEl=document.getElementById("pd-def");
   if(!A){T.innerHTML='<div class="empty">Контроля за этот период нет.</div>';cutEl.innerHTML="";defEl.innerHTML="";return}
-  const defs={};Object.values(A.cuts).forEach(c=>Object.entries(c.defs).forEach(([k,v])=>defs[k]=(defs[k]||0)+v));
+  const defs={};Object.values(A.cuts).forEach(c=>Object.entries(c.defs).forEach(([k,v])=>{const n=pdn(k);defs[n]=(defs[n]||0)+v}));
   const dtot=Object.values(defs).reduce((a,b)=>a+b,0); const top=Object.entries(defs).sort((a,b)=>b[1]-a[1])[0];
   const pr=prevRange(f,t);const P=pr&&pdAgg(pr[0],pr[1]);
-  T.innerHTML=tile("Оценка соответствия",fmt(A.rate,1)+" %",P?`${pr[2]}: ${fmt(P.rate,1)} %`:"",stPd(A.rate))+tile("Проверено отрубов",fmt(A.n),`замечаний ${fmt(dtot)} · дней контроля ${A.days}`)
-    +`<div class="tile"><div class="l">Главное замечание</div><div class="v" style="font-size:16px;line-height:1.2">${top&&top[1]?top[0]:"—"}</div><div class="s">${top&&top[1]?`${fmt(top[1])} · ${fmt(top[1]/dtot*100,0)} % замечаний`:""}</div></div>`;
-  cutEl.innerHTML="<h3>Оценка соответствия по полуфабрикатам<small>нажмите, чтобы увидеть замечания</small></h3>";
+  T.innerHTML=tile("Уровень соответствия",fmt(A.rate,1)+" %",P?`${pr[2]}: ${fmt(P.rate,1)} %`:"",stPd(A.rate))+tile("Проверено отрубов",fmt(A.n),`с дефектами ${fmt(A.n-Object.values(A.cuts).reduce((a,c)=>a+c.score,0))} · дней осмотра ${A.days}`)
+    +`<div class="tile"><div class="l">Главный дефект</div><div class="v" style="font-size:16px;line-height:1.2">${top&&top[1]?top[0]:"—"}</div><div class="s">${top&&top[1]?`${fmt(top[1])} · ${fmt(top[1]/dtot*100,0)} % дефектов`:""}</div></div>`;
+  cutEl.innerHTML="<h3>Уровень соответствия по полуфабрикатам<small>нажмите, чтобы увидеть дефекты</small></h3>";
   Object.entries(A.cuts).map(([k,c])=>[k,c,c.score/c.n*100]).sort((a,b)=>a[2]-b[2]).forEach(([k,c,r])=>{const st=stPd(r);const row=document.createElement("div");row.className="hr click st-"+st;
-    const dn=Object.values(c.defs).reduce((a,b)=>a+b,0);
-    row.innerHTML=`<span class="t"><span class="dot"></span>${k}</span><span class="n"><b>${fmt(r,1)} %</b> · замечаний ${dn} на ${fmt(c.n)} отрубов</span><div class="hb"><i class="${cls[st]}" style="width:${Math.max(0,r)}%"></i></div>`;
-    row.onclick=()=>{const open=row.classList.toggle("open");let det=row.querySelector(".det");if(open&&!det){det=document.createElement("div");det.className="det";det.innerHTML=Object.entries(c.defs).filter(([d,x])=>x).sort((a,b)=>b[1]-a[1]).map(([d,x])=>`<div class="c">${d} <span class="m">· ${x} шт</span> <b style="float:right">${fmt(x/c.n*100,2)} %</b></div>`).join("")||'<div class="c">Замечаний нет</div>';row.appendChild(det)}else if(det)det.remove()};
+        row.innerHTML=`<span class="t"><span class="dot"></span>${k}</span><span class="n"><b>${fmt(r,1)} %</b> · без дефектов ${fmt(c.score)} из ${fmt(c.n)}</span><div class="hb"><i class="${cls[st]}" style="width:${Math.max(0,r)}%"></i></div>`;
+    row.onclick=()=>{const open=row.classList.toggle("open");let det=row.querySelector(".det");if(open&&!det){det=document.createElement("div");det.className="det";det.innerHTML=Object.entries(c.defs).filter(([d,x])=>x).sort((a,b)=>b[1]-a[1]).map(([d,x])=>`<div class="c">${pdn(d)} <span class="m">· ${x} шт</span> <b style="float:right">${fmt(x/c.n*100,2)} %</b></div>`).join("")||'<div class="c">Дефектов нет</div>';row.appendChild(det)}else if(det)det.remove()};
     cutEl.appendChild(row)});
   const dl=Object.entries(defs).sort((a,b)=>b[1]-a[1]);const dmx=dl[0]&&dl[0][1]?dl[0][1]:1;
-  defEl.innerHTML="<h3>По видам замечаний (все полуфабрикаты)</h3>"+dl.map(([k,v])=>`<div class="hr"><span class="t" style="white-space:normal">${k}</span><span class="n"><b>${fmt(v)}</b> · ${fmt(v/A.n*100,2)} % отрубов</span><div class="hb"><i class="o" style="width:${v/dmx*100}%"></i></div></div>`).join("");
+  defEl.innerHTML="<h3>По видам дефектов (все отрубы)</h3>"+dl.map(([k,v])=>`<div class="hr"><span class="t">${k}</span><span class="n"><b>${fmt(v)}</b> · ${fmt(v/A.n*100,2)} % отрубов</span><div class="hb"><i class="o" style="width:${v/dmx*100}%"></i></div></div>`).join("");
 }
 // ---------- соблюдение технологии ЦУиППЖ (книга «Результаты производственного контроля ЦУ») ----------
 const stTh=v=>v==null?"none":v>=98?"good":v>=95?"warn":"crit";
