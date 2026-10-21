@@ -359,7 +359,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=a9864553b4"></script>
+<script src="/MPK/director-data.js?v=e4de7cf949"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="sanitary";
@@ -487,7 +487,8 @@ function renderPt(f,t,lab){
   document.getElementById("pt-note").textContent=lab+_sl+idleNote();
   const ax=axis(f,t); document.getElementById("pt-ct").textContent=ax.kind==="day"?"Уровень качества по дням убоя, %":"Уровень качества по месяцам, %";
   document.getElementById("pt-ct2").textContent=ax.kind==="day"?"Туши с серьёзным (критическим) несоответствием по дням убоя, %":"Туши с серьёзным (критическим) несоответствием по месяцам, %";
-  bars(document.getElementById("pt-chart2"),document.getElementById("pt-xl2"),ax,it=>{const a=ptSr(it.f,it.t);return a?a.rate:null},null,{dec:1,line:true,stIt:it=>stPtW(ptW(it.f,it.t))});
+  const srMx=Math.max(1,...ax.items.map(it=>{const a=ptSr(it.f,it.t);return a&&a.rate!=null?a.rate:0}));   // гистограмма критических несоответствий (Павел, 21.10.2026), высота — к максимуму периода
+  bars(document.getElementById("pt-chart2"),document.getElementById("pt-xl2"),ax,it=>{const a=ptSr(it.f,it.t);return a?a.rate:null},null,{dec:0,unit:"%",h:v=>Math.max(2,v/srMx*100),stIt:it=>stPtW(ptW(it.f,it.t))});
   bars(document.getElementById("pt-chart"),document.getElementById("pt-xl"),ax,it=>{const a=ptAgg(it.f,it.t);return a?a.score:null},stPt,{dec:1,line:true,stIt:it=>stPtW(ptW(it.f,it.t))});
   if(!A){T.innerHTML='<div class="empty">Проверок за этот период нет.</div>';L.innerHTML="";return}
   const defs={};A.ds.forEach(d=>Object.entries(DATA.pt[d].defects).forEach(([k,v])=>{const o=defs[k]||(defs[k]={w:v.w,n:0});o.n+=v.n}));
