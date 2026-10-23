@@ -258,10 +258,10 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
   </section>
 
   <section class="panel" id="p-tech" hidden="">
-    <div class="ph"><h2>Соблюдение технологии ЦУиППЖ</h2><span class="note" id="th-note"></span></div>
+    <div class="ph"><h2>Работа оборудования ЦУиППЖ</h2><span class="note" id="th-note"></span></div>
     <div class="tiles" id="th-tiles"></div>
     <h3 class="ch-t" id="th-ct"></h3><div class="chart auto" id="th-chart"></div><div class="xl auto" id="th-xl"></div>
-    <div class="legend"><span><i style="background:var(--good)"></i>98 % и выше</span><span><i style="background:var(--warn)"></i>95–98 %</span><span><i style="background:var(--crit)"></i>ниже 95 %</span><span>уровень соблюдения = туши без отклонений / проверено (производственный контроль ЦУ, ~300 туш в день по каждой операции)</span></div>
+    <div class="legend"><span><i style="background:var(--good)"></i>98 % и выше</span><span><i style="background:var(--warn)"></i>95–98 %</span><span><i style="background:var(--crit)"></i>ниже 95 %</span><span>уровень соответствия = туши без отклонений / проверено (производственный контроль ЦУ, ~300 туш в день по каждой операции)</span></div>
     <div class="two"><div class="hl" id="th-dev"></div><div class="hl" id="th-par"></div></div>
   </section>
 
@@ -359,13 +359,13 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=5981d5b6a5"></script>
+<script src="/MPK/director-data.js?v=e18d9b9892"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="sanitary";
 // Отчёт №2 (Павел, 18.09.2026): вкладка «Качество» — полутуши, ЖКТ, обвалка для ЦРП, претензии, возвраты. Отчёт №3 (?full=1 или уже открывали в сессии) — все модули.
-const SECTIONS={quality:["p-pt","p-gkt","p-crp","p-pod"],safety:["p-bb","p-ot"],sanitary:["p-san"],claims:["p-claims"],returns:["p-voz"]};
-const SECTIONS_FULL={quality:["p-pt","p-gkt","p-crp","p-pod","p-cgp","p-crp2","p-temp"],safety:["p-bb","p-ot"],sanitary:["p-san"],claims:["p-claims"],returns:["p-voz"]};
+const SECTIONS={quality:["p-pt","p-tech","p-gkt","p-crp","p-pod"],safety:["p-bb","p-ot"],sanitary:["p-san"],claims:["p-claims"],returns:["p-voz"]};
+const SECTIONS_FULL={quality:["p-pt","p-tech","p-gkt","p-crp","p-pod","p-cgp","p-crp2","p-temp"],safety:["p-bb","p-ot"],sanitary:["p-san"],claims:["p-claims"],returns:["p-voz"]};
 const FULL3=(()=>{try{const q=new URLSearchParams(location.search).get("full"); if(q==="0"){sessionStorage.removeItem("mpkFull");return false}
   const f=q==="1"||sessionStorage.getItem("mpkFull")==="1"; if(f) sessionStorage.setItem("mpkFull","1"); return f}catch(e){return new URLSearchParams(location.search).get("full")==="1"}})();
 const SECT=(FULL3?SECTIONS_FULL:SECTIONS)[PAGE];
@@ -563,13 +563,13 @@ function renderTech(f,t,lab){
   const T=document.getElementById("th-tiles"); let A=thAgg(f,t);
   if(!A){const fb=lastDayBefore(DATA.tech.map(r=>r.d),f,lab); if(fb){[f,t,lab]=fb; A=thAgg(f,t)}}
   document.getElementById("th-note").textContent=lab+idleNote();
-  const ax=axis(f,t); document.getElementById("th-ct").textContent=ax.kind==="day"?"Уровень соблюдения по дням, %":"Уровень соблюдения по месяцам, %";
+  const ax=axis(f,t); document.getElementById("th-ct").textContent=ax.kind==="day"?"Уровень соответствия по дням, %":"Уровень соответствия по месяцам, %";
   bars(document.getElementById("th-chart"),document.getElementById("th-xl"),ax,it=>{const a=thAgg(it.f,it.t);return a?a.rate:null},stTh,{dec:1,line:true});
   const D=document.getElementById("th-dev"),Pp=document.getElementById("th-par");
   if(!A){T.innerHTML='<div class="empty">Контроля за этот период нет.</div>';D.innerHTML="";Pp.innerHTML="";return}
   const pr=prevRange(f,t);const P=pr&&thAgg(pr[0],pr[1]);
   const dl=Object.entries(A.dev).map(([k,[c,x]])=>[k,c,x,100-x/c*100]).sort((a,b)=>a[3]-b[3]); const worst=dl.filter(x=>x[2])[0];
-  T.innerHTML=tile("Уровень соблюдения",fmt(A.rate,1)+" %",P?`${pr[2]}: ${fmt(P.rate,1)} %`:"",stTh(A.rate))
+  T.innerHTML=tile("Уровень соответствия",fmt(A.rate,1)+" %",P?`${pr[2]}: ${fmt(P.rate,1)} %`:"",stTh(A.rate))
     +tile("Проверок",fmt(A.n),`отклонений ${fmt(A.b)} · дней контроля ${A.days}`)
     +`<div class="tile"><div class="l">Самое низкое соответствие</div><div class="v" style="font-size:16px;line-height:1.2">${worst?worst[0]:"—"}</div><div class="s">${worst?`${fmt(worst[3],1)} % · отклонений ${fmt(worst[2])} из ${fmt(worst[1])}`:""}</div></div>`;
   D.innerHTML=`<h3>По операциям</h3>`+dl.map(([k,c,x,r])=>{const st=stTh(r); let ar="";
@@ -863,7 +863,7 @@ const IDLE=new Set(DATA.idle_days||[]);
 const idleNote=()=>(mode==="day"&&IDLE.has(day))?" · завод не работал":"";
 function render(){
   const [f,t,lab]=range(); document.getElementById("cur").textContent=lab+idleNote(); renderPicker();
-  if(PAGE==="quality"){renderPt(f,t,lab);renderGkt(f,t,lab);renderCrp(f,t,lab);renderPod(f,t,lab);renderMon("cgp","cg",f,t,lab);renderMon("crp2","c2",f,t,lab);renderTemp(f,t,lab)} else if(PAGE==="returns") renderVoz(f,t,lab); else if(PAGE==="claims") renderClaims(f,t,lab); else if(PAGE==="sanitary") renderSm(f,t,lab); else renderSafety(f,t,lab);
+  if(PAGE==="quality"){renderPt(f,t,lab);renderTech(f,t,lab);renderGkt(f,t,lab);renderCrp(f,t,lab);renderPod(f,t,lab);renderMon("cgp","cg",f,t,lab);renderMon("crp2","c2",f,t,lab);renderTemp(f,t,lab)} else if(PAGE==="returns") renderVoz(f,t,lab); else if(PAGE==="claims") renderClaims(f,t,lab); else if(PAGE==="sanitary") renderSm(f,t,lab); else renderSafety(f,t,lab);
 }
 render();
 document.documentElement.classList.add("ready");
