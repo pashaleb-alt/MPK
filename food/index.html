@@ -274,6 +274,17 @@ button { cursor: pointer; }
     }
   };
 })();
+/* Импорт по ссылке: .../food/#import=<base64 JSON>. Часть адреса после # на сервер не передаётся. */
+(function () {
+  var m = /^#import=([A-Za-z0-9_\-]+)$/.exec(location.hash);
+  if (!m) return;
+  try {
+    var b = m[1].replace(/-/g, "+").replace(/_/g, "/");
+    var ok = window.__localDb.importJSON(decodeURIComponent(escape(atob(b))));
+    history.replaceState(null, "", location.pathname);
+    if (ok) location.replace(location.pathname + "?imported=1");
+  } catch (e) { history.replaceState(null, "", location.pathname); }
+})();
 
 </script>
 <script>
