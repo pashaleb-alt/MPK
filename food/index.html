@@ -54,6 +54,7 @@ button { cursor: pointer; }
 .app { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 .num { font-variant-numeric: tabular-nums; }
 
+.eyebrow a { color: inherit; }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .eyebrow { font: 700 12px/1 var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .ghost { background: none; border: 1.5px solid var(--ink); border-radius: 999px; padding: 8px 14px; min-height: 40px; font-weight: 500; }
@@ -162,7 +163,7 @@ button { cursor: pointer; }
 <body>
 <div class="app" id="app">
   <div class="top">
-    <span class="eyebrow">Дневник питания</span>
+    <span class="eyebrow">Дневник питания · <a href="../train/">Тренировки →</a></span>
     <button class="ghost" id="btn-targets" type="button">Цели</button>
   </div>
   <div class="datebar">
@@ -266,6 +267,17 @@ button { cursor: pointer; }
                        kcal: ov ? r[3] : f.kcal, p: ov ? r[4] : f.p, f: ov ? r[5] : f.f, c: ov ? r[6] : f.c, t: Date.UTC(2026, 0, 1) + n };
             }).filter(Boolean);
             store.docs["days/" + date] = { date: date, entries: entries };
+          });
+          save(); return true;
+        }
+        if (o && o.workouts) {  // {"workouts": {"ГГГГ-ММ-ДД": {"min": 45, "pain": 0, "items": [[id упражнения, [[вес, повторы], ...]], ...]}}}
+          Object.keys(o.workouts).forEach(function (date) {
+            var w = o.workouts[date];
+            var items = w.items.map(function (r, n) {
+              var x = store.docs["exercises/" + r[0]]; if (!x) return null;
+              return { id: "w" + date.slice(-2) + n, exId: r[0], name: x.name, group: x.group, sets: r[1].map(function (s) { return { w: s[0], r: s[1] }; }) };
+            }).filter(Boolean);
+            store.docs["workouts/" + date] = { date: date, minutes: w.min || 0, pain: !!w.pain, note: w.note || "", items: items };
           });
           save(); return true;
         }
