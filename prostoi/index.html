@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ffffff">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="apple-mobile-web-app-title" content="Простои">
+<link rel="apple-touch-icon" href="/MPK/apple-touch-icon.png?v=3">
+<title>Простои ЦРП</title>
+<style>
+:root{--bg:#fff;--ink:#111;--mute:#6b6b6b;--line:#d9d9d9;--panel:#f3f3f3;--stop:#b3261e;--stop-bg:#fbeceb}
+@media (prefers-color-scheme:dark){:root{--bg:#121212;--ink:#f1f1f1;--mute:#9a9a9a;--line:#333;--panel:#1d1d1d;--stop:#ff8a80;--stop-bg:#2a1816}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding:env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom))}
+.wrap{max-width:520px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 8px}
+h1{font-size:20px;margin:0}
+#clock{font-variant-numeric:tabular-nums;color:var(--mute)}
+.demo{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--mute);margin-bottom:10px}
+.lines{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 14px}
+.lines button{padding:12px 4px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font-weight:600;font-size:16px;font-family:inherit}
+.lines button small{display:block;font-weight:400;font-size:12px;color:var(--mute);min-height:15px}
+.lines button.sel{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.lines button.down{background:var(--stop-bg);border-color:var(--stop)}
+.lines button.down small{color:var(--stop);font-weight:600}
+.card{border:1.5px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card.down{background:var(--stop-bg);border-color:var(--stop)}
+.big{display:block;width:100%;padding:26px 12px;border-radius:16px;border:0;font-weight:700;font-size:22px;font-family:inherit;background:var(--ink);color:var(--bg);margin-top:6px}
+.big.go{background:var(--bg);color:var(--ink);border:2.5px solid var(--ink)}
+.big:active{opacity:.7}
+.sub{color:var(--mute);font-size:14px;margin:0 0 4px}
+h2{font-size:18px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid button{padding:20px 8px;border-radius:14px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);font-weight:600;font-size:17px;line-height:1.2;font-family:inherit}
+.grid button:active{background:var(--panel)}
+.grid .wide{grid-column:1/-1}
+.link{background:none;border:0;color:var(--mute);font:inherit;text-decoration:underline;padding:10px 0;display:block;width:100%;text-align:center}
+.timer{font-size:56px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--stop);margin:2px 0 4px;letter-spacing:-1px}
+.chips{display:flex;gap:8px;margin:8px 0 12px;flex-wrap:wrap}
+.chips button{flex:1;padding:12px 6px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-family:inherit;min-width:70px}
+input[type=text]{width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin-top:6px}
+.sum{display:flex;gap:10px;margin-bottom:10px}
+.sum div{flex:1;background:var(--panel);border-radius:12px;padding:10px 12px}
+.sum b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.sum span{font-size:12px;color:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--mute);font-weight:500}
+td.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));max-width:488px;margin:0 auto;background:var(--ink);color:var(--bg);padding:14px 16px;border-radius:12px;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:9}
+#toast.on{opacity:1;transform:none}
+.foot{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:8px}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Простои ЦРП</h1><div id="clock"></div></header>
+  <div id="demo" class="demo hide">Пробный режим: нажатия сохраняются только на этом телефоне и никуда не отправляются.</div>
+  <div id="lines" class="lines"></div>
+
+  <div id="view"></div>
+
+  <div class="card">
+    <h2 id="todayTitle">Сегодня</h2>
+    <div class="sum"><div><b id="sCount">0</b><span>простоев</span></div><div><b id="sMin">0</b><span>минут</span></div></div>
+    <table id="log"></table>
+  </div>
+  <div class="foot"><span id="queue"></span><button class="link" id="csv" style="width:auto;padding:0">Скачать журнал (CSV)</button></div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ---------- настройки ---------- */
+const CONFIG = {
+  // Адрес приёма ответов Google Формы (…/forms/d/e/<id>/formResponse). Пусто — пробный режим.
+  endpoint: '',
+  // Номера полей формы (entry.NNNN) в том же порядке, что вопросы формы.
+  fields: {line:'', event:'', cause:'', start:'', end:'', seconds:'', shift:'', shiftDate:'', comment:''},
+  lines: ['Линия 1','Линия 2','Линия 3','Линия 4','Линия 5','Линия 7'],
+  causes: ['Нет сырья','Нет упаковки или плёнки','Поломка оборудования','Переналадка','Мойка, санитария','Маркировка, этикетки','Контроль качества, брак','Нет людей','Прочее'],
+  tz: 'Europe/Moscow'
+};
+
+/* ---------- время по Москве ---------- */
+const P = (d,o)=>Object.fromEntries(new Intl.DateTimeFormat('ru-RU',{timeZone:CONFIG.tz,hourCycle:'h23',...o}).formatToParts(d).map(x=>[x.type,x.value]));
+const parts = d=>P(d,{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+const fmtDT = ms=>{const p=parts(new Date(ms));return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}:${p.second}`};
+const fmtT = ms=>{const p=parts(new Date(ms));return `${p.hour}:${p.minute}`};
+const dayKey = ms=>{const p=parts(new Date(ms));return `${p.day}.${p.month}.${p.year}`};
+function shiftOf(ms){ // 1 смена 08–20, 2 смена 20–02, ночью до 08:00 относится к дате предыдущих суток
+  const p=parts(new Date(ms)), h=+p.hour;
+  const shift = (h>=8&&h<20)?'1 смена (08–20)':(h>=20||h<2)?'2 смена (20–02)':'Вне смен';
+  let date=dayKey(ms);
+  if(h<8) date=dayKey(ms-86400000);
+  return {shift,date};
+}
+const mmss = s=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0')};
+const minutes = s=>Math.round(s/60);
+
+/* ---------- хранилище ---------- */
+const S = {
+  get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+let state = S.get('down_state',{});        // линия → {start,cause,comment}
+let journal = S.get('down_journal',[]);    // завершённые простои на этом телефоне
+let queue = S.get('down_queue',[]);        // неотправленные строки
+let selected = S.get('down_line',CONFIG.lines[0]);
+let picking = false;                       // открыта сетка причин
+const save = ()=>{S.set('down_state',state);S.set('down_journal',journal);S.set('down_queue',queue);S.set('down_line',selected)};
+
+/* ---------- отправка в Google Форму ---------- */
+function post(rec){
+  const f=CONFIG.fields, sh=shiftOf(rec.endMs||rec.startMs);
+  const p=new URLSearchParams();
+  const put=(k,v)=>{if(f[k])p.append(f[k],v)};
+  put('line',rec.line); put('event',rec.event); put('cause',rec.cause||'');
+  put('start',fmtDT(rec.startMs)); put('end',rec.endMs?fmtDT(rec.endMs):'');
+  put('seconds',rec.seconds!=null?String(rec.seconds):''); put('shift',sh.shift); put('shiftDate',sh.date); put('comment',rec.comment||'');
+  if(!CONFIG.endpoint) return;
+  queue.push(p.toString()); save(); flush();
+}
+let flushing=false;
+async function flush(){
+  if(flushing||!CONFIG.endpoint) return; flushing=true;
+  while(queue.length){
+    try{
+      await fetch(CONFIG.endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:queue[0]});
+      queue.shift(); save();
+    }catch(e){break}
+  }
+  flushing=false; drawQueue();
+}
+window.addEventListener('online',flush);
+
+/* ---------- действия ---------- */
+function startDown(cause){
+  state[selected]={start:Date.now(),cause,comment:''};
+  picking=false; save();
+  post({line:selected,event:'Остановка',cause,startMs:state[selected].start});
+  render(); toast(`${selected}: остановка в ${fmtT(state[selected].start)}`);
+}
+function endDown(){
+  const st=state[selected]; if(!st) return;
+  const now=Date.now(), sec=Math.round((now-st.start)/1000);
+  const rec={line:selected,cause:st.cause,comment:st.comment,startMs:st.start,endMs:now,seconds:sec};
+  journal.push(rec); delete state[selected]; save();
+  post({...rec,event:'Пуск'});
+  render(); toast(`Записано: ${minutes(sec)} мин, ${rec.cause}`);
+}
+function cancelDown(){
+  const st=state[selected]; if(!st) return;
+  if(!confirm('Отменить эту остановку? Простой не будет засчитан.')) return;
+  post({line:selected,event:'Отмена',cause:st.cause,startMs:st.start,endMs:Date.now(),seconds:0});
+  delete state[selected]; save(); render(); toast('Остановка отменена');
+}
+function shiftStart(min){
+  const st=state[selected]; if(!st) return;
+  st.start-=min*60000; save(); render();
+}
+function changeCause(c){
+  const st=state[selected]; st.cause=c; picking=false; save(); render();
+}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
+
+/* ---------- отрисовка ---------- */
+const $=id=>document.getElementById(id);
+function drawLines(){
+  $('lines').innerHTML=CONFIG.lines.map(l=>{
+    const d=state[l];
+    return `<button data-l="${l}" class="${l===selected?'sel':''} ${d?'down':''}">${l.replace('Линия ','Л')}<small>${d?'стоит':''}</small></button>`;
+  }).join('');
+  $('lines').querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.l;picking=false;save();render()});
+}
+function drawView(){
+  const st=state[selected], v=$('view');
+  if(picking){
+    v.innerHTML=`<div class="card"><h2>${selected}: причина остановки</h2><div class="grid">${
+      CONFIG.causes.map((c,i)=>`<button data-c="${c}" class="${i===CONFIG.causes.length-1&&CONFIG.causes.length%2?'wide':''}">${c}</button>`).join('')
+    }</div><button class="link" id="cancelPick">Назад</button></div>`;
+    v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>st?changeCause(b.dataset.c):startDown(b.dataset.c));
+    $('cancelPick').onclick=()=>{picking=false;render()};
+    return;
+  }
+  if(!st){
+    v.innerHTML=`<div class="card"><p class="sub">${selected} работает</p><button class="big" id="stop">ЛИНИЯ ОСТАНОВИЛАСЬ</button></div>`;
+    $('stop').onclick=()=>{picking=true;render()};
+    return;
+  }
+  v.innerHTML=`<div class="card down">
+    <p class="sub">${selected} стоит с ${fmtT(st.start)}</p>
+    <div class="timer" id="timer">${mmss((Date.now()-st.start)/1000)}</div>
+    <p style="margin:0 0 6px"><b>${st.cause}</b></p>
+    <input type="text" id="comment" placeholder="Комментарий (необязательно)" value="${(st.comment||'').replace(/"/g,'&quot;')}">
+    <p class="sub" style="margin-top:12px">Забыли нажать вовремя? Сдвинуть начало раньше:</p>
+    <div class="chips"><button data-s="5">−5 мин</button><button data-s="10">−10 мин</button><button data-s="30">−30 мин</button></div>
+    <button class="big go" id="go">ЛИНИЯ ЗАПУЩЕНА</button>
+    <button class="link" id="chg">Изменить причину</button>
+    <button class="link" id="mis">Нажали по ошибке — отменить</button>
+  </div>`;
+  v.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>shiftStart(+b.dataset.s));
+  $('comment').oninput=e=>{st.comment=e.target.value;save()};
+  $('go').onclick=endDown; $('chg').onclick=()=>{picking=true;render()}; $('mis').onclick=cancelDown;
+}
+function drawLog(){
+  const today=dayKey(Date.now());
+  const rows=journal.filter(r=>r.line===selected&&dayKey(r.endMs)===today).sort((a,b)=>b.endMs-a.endMs);
+  $('todayTitle').textContent=`${selected}, сегодня`;
+  $('sCount').textContent=rows.length;
+  $('sMin').textContent=minutes(rows.reduce((s,r)=>s+r.seconds,0));
+  $('log').innerHTML=rows.length?`<tr><th>Время</th><th>Причина</th><th class="r">Мин</th></tr>`+rows.slice(0,10).map(r=>`<tr><td>${fmtT(r.startMs)}–${fmtT(r.endMs)}</td><td>${r.cause}${r.comment?`<br><span class="sub">${r.comment.replace(/</g,'&lt;')}</span>`:''}</td><td class="r">${minutes(r.seconds)}</td></tr>`).join(''):'<tr><td class="sub">Пока без простоев</td></tr>';
+}
+function drawQueue(){$('queue').textContent=CONFIG.endpoint?(queue.length?`Не отправлено: ${queue.length}`:'Всё отправлено'):''}
+function render(){drawLines();drawView();drawLog();drawQueue()}
+
+/* ---------- таймеры ---------- */
+setInterval(()=>{
+  $('clock').textContent=fmtT(Date.now());
+  const st=state[selected], t=$('timer'); if(st&&t) t.textContent=mmss((Date.now()-st.start)/1000);
+},1000);
+
+/* ---------- CSV ---------- */
+$('csv').onclick=()=>{
+  const head=['Линия','Причина','Начало','Конец','Секунд','Минут','Смена','Комментарий'];
+  const rows=journal.map(r=>{const s=shiftOf(r.endMs);return [r.line,r.cause,fmtDT(r.startMs),fmtDT(r.endMs),r.seconds,(r.seconds/60).toFixed(1).replace('.',','),s.shift,r.comment||'']});
+  const csv='﻿'+[head,...rows].map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='простои.csv';a.click();
+};
+
+if(!CONFIG.endpoint) $('demo').classList.remove('hide');
+$('clock').textContent=fmtT(Date.now());
+render(); flush();
+</script>
+</body>
+</html>
