@@ -261,7 +261,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="ph"><h2>Работа оборудования ЦУиППЖ</h2><span class="note" id="th-note"></span></div>
     <div class="tiles" id="th-tiles"></div>
     <h3 class="ch-t" id="th-ct"></h3><div class="chart auto" id="th-chart"></div><div class="xl auto" id="th-xl"></div>
-    <div class="legend"><span><i style="background:var(--good)"></i>98 % и выше</span><span><i style="background:var(--warn)"></i>95–98 %</span><span><i style="background:var(--crit)"></i>ниже 95 %</span><span>уровень соответствия = туши без отклонений / проверено (производственный контроль ЦУ, ~300 туш в день по каждой операции)</span></div>
+    <div class="legend"><span><i style="background:var(--good)"></i>98 % и выше</span><span><i style="background:var(--warn)"></i>95–98 %</span><span><i style="background:var(--crit)"></i>ниже 95 %</span><span>уровень соответствия = 100 % − доля несоответствий (производственный контроль ЦУ, 150–300 туш в день по каждой операции)</span></div>
     <div class="two"><div class="hl" id="th-dev"></div><div class="hl" id="th-par"></div></div>
   </section>
 
@@ -359,7 +359,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=6d07fe65bc"></script>
+<script src="/MPK/director-data.js?v=4551f68a84"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="returns";
@@ -568,13 +568,13 @@ function renderTech(f,t,lab){
   const D=document.getElementById("th-dev"),Pp=document.getElementById("th-par");
   if(!A){T.innerHTML='<div class="empty">Контроля за этот период нет.</div>';D.innerHTML="";Pp.innerHTML="";return}
   const pr=prevRange(f,t);const P=pr&&thAgg(pr[0],pr[1]);
-  const dl=Object.entries(A.dev).map(([k,[c,x]])=>[k,c,x,100-x/c*100]).sort((a,b)=>a[3]-b[3]); const worst=dl.filter(x=>x[2])[0];
+  const dl=Object.entries(A.dev).map(([k,[c,x]])=>[k,c,x,x/c*100]).sort((a,b)=>b[3]-a[3]); const worst=dl.filter(x=>x[2])[0]; const dmx=Math.max(0.1,...dl.map(x=>x[3]));   // r = доля туш с несоответствием (Павел, 24.10.2026: оцениваем наличие несоответствий)
   T.innerHTML=tile("Уровень соответствия",fmt(A.rate,1)+" %",P?`${pr[2]}: ${fmt(P.rate,1)} %`:"",stTh(A.rate))
     +tile("Проверок",fmt(A.n),`отклонений ${fmt(A.b)} · дней контроля ${A.days}`)
-    +`<div class="tile"><div class="l">Самое низкое соответствие</div><div class="v" style="font-size:16px;line-height:1.2">${worst?worst[0]:"—"}</div><div class="s">${worst?`${fmt(worst[3],1)} % · отклонений ${fmt(worst[2])} из ${fmt(worst[1])}`:""}</div></div>`;
-  D.innerHTML=`<h3>По операциям</h3>`+dl.map(([k,c,x,r])=>{const st=stTh(r); let ar="";
-    if(P&&P.dev[k]){const pv=100-P.dev[k][1]/P.dev[k][0]*100; ar=r<pv-0.05?` <b style="color:var(--crit)">↓</b>`:r>pv+0.05?` <b style="color:var(--good)">↑</b>`:""}
-    return `<div class="hr st-${st}"><span class="t" style="white-space:normal"><span class="dot"></span>${k}</span><span class="n"><b>${fmt(r,1)} %</b> · ${fmt(x)} из ${fmt(c)}${ar}</span><div class="hb"><i class="${cls[st]}" style="width:${Math.max(0,r)}%"></i></div></div>`}).join("");
+    +`<div class="tile"><div class="l">Чаще всего несоответствие</div><div class="v" style="font-size:16px;line-height:1.2">${worst?worst[0]:"—"}</div><div class="s">${worst?`${fmt(worst[3],1)} % · несоответствий ${fmt(worst[2])} из ${fmt(worst[1])}`:""}</div></div>`;
+  D.innerHTML=`<h3>Несоответствия<small>доля туш с несоответствием</small></h3>`+dl.map(([k,c,x,r])=>{const st=stTh(100-r); let ar="";
+    if(P&&P.dev[k]){const pv=P.dev[k][1]/P.dev[k][0]*100; ar=r>pv+0.05?` <b style="color:var(--crit)">↑</b>`:r<pv-0.05?` <b style="color:var(--good)">↓</b>`:""}
+    return `<div class="hr st-${st}"><span class="t" style="white-space:normal"><span class="dot"></span>${k}</span><span class="n"><b>${fmt(r,1)} %</b> · ${fmt(x)} из ${fmt(c)}${ar}</span><div class="hb"><i class="${cls[st]}" style="width:${r?Math.max(2,r/dmx*100):0}%"></i></div></div>`}).join("");
   const lastR=A.rs[A.rs.length-1]; const par=lastR.params||[];
   Pp.innerHTML=`<h3>Режимы и замеры<small>${A.days>1?"на "+dd(lastR.d):""}</small></h3>`+(par.length?par.map(([k,v])=>`<div class="hr"><span class="t">${k}</span><span class="n"><b>${v}</b></span></div>`).join(""):'<div class="empty">—</div>')
     +(lastR.note?`<div class="hr"><span class="t" style="white-space:normal;color:var(--ink-2)">Примечание: ${lastR.note}</span></div>`:"");
