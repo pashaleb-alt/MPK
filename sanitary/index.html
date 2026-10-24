@@ -359,7 +359,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=4551f68a84"></script>
+<script src="/MPK/director-data.js?v=4e1a023f63"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="sanitary";
@@ -800,7 +800,11 @@ function renderBio(f,t,lab){
     +tile("Требований не выполнено",fmt(kt+vt),"",kt?"crit":vt?"warn":"good");
   const il=[...A.items].sort((a,b)=>(a[3]==="Кт"?0:1)-(b[3]==="Кт"?0:1)||a[0].localeCompare(b[0]));
   const KN={"Кт":"Требование не выполнено","Вт":"Требование не выполнено"};
-  I.innerHTML=`<h3>Несоответствия</h3>`+(il.length?il.map(([d,n,req,k,com])=>`<div class="hr st-${k==="Кт"?"crit":"warn"}"><span class="t" style="white-space:normal"><span class="dot"></span><b style="color:${k==="Кт"?"var(--crit)":"var(--warn-t,#96680a)"}">${KN[k]}</b> · п. ${n}<br>${req}${com?`<br><span style="color:var(--ink-3)">${com}</span>`:""}${A.days>1?` <span style="color:var(--ink-3)">· ${dd(d)}</span>`:""}</span></div>`).join(""):'<div class="empty">Несоответствий нет.</div>');
+  const bbBody=(il.length?il.map(([d,n,req,k,com])=>`<div class="hr st-${k==="Кт"?"crit":"warn"}"><span class="t" style="white-space:normal"><span class="dot"></span><b style="color:${k==="Кт"?"var(--crit)":"var(--warn-t,#96680a)"}">${KN[k]}</b> · п. ${n}<br>${req}${com?`<br><span style="color:var(--ink-3)">${com}</span>`:""}${A.days>1?` <span style="color:var(--ink-3)">· ${dd(d)}</span>`:""}</span></div>`).join(""):'<div class="empty">Несоответствий нет.</div>');
+  // по умолчанию список свёрнут, раскрывается по нажатию на заголовок (Павел, 24.10.2026)
+  I.innerHTML=`<h3 class="fold" role="button" tabindex="0" style="cursor:pointer;user-select:none">Несоответствия<small>${il.length}</small><span class="car" style="float:right;color:var(--ink-3)">${window.BBOPEN?"▴":"▾"}</span></h3><div class="fb"${window.BBOPEN?"":" hidden"}>${bbBody}</div>`;
+  const hh=I.querySelector("h3.fold"), fb=I.querySelector(".fb"), car=I.querySelector(".car"); const tg=()=>{window.BBOPEN=!window.BBOPEN; fb.hidden=!window.BBOPEN; car.textContent=window.BBOPEN?"▴":"▾"};
+  hh.onclick=tg; hh.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg()}};
 }
 // ---------- безопасность ----------
 function renderSafety(f,t,lab){
