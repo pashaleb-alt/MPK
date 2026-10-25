@@ -80,7 +80,7 @@ const CONFIG = {
   endpoint: 'https://docs.google.com/forms/d/e/1FAIpQLSfj5ysxFc-l_Tc3HxupwFmwRaL7IhU4e3ub_gAkIi0QX_chNg/formResponse',
   // Номера полей формы (entry.NNNN) в том же порядке, что вопросы формы.
   fields: {line:'entry.331374885', event:'entry.1118132647', cause:'entry.2039888318', start:'entry.1457364802', end:'entry.2110158197', seconds:'entry.1673117236', shift:'entry.2031487776', shiftDate:'entry.876001012', comment:'entry.2061596686'},
-  lines: ['Линия 1','Линия 2','Линия 3','Линия 4','Линия 5','Линия 7'],
+  lines: ['Линия 5'],  // пока только Л5, остальные (Линия 1–4, Линия 7) добавим после тренировки; те же названия — в листе «Справочник» таблицы
   causes: ['Нет сырья','Нет упаковки или плёнки','Поломка оборудования','Переналадка','Мойка, санитария','Маркировка, этикетки','Контроль качества, брак','Нет людей','Прочее'],
   tz: 'Europe/Moscow'
 };
@@ -110,6 +110,7 @@ let state = S.get('down_state',{});        // линия → {start,cause,commen
 let journal = S.get('down_journal',[]);    // завершённые простои на этом телефоне
 let queue = S.get('down_queue',[]);        // неотправленные строки
 let selected = S.get('down_line',CONFIG.lines[0]);
+if(!CONFIG.lines.includes(selected)) selected = CONFIG.lines[0];
 let picking = false;                       // открыта сетка причин
 const save = ()=>{S.set('down_state',state);S.set('down_journal',journal);S.set('down_queue',queue);S.set('down_line',selected)};
 
@@ -170,9 +171,10 @@ function toast(t){const e=document.getElementById('toast');e.textContent=t;e.cla
 /* ---------- отрисовка ---------- */
 const $=id=>document.getElementById(id);
 function drawLines(){
+  $('lines').style.gridTemplateColumns='repeat('+Math.min(3,CONFIG.lines.length)+',1fr)';
   $('lines').innerHTML=CONFIG.lines.map(l=>{
     const d=state[l];
-    return `<button data-l="${l}" class="${l===selected?'sel':''} ${d?'down':''}">${l.replace('Линия ','Л')}<small>${d?'стоит':''}</small></button>`;
+    return `<button data-l="${l}" class="${l===selected?'sel':''} ${d?'down':''}">${CONFIG.lines.length>1?l.replace('Линия ','Л'):l}<small>${d?'стоит':''}</small></button>`;
   }).join('');
   $('lines').querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.l;picking=false;save();render()});
 }
