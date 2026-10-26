@@ -372,7 +372,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">2</div><div class="s">последняя травма 23.10.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=04b7218b86"></script>
+<script src="/MPK/director-data.js?v=d33b1e5706"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -506,7 +506,7 @@ function renderPt(f,t,lab){
   if(!A){T.innerHTML='<div class="empty">Проверок за этот период нет.</div>';L.innerHTML="";return}
   const defs={};A.ds.forEach(d=>Object.entries(DATA.pt[d].defects).forEach(([k,v])=>{const o=defs[k]||(defs[k]={w:v.w,n:0});o.n+=v.n}));
   const top=Object.entries(defs).sort((a,b)=>b[1].n-a[1].n)[0]; const srN=A.ds.reduce((a,d)=>a+(DATA.pt[d].serious||0),0); const pr=prevRange(f,t); const P=pr&&ptAgg(pr[0],pr[1]);
-  T.innerHTML=tile("Уровень качества",fmt(A.score,1)+" %",P?`${pr[2]}: ${fmt(P.score,1)} %`:"",stPtW(ptW(f,t)))+tile("Туш проверено",fmt(A.n),`${A.ds.length} дн. · по 100 в день`)+tile("С критическим несоответствием",fmt(srN/A.n*100,1)+" %",`${fmt(srN)} туш из ${fmt(A.n)}`)
+  T.innerHTML=tile("Уровень качества",fmt(A.score,1)+" %",P?`${pr[2]}: ${fmt(P.score,1)} %`:"",stPtW(ptW(f,t)))+tile("Туш проверено",fmt(A.n),`${A.ds.length} дн. · в среднем ${fmt(A.n/A.ds.length)} в день`)+tile("С критическим несоответствием",fmt(srN/A.n*100,1)+" %",`${fmt(srN)} туш из ${fmt(A.n)}`)
     +`<div class="tile"><div class="l">Главное несоответствие</div><div class="v" style="font-size:18px;line-height:1.2">${top?top[0]:"—"}</div><div class="s">${top?`у ${fmt(top[1].n/A.n*100,0)} % туш`:""}</div></div>`;
   const dl=Object.entries(defs).filter(([k,v])=>v.n).sort((a,b)=>b[1].n-a[1].n); const dmx=dl[0]?dl[0][1].n:1;
   L.innerHTML=`<h3>Несоответствия<small>доля туш с несоответствием</small></h3>`+dl.map(([k,v])=>`<div class="hr"><span class="t" style="white-space:normal">${k}</span><span class="n"><b>${fmt(v.n/A.n*100,1)} %</b> · ${v.n} туш</span><div class="hb"><i class="o" style="width:${v.n/dmx*100}%;background:${v.w>=0.1?"var(--crit)":"#1e88ff"}"></i></div></div>`).join("");
