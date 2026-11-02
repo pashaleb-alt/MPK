@@ -8,10 +8,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="&#8203;">
 <meta property="og:title" content="Сводка МПК за 01.11.2026">
-<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261102121708">
+<meta property="og:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261102012229">
 <meta property="og:image:width" content="1230"><meta property="og:image:height" content="1245">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261102121708">
+<meta name="twitter:image" content="https://pashaleb-alt.github.io/MPK/preview.png?v=20261102012229">
 <title>Показатели МПК 2026</title>
 <style>:root{color-scheme:light dark}html,body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if(/tgWebApp/.test(location.hash)){var s=document.createElement("script");s.src="https://telegram.org/js/telegram-web-app.js";s.onload=function(){try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}};document.head.appendChild(s)}</script>
@@ -189,6 +189,7 @@ input[type=date]:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 @media (max-width:720px){.tile.sostav{grid-column:1/-1}}
 .tile.st-good .v{color:var(--good-t)} .tile.st-warn .v{color:var(--warn-t)} .tile.st-crit .v{color:var(--crit-t)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:18px} .sf-h{font-size:13px;color:var(--ink-2);margin:0 0 4px;font-weight:700}
+.sf-h.fold{cursor:pointer;user-select:none;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap} .sf-h.fold small{font-weight:400;color:var(--ink-3);font-size:12px} .sf-h.fold .car{margin-left:auto;color:var(--ink-3)}
 .chart.sfc{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;align-items:end;height:120px;padding-top:18px;position:relative}
 .sfc .col{display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative;cursor:pointer}
 .sfc .col .lab{position:absolute;top:-17px;left:0;right:0;text-align:center;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink-2)}
@@ -645,6 +646,14 @@ function renderStaff(){
       const det=pos.length?`<div class="su-pos" hidden>${pos.sort((a,b)=>b[3]-a[3]).map(p=>`<div class="su-p"><span>${p[0].includes(" · ")?`<small style="grid-column:1;display:block;margin:0 0 1px">${p[0].split(" · ")[0]}</small>${p[0].split(" · ").slice(1).join(" · ")}`:p[0]}</span><b style="color:${p[3]<0?"var(--crit)":"var(--ink)"}">${p[3]<0?"переизбыток "+fx(-p[3],p[3]%1?1:0):"вакансий "+fx(p[3],p[3]%1?1:0)}</b><small>штат ${fx(p[1],p[1]%1?1:0)} · факт ${fx(p[2],p[2]%1?1:0)}</small></div>`).join("")}</div>`:"";
       return `<div class="su${pos.length?" tap":""}"><div class="su-t"><span class="su-n">${u.name}${pos.length?' <i class="su-arr">▸</i>':""}</span><span class="su-v" style="color:${col}">${fx(u.fill,0)} %</span></div><div class="su-b"><i style="width:${Math.min(100,u.fill)}%;background:${col}"></i></div><div class="su-s">${u.ext?"вне штата МПК · ":""}факт ${fx(u.fact,0)} из ${fx(u.plan,0)} · ${over?`<b style="color:var(--crit)">переизбыток ${fx(-u.vac,0)}</b>`:`вакансий ${fx(u.vac,0)}`}${pos.length?` · <span style="color:var(--accent)">по должностям</span>`:""}</div>${det}</div>`}).join("");
   document.querySelectorAll("#sf-units .su.tap").forEach(el=>el.onclick=()=>{const d=el.querySelector(".su-pos"); d.hidden=!d.hidden; el.classList.toggle("open",!d.hidden)});
+  // принятые, уволенные и укомплектованность по подразделениям по умолчанию свёрнуты, раскрываются по нажатию на заголовок (Павел, 02.11.2026)
+  window.SFOPEN=window.SFOPEN||{};
+  ["sf-hires","sf-fires","sf-units"].forEach(id=>{ const el=document.getElementById(id), h=el&&el.querySelector("h3.sf-h"); if(!h) return;
+    const fb=document.createElement("div"); fb.className="fb"; while(h.nextSibling) fb.appendChild(h.nextSibling); el.appendChild(fb);
+    const open=!!window.SFOPEN[id]; fb.hidden=!open; h.classList.add("fold"); h.setAttribute("role","button"); h.tabIndex=0;
+    h.insertAdjacentHTML("beforeend",`<small>нажмите, чтобы раскрыть</small><span class="car">${open?"▴":"▾"}</span>`);
+    const car=h.querySelector(".car"), tg=()=>{ window.SFOPEN[id]=!window.SFOPEN[id]; fb.hidden=!window.SFOPEN[id]; car.textContent=window.SFOPEN[id]?"▴":"▾" };
+    h.onclick=tg; h.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); tg() } }; });
   document.querySelectorAll("#staff .col[data-m]").forEach(c=>c.onclick=()=>{const m=+c.dataset.m; if(MONS[m-1]){renderKeep(document.getElementById("staff"),()=>{moSel=MONS[m-1]; setMode("month")})}});
 }
 
