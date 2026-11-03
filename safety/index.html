@@ -374,7 +374,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">10</div><div class="s">последняя травма 23.10.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=b0ef6ae029"></script>
+<script src="/MPK/director-data.js?v=8d1feb636c"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -545,6 +545,16 @@ function pdAgg(f,t){
 // названия дефектов — как в «Контроле качества обвалки для ЦРП» (Павел, 21.10.2026: «дефекты должны выглядеть аналогично»)
 const PDN={"Жировой полив в норме":"жировой полив","Отсутствие глубоких повреждений мышечной ткани":"повреждения мышц","Отсутствие лимфатических узлов":"лимфоузлы","Отсутствие остатков шкуры":"остатки шкуры","Отсутствие прирези грудинки":"прирезь грудинки","Отсутствие хрящевой и костной ткани, надкостницы":"хрящ/кость","Прирезь хребтового шпика в норме":"прирезь шпика"};
 const pdn=k=>PDN[k]||k.replace(/^Отсутствие /,"");
+// свёрнутый список под заголовком h3: по умолчанию закрыт, подсказка и стрелка, состояние запоминается по ключу (Павел, 03.11.2026: «несоответствия по умолчанию сверни»)
+function foldList(el,key){
+  const h=el&&el.querySelector("h3"); if(!h) return;
+  const base=h.childNodes[0]?h.childNodes[0].textContent:""; const fb=document.createElement("div"); fb.className="fb"; while(h.nextSibling) fb.appendChild(h.nextSibling); el.appendChild(fb);
+  window.FOLD=window.FOLD||{}; const open=!!window.FOLD[key]; fb.hidden=!open; const n=fb.querySelectorAll(".hr").length;
+  h.className="fold"; h.setAttribute("role","button"); h.tabIndex=0; h.style.cssText="cursor:pointer;user-select:none";
+  h.innerHTML=`${base}<small>${n} · нажмите, чтобы раскрыть</small><span class="car" style="float:right;color:var(--ink-3)">${open?"▴":"▾"}</span>`;
+  const car=h.querySelector(".car"), tg=()=>{window.FOLD[key]=!window.FOLD[key]; fb.hidden=!window.FOLD[key]; car.textContent=window.FOLD[key]?"▴":"▾"};
+  h.onclick=tg; h.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg()}};
+}
 function renderPod(f,t,lab){
   const T=document.getElementById("pd-tiles"); let A=pdAgg(f,t);
   if(!A){const fb=lastDayBefore(DATA.pod.map(r=>r.d),f,lab); if(fb){[f,t,lab]=fb; A=pdAgg(f,t)}}
@@ -563,6 +573,7 @@ function renderPod(f,t,lab){
         row.innerHTML=`<span class="t"><span class="dot"></span>${k}</span><span class="n"><b>${fmt(r,1)} %</b> · без дефектов ${fmt(c.score)} из ${fmt(c.n)}</span><div class="hb"><i class="${cls[st]}" style="width:${Math.max(0,r)}%"></i></div>`;
     row.onclick=()=>{const open=row.classList.toggle("open");let det=row.querySelector(".det");if(open&&!det){det=document.createElement("div");det.className="det";det.innerHTML=Object.entries(c.defs).filter(([d,x])=>x).sort((a,b)=>b[1]-a[1]).map(([d,x])=>`<div class="c">${pdn(d)} <span class="m">· ${x} шт</span> <b style="float:right">${fmt(x/c.n*100,2)} %</b></div>`).join("")||'<div class="c">Дефектов нет</div>';row.appendChild(det)}else if(det)det.remove()};
     cutEl.appendChild(row)});
+  foldList(cutEl,"pdcut");
   const dl=Object.entries(defs).sort((a,b)=>b[1]-a[1]);const dmx=dl[0]&&dl[0][1]?dl[0][1]:1;
   defEl.innerHTML="<h3>По видам дефектов (все отрубы)</h3>"+dl.map(([k,v])=>`<div class="hr"><span class="t">${k}</span><span class="n"><b>${fmt(v)}</b> · ${fmt(v/A.n*100,2)} % отрубов</span><div class="hb"><i class="o" style="width:${v/dmx*100}%"></i></div></div>`).join("");
 }
@@ -590,6 +601,7 @@ function renderTech(f,t,lab){
   D.innerHTML=`<h3>Несоответствия<small>доля туш с несоответствием</small></h3>`+dl.map(([k,c,x,r])=>{const st=stTh(100-r); let ar="";
     if(P&&P.dev[k]){const pv=P.dev[k][1]/P.dev[k][0]*100; ar=r>pv+0.05?` <b style="color:var(--crit)">↑</b>`:r<pv-0.05?` <b style="color:var(--good)">↓</b>`:""}
     return `<div class="hr st-${st}"><span class="t" style="white-space:normal"><span class="dot"></span>${k}</span><span class="n"><b>${fmt(r,1)} %</b> · ${fmt(x)} из ${fmt(c)}${ar}</span><div class="hb"><i class="${cls[st]}" style="width:${r?Math.max(2,r/dmx*100):0}%"></i></div></div>`}).join("");
+  foldList(D,"thdev");
   const lastR=A.rs[A.rs.length-1]; const par=lastR.params||[];
   Pp.innerHTML=`<h3>Режимы и замеры<small>${A.days>1?"на "+dd(lastR.d):""}</small></h3>`+(par.length?par.map(([k,v])=>`<div class="hr"><span class="t">${k}</span><span class="n"><b>${v}</b></span></div>`).join(""):'<div class="empty">—</div>')
     +(lastR.note?`<div class="hr"><span class="t" style="white-space:normal;color:var(--ink-2)">Примечание: ${lastR.note}</span></div>`:"");
