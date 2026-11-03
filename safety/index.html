@@ -113,6 +113,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 @media (max-width:720px){.legend{gap:8px 10px} .legend span:has(i){font-size:11.5px}}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px;align-items:start}
 .hl{display:grid;gap:5px;align-content:start}
+.gf{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px} .gf th{font-weight:600;color:var(--ink-3);text-align:right;font-size:11.5px;padding:4px 6px;border-bottom:1px solid var(--line)} .gf td{padding:6px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap} .gf th:first-child,.gf td:first-child{text-align:left;font-weight:600} .gf tfoot td{font-weight:700;border-top:1px solid var(--ink-3)} .gfn{font-size:12px;color:var(--ink-3);margin-top:6px}
 .hl h3{font-size:15px;color:var(--ink);margin:0 0 6px;font-weight:700} .hl h3 small{font-size:11.5px;color:var(--ink-3);font-weight:500;margin-left:6px}
 .hr{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px}
 .hr .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -271,6 +272,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="tiles" id="gk-tiles"></div>
     <h3 class="ch-t" id="gk-ct"></h3><div class="chart auto" id="gk-chart"></div><div class="xl auto" id="gk-xl"></div>
     <div class="legend"><span>содержимое ЖКТ сверх нормы 6,36 % живого веса, кг</span></div>
+    <div class="hl" id="gk-farms"></div>
   </section>
 
   <section class="panel" id="p-crp" hidden="">
@@ -372,7 +374,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">10</div><div class="s">последняя травма 23.10.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=89942ec70b"></script>
+<script src="/MPK/director-data.js?v=b0ef6ae029"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -594,11 +596,24 @@ function renderTech(f,t,lab){
 }
 // ---------- превышение по ЖКТ (книга «Выход парных полутуш») ----------
 function gkAgg(f,t){const rs=DATA.vyh.filter(r=>inR(r.d,f,t)); if(!rs.length) return null; const live=rs.reduce((a,r)=>a+r.live,0),kg=rs.reduce((a,r)=>a+r.gkt_kg,0),heads=rs.reduce((a,r)=>a+r.heads,0); return {rs,live,kg,heads,pct:live?kg/live*100:null,days:rs.length}}
+// срез «ЖКТ по фермам»: по умолчанию свёрнут, раскрывается по нажатию на заголовок (Павел, 03.11.2026)
+function renderGktFarms(A){
+  const el=document.getElementById("gk-farms"); if(!el) return;
+  const F={}; (A?A.rs:[]).forEach(r=>Object.entries(r.farms||{}).forEach(([k,v])=>{const a=F[k]||(F[k]=[0,0,0,0,0,0]); v.forEach((x,i)=>a[i]+=x)}));
+  const L=Object.entries(F).sort((a,b)=>b[1][3]-a[1][3]); if(!L.length){el.innerHTML=""; return}
+  const row=([k,a])=>{const kgh=a[1]?a[3]/a[1]:0, sh=a[0]?a[4]/a[0]*100:0; return `<tr><td>${k}</td><td>${fmt(a[3])}</td><td>${fmt(kgh,2)}</td><td>${fmt(a[4])} из ${fmt(a[0])} · ${fmt(sh)} %</td><td>${fmt(a[5])}</td><td>${fmt(a[1])}</td></tr>`};
+  const T=L.reduce((s,[,a])=>{a.forEach((x,i)=>s[i]+=x);return s},[0,0,0,0,0,0]);
+  const open=!!window.GKFARM;
+  el.innerHTML=`<h3 class="fold" role="button" tabindex="0" style="cursor:pointer;user-select:none">ЖКТ по фермам<small>${L.length} · нажмите, чтобы раскрыть</small><span class="car" style="float:right;color:var(--ink-3)">${open?"▴":"▾"}</span></h3><div class="fb"${open?"":" hidden"}><div style="overflow-x:auto"><table class="gf"><thead><tr><th>Ферма</th><th>Превышение, кг</th><th>кг на голову</th><th>Партий с превышением</th><th>Партий выше 300 кг</th><th>Голов</th></tr></thead><tbody>${L.map(row).join("")}</tbody><tfoot>${row(["Итого",T])}</tfoot></table></div><div class="gfn">Превышение — только партии, где содержимое ЖКТ больше нормы (6,36 % живого веса); партии ниже нормы не вычитаются.</div></div>`;
+  const hh=el.querySelector("h3.fold"), fb=el.querySelector(".fb"), car=el.querySelector(".car"); const tg=()=>{window.GKFARM=!window.GKFARM; fb.hidden=!window.GKFARM; car.textContent=window.GKFARM?"▴":"▾"};
+  hh.onclick=tg; hh.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg()}};
+}
 function renderGkt(f,t,lab){
   const T=document.getElementById("gk-tiles"); const A=gkAgg(f,t); document.getElementById("gk-note").textContent=lab+idleNote();
   const ax=axis(f,t); document.getElementById("gk-ct").textContent=ax.kind==="day"?"Превышение по ЖКТ по дням, кг":"Превышение по ЖКТ по месяцам, кг";
   const mx=Math.max(1,...ax.items.map(it=>{const a=gkAgg(it.f,it.t);return a?a.kg:0}));
   bars(document.getElementById("gk-chart"),document.getElementById("gk-xl"),ax,it=>{const a=gkAgg(it.f,it.t);return a?a.kg:null},()=>"crit",{dec:0,line:true,seg:(it,v)=>`<div class="seg" style="height:${Math.max(2,v/mx*100)}%;background:var(--crit)"></div>`});
+  renderGktFarms(A);
   if(!A){T.innerHTML='<div class="empty">Данных за этот период нет.</div>';return}
   const pr=prevRange(f,t);const P=pr&&gkAgg(pr[0],pr[1]);
   T.innerHTML=tile("Превышение по ЖКТ, кг",fmt(A.kg),P?`${pr[2]}: ${fmt(P.kg)} кг`:`сверх нормы 6,36 % живого веса`,"crit")
