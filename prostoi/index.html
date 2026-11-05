@@ -4,72 +4,117 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="apple-mobile-web-app-title" content="Простои">
 <link rel="apple-touch-icon" href="/MPK/apple-touch-icon.png?v=3">
 <title>Простои ЦРП</title>
 <style>
-:root{--bg:#fff;--ink:#111;--mute:#6b6b6b;--line:#d9d9d9;--panel:#f3f3f3;--stop:#b3261e;--stop-bg:#fbeceb}
-@media (prefers-color-scheme:dark){:root{--bg:#121212;--ink:#f1f1f1;--mute:#9a9a9a;--line:#333;--panel:#1d1d1d;--stop:#ff8a80;--stop-bg:#2a1816}}
+:root{
+  --bg:#f6f3ee;--card:#fff;--ink:#1f2933;--mute:#6b7280;--line:#e7e2d9;--soft:#f1ede6;
+  --run:#1f8a5b;--run-bg:#e6f4ec;--stop:#d9482b;--stop-bg:#fdece7;--on:#fff;
+  --shadow:0 1px 2px rgba(31,41,51,.06),0 6px 18px rgba(31,41,51,.06);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15171a;--card:#1f2227;--ink:#f1f2f4;--mute:#9aa1ab;--line:#2f343b;--soft:#272b31;
+  --run:#4cc38a;--run-bg:#16291f;--stop:#ff7a59;--stop-bg:#33201b;--on:#0f1114;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding:env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom))}
+body{background:var(--bg);color:var(--ink);font:17px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans","Noto Sans KR","Malgun Gothic",Arial,sans-serif;padding:env(safe-area-inset-top) 16px calc(28px + env(safe-area-inset-bottom))}
 .wrap{max-width:520px;margin:0 auto}
-header{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 8px}
-h1{font-size:20px;margin:0}
-#clock{font-variant-numeric:tabular-nums;color:var(--mute)}
-.demo{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--mute);margin-bottom:10px}
-.lines{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 14px}
-.lines button{padding:12px 4px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font-weight:600;font-size:16px;font-family:inherit}
-.lines button small{display:block;font-weight:400;font-size:12px;color:var(--mute);min-height:15px}
-.lines button.sel{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-.lines button.down{background:var(--stop-bg);border-color:var(--stop)}
-.lines button.down small{color:var(--stop);font-weight:600}
-.card{border:1.5px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
-.card.down{background:var(--stop-bg);border-color:var(--stop)}
-.big{display:block;width:100%;padding:26px 12px;border-radius:16px;border:0;font-weight:700;font-size:22px;font-family:inherit;background:var(--ink);color:var(--bg);margin-top:6px}
-.big.go{background:var(--bg);color:var(--ink);border:2.5px solid var(--ink)}
-.big:active{opacity:.7}
-.sub{color:var(--mute);font-size:14px;margin:0 0 4px}
-h2{font-size:18px;margin:0 0 12px}
+svg{width:1.4em;height:1.4em;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+svg .f{fill:currentColor;stroke:none}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 0 12px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--ink);color:var(--card);display:grid;place-items:center;flex:none}
+.logo svg{width:22px;height:22px}
+h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.2px}
+.clock{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:999px;padding:7px 12px;box-shadow:var(--shadow);font-variant-numeric:tabular-nums;font-weight:600;font-size:15px;color:var(--mute)}
+.clock svg{width:16px;height:16px}
+.demo{background:var(--soft);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--mute);margin-bottom:12px}
+.lines{display:grid;gap:10px;margin:4px 0 14px}
+.lines button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 12px;border-radius:16px;border:2px solid transparent;background:var(--card);color:var(--ink);font-weight:650;font-size:17px;font-family:inherit;box-shadow:var(--shadow);transition:transform .12s}
+.lines button:active{transform:scale(.97)}
+.lines button.sel{border-color:var(--ink)}
+.lines .dot{width:10px;height:10px;border-radius:50%;background:var(--run);flex:none}
+.lines button.down .dot{background:var(--stop)}
+.lines button.down{background:var(--stop-bg)}
+.lines small{display:none;font-weight:600;font-size:13px;color:var(--stop)}
+.lines button.down small{display:inline}
+.card{background:var(--card);border-radius:24px;padding:20px;margin-bottom:14px;box-shadow:var(--shadow);animation:rise .25s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card.run{background:var(--run-bg)}
+.card.down{background:var(--stop-bg)}
+.state{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-weight:600;font-size:17px}
+.pulse{width:12px;height:12px;border-radius:50%;background:var(--run);position:relative;flex:none}
+.pulse::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--run);opacity:0;animation:ping 2s ease-out infinite}
+.pulse.red{background:var(--stop)}
+.pulse.red::after{border-color:var(--stop)}
+@keyframes ping{0%{opacity:.6;transform:scale(.6)}100%{opacity:0;transform:scale(1.5)}}
+.big{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:92px;padding:18px 14px;border-radius:22px;border:0;font-weight:750;font-size:21px;line-height:1.15;font-family:inherit;color:var(--on);margin-top:4px;transition:transform .12s,filter .12s}
+.big svg{width:30px;height:30px}
+.big.stop{background:var(--stop);color:#fff}
+.big.go{background:var(--run);color:#fff;margin-top:10px}
+.big:active{transform:scale(.98);filter:brightness(.94)}
+.sub{color:var(--mute);font-size:15px;margin:0 0 6px}
+h2{font-size:19px;font-weight:700;margin:0 0 14px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.grid button{padding:20px 8px;border-radius:14px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);font-weight:600;font-size:17px;line-height:1.2;font-family:inherit}
-.grid button:active{background:var(--panel)}
-.grid .wide{grid-column:1/-1}
-.link{background:none;border:0;color:var(--mute);font:inherit;text-decoration:underline;padding:10px 0;display:block;width:100%;text-align:center}
-.timer{font-size:56px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--stop);margin:2px 0 4px;letter-spacing:-1px}
-.chips{display:flex;gap:8px;margin:8px 0 12px;flex-wrap:wrap}
-.chips button{flex:1;padding:12px 6px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-family:inherit;min-width:70px}
-input[type=text]{width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin-top:6px}
-.sum{display:flex;gap:10px;margin-bottom:10px}
-.sum div{flex:1;background:var(--panel);border-radius:12px;padding:10px 12px}
-.sum b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
-.sum span{font-size:12px;color:var(--mute)}
-table{width:100%;border-collapse:collapse;font-size:14px}
-td,th{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-th{font-size:12px;color:var(--mute);font-weight:500}
-td.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-#toast{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));max-width:488px;margin:0 auto;background:var(--ink);color:var(--bg);padding:14px 16px;border-radius:12px;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:9}
+.grid button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:96px;padding:14px 8px;border-radius:18px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:600;font-size:16.5px;line-height:1.2;font-family:inherit;text-align:center;transition:transform .12s,background .12s,border-color .12s}
+.grid button svg{width:30px;height:30px;color:var(--stop)}
+.grid button:active{transform:scale(.97);background:var(--stop-bg);border-color:var(--stop)}
+.grid .wide{grid-column:1/-1;min-height:72px;flex-direction:row;gap:12px}
+.link{display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:0;color:var(--mute);font:inherit;font-size:16px;padding:14px 0 2px;width:100%}
+.link svg{width:18px;height:18px}
+.timer{font-size:64px;line-height:1.05;font-weight:750;font-variant-numeric:tabular-nums;color:var(--stop);margin:0 0 10px;letter-spacing:-1.5px}
+.cause{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:16px;padding:12px 14px;margin:0 0 12px;font-weight:650}
+.cause svg{color:var(--stop);width:26px;height:26px}
+.chips{display:flex;gap:8px;margin:2px 0 14px}
+.chips button{flex:1;min-height:48px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;transition:transform .12s}
+.chips button:active{transform:scale(.97)}
+input[type=text]{width:100%;min-height:50px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;margin:0 0 6px;outline:none}
+input[type=text]:focus{border-color:var(--ink)}
+.sum{display:flex;gap:10px;margin-bottom:12px}
+.sum div{flex:1;background:var(--soft);border-radius:18px;padding:12px 14px}
+.sum b{display:block;font-size:28px;line-height:1.1;font-weight:750;font-variant-numeric:tabular-nums}
+.sum span{font-size:14px;color:var(--mute)}
+table{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:15px}
+td,th{padding:10px 8px;text-align:left;vertical-align:top}
+th{font-size:13px;color:var(--mute);font-weight:600;padding:0 8px}
+td{background:var(--soft)}
+td:first-child{border-radius:12px 0 0 12px}
+td:last-child{border-radius:0 12px 12px 0}
+td.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:700}
+td.sub,td[colspan]{background:none;padding-left:0}
+.card.today h2{margin-bottom:12px}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));max-width:488px;margin:0 auto;display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);padding:15px 18px;border-radius:18px;box-shadow:var(--shadow);opacity:0;transform:translateY(14px);transition:.25s;pointer-events:none;z-index:9;font-weight:600}
+#toast svg{color:var(--run)}
 #toast.on{opacity:1;transform:none}
-.foot{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:8px}
+.foot{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--mute);margin:4px 4px 0}
+.foot .link{width:auto;padding:6px 0;font-size:14px;text-decoration:underline}
 .hide{display:none!important}
+@media (prefers-reduced-motion:reduce){*,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header><h1>Простои ЦРП</h1><div id="clock"></div></header>
+  <header>
+    <div class="brand"><span class="logo"><svg viewBox="0 0 24 24"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M8 21v-4M13 21v-4M18 21v-4"/></svg></span><h1>Простои ЦРП</h1></div>
+    <div class="clock"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="clock"></span></div>
+  </header>
   <div id="demo" class="demo hide">Пробный режим: нажатия сохраняются только на этом телефоне и никуда не отправляются.</div>
   <div id="lines" class="lines"></div>
 
   <div id="view"></div>
 
-  <div class="card">
+  <div class="card today">
     <h2 id="todayTitle">Сегодня</h2>
     <div class="sum"><div><b id="sCount">0</b><span>простоев</span></div><div><b id="sMin">0</b><span>минут</span></div></div>
     <table id="log"></table>
   </div>
-  <div class="foot"><span id="queue"></span><button class="link" id="csv" style="width:auto;padding:0">Скачать журнал (CSV)</button></div>
+  <div class="foot"><span id="queue"></span><button class="link" id="csv">Скачать журнал (CSV)</button></div>
 </div>
 <div id="toast"></div>
 
@@ -84,6 +129,31 @@ const CONFIG = {
   causes: ['Машина не востребована','Переналадка','Неисправность','Закончилась пленка, этикетка','Отсутствие сырья','Смена заказа','Прочее','Перерыв','Окончание работы'],  // перечень Павла от 26.10.2026, «Окончание работы» добавлено 27.10.2026; те же названия — в листе «Справочник» таблицы
   tz: 'Europe/Moscow'
 };
+
+/* ---------- значки (без текста, понятны на любом языке) ---------- */
+const svg = (body,vb='0 0 24 24') => `<svg viewBox="${vb}" aria-hidden="true">${body}</svg>`;
+const I = {
+  pause: svg('<rect class="f" x="6" y="5" width="4" height="14" rx="1.3"/><rect class="f" x="14" y="5" width="4" height="14" rx="1.3"/>'),
+  play: svg('<path class="f" d="M7 4.5v15l12.5-7.5z"/>'),
+  back: svg('<path d="M15 5l-7 7 7 7"/>'),
+  check: svg('<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>'),
+  alert: svg('<path d="M12 4 3 20h18z"/><path d="M12 10v4M12 17h.01"/>'),
+  clock: svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+  list: svg('<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>')
+};
+const CAUSE_ICON = {
+  'Машина не востребована': svg('<path d="M7 3h10M7 21h10M8 3v3.5a4 4 0 0 0 1.2 2.8L12 12l-2.8 2.7A4 4 0 0 0 8 17.5V21M16 3v3.5a4 4 0 0 1-1.2 2.8L12 12l2.8 2.7A4 4 0 0 1 16 17.5V21"/>'),
+  'Переналадка': svg('<path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10"/><circle cx="15" cy="6" r="2.2"/><circle cx="9" cy="12" r="2.2"/><circle cx="17" cy="18" r="2.2"/>'),
+  'Неисправность': I.alert,
+  'Закончилась пленка, этикетка': svg('<path d="M3 3h8l10 10-8 8L3 11z"/><circle cx="7.5" cy="7.5" r="1.3"/>'),
+  'Отсутствие сырья': svg('<path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>'),
+  'Смена заказа': svg('<path d="M4 8h14l-3-3M20 16H6l3 3"/>'),
+  'Прочее': svg('<circle class="f" cx="6" cy="12" r="1.8"/><circle class="f" cx="12" cy="12" r="1.8"/><circle class="f" cx="18" cy="12" r="1.8"/>'),
+  'Перерыв': svg('<path d="M4 8h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M16 9h2a2.5 2.5 0 0 1 0 5h-2M7 3v2M11 3v2"/>'),
+  'Окончание работы': svg('<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>')
+};
+const icon = c => CAUSE_ICON[c] || CAUSE_ICON['Прочее'];
+const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 /* ---------- время по Москве ---------- */
 const P = (d,o)=>Object.fromEntries(new Intl.DateTimeFormat('ru-RU',{timeZone:CONFIG.tz,hourCycle:'h23',...o}).formatToParts(d).map(x=>[x.type,x.value]));
@@ -166,7 +236,7 @@ function shiftStart(min){
 function changeCause(c){
   const st=state[selected]; st.cause=c; picking=false; save(); render();
 }
-function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
+function toast(t){const e=document.getElementById('toast');e.innerHTML=I.check+'<span></span>';e.lastChild.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
 
 /* ---------- отрисовка ---------- */
 const $=id=>document.getElementById(id);
@@ -174,33 +244,33 @@ function drawLines(){
   $('lines').style.gridTemplateColumns='repeat('+Math.min(3,CONFIG.lines.length)+',1fr)';
   $('lines').innerHTML=CONFIG.lines.map(l=>{
     const d=state[l];
-    return `<button data-l="${l}" class="${l===selected?'sel':''} ${d?'down':''}">${CONFIG.lines.length>1?l.replace('Линия ','Л'):l}<small>${d?'стоит':''}</small></button>`;
+    return `<button data-l="${esc(l)}" class="${l===selected?'sel':''} ${d?'down':''}"><i class="dot"></i><span>${esc(CONFIG.lines.length>1?l.replace('Линия ','Л'):l)}</span><small>стоит</small></button>`;
   }).join('');
   $('lines').querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.l;picking=false;save();render()});
 }
 function drawView(){
   const st=state[selected], v=$('view');
   if(picking){
-    v.innerHTML=`<div class="card"><h2>${selected}: причина остановки</h2><div class="grid">${
-      CONFIG.causes.map((c,i)=>`<button data-c="${c}" class="${i===CONFIG.causes.length-1&&CONFIG.causes.length%2?'wide':''}">${c}</button>`).join('')
-    }</div><button class="link" id="cancelPick">Назад</button></div>`;
+    v.innerHTML=`<div class="card"><h2>${esc(selected)}: причина остановки</h2><div class="grid">${
+      CONFIG.causes.map((c,i)=>`<button data-c="${esc(c)}" class="${i===CONFIG.causes.length-1&&CONFIG.causes.length%2?'wide':''}">${icon(c)}<span>${esc(c)}</span></button>`).join('')
+    }</div><button class="link" id="cancelPick">${I.back}Назад</button></div>`;
     v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>st?changeCause(b.dataset.c):startDown(b.dataset.c));
     $('cancelPick').onclick=()=>{picking=false;render()};
     return;
   }
   if(!st){
-    v.innerHTML=`<div class="card"><p class="sub">${selected} работает</p><button class="big" id="stop">ЛИНИЯ ОСТАНОВИЛАСЬ</button></div>`;
+    v.innerHTML=`<div class="card run"><p class="state"><i class="pulse"></i>${esc(selected)} работает</p><button class="big stop" id="stop">${I.pause}<span>ЛИНИЯ ОСТАНОВИЛАСЬ</span></button></div>`;
     $('stop').onclick=()=>{picking=true;render()};
     return;
   }
   v.innerHTML=`<div class="card down">
-    <p class="sub">${selected} стоит с ${fmtT(st.start)}</p>
+    <p class="state"><i class="pulse red"></i>${esc(selected)} стоит с ${fmtT(st.start)}</p>
     <div class="timer" id="timer">${mmss((Date.now()-st.start)/1000)}</div>
-    <p style="margin:0 0 6px"><b>${st.cause}</b></p>
-    <input type="text" id="comment" placeholder="Комментарий (необязательно)" value="${(st.comment||'').replace(/"/g,'&quot;')}">
-    <p class="sub" style="margin-top:12px">Забыли нажать вовремя? Сдвинуть начало раньше:</p>
+    <div class="cause">${icon(st.cause)}<b>${esc(st.cause)}</b></div>
+    <input type="text" id="comment" placeholder="Комментарий (необязательно)" value="${esc(st.comment||'')}">
+    <p class="sub" style="margin-top:14px">Забыли нажать вовремя? Сдвинуть начало раньше:</p>
     <div class="chips"><button data-s="5">−5 мин</button><button data-s="10">−10 мин</button><button data-s="30">−30 мин</button></div>
-    <button class="big go" id="go">ЛИНИЯ ЗАПУЩЕНА</button>
+    <button class="big go" id="go">${I.play}<span>ЛИНИЯ ЗАПУЩЕНА</span></button>
     <button class="link" id="chg">Изменить причину</button>
     <button class="link" id="mis">Нажали по ошибке — отменить</button>
   </div>`;
@@ -214,7 +284,7 @@ function drawLog(){
   $('todayTitle').textContent=`${selected}, сегодня`;
   $('sCount').textContent=rows.length;
   $('sMin').textContent=minutes(rows.reduce((s,r)=>s+r.seconds,0));
-  $('log').innerHTML=rows.length?`<tr><th>Время</th><th>Причина</th><th class="r">Мин</th></tr>`+rows.slice(0,10).map(r=>`<tr><td>${fmtT(r.startMs)}–${fmtT(r.endMs)}</td><td>${r.cause}${r.comment?`<br><span class="sub">${r.comment.replace(/</g,'&lt;')}</span>`:''}</td><td class="r">${minutes(r.seconds)}</td></tr>`).join(''):'<tr><td class="sub">Пока без простоев</td></tr>';
+  $('log').innerHTML=rows.length?`<tr><th>Время</th><th>Причина</th><th class="r">Мин</th></tr>`+rows.slice(0,10).map(r=>`<tr><td>${fmtT(r.startMs)}–${fmtT(r.endMs)}</td><td>${esc(r.cause)}${r.comment?`<br><span class="sub">${esc(r.comment)}</span>`:''}</td><td class="r">${minutes(r.seconds)}</td></tr>`).join(''):'<tr><td class="sub" colspan="3">Пока без простоев</td></tr>';
 }
 function drawQueue(){$('queue').textContent=CONFIG.endpoint?(queue.length?`Не отправлено: ${queue.length}`:'Всё отправлено'):''}
 function render(){drawLines();drawView();drawLog();drawQueue()}
