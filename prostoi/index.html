@@ -13,12 +13,12 @@
 <style>
 :root{
   --bg:#f6f3ee;--card:#fff;--ink:#1f2933;--mute:#6b7280;--line:#e7e2d9;--soft:#f1ede6;
-  --run:#1f8a5b;--run-bg:#e6f4ec;--stop:#d9482b;--stop-bg:#fdece7;--on:#fff;
+  --run:#1f8a5b;--run-bg:#e6f4ec;--stop:#d9730d;--stop-bg:#fdf0e0;--on:#fff;
   --shadow:0 1px 2px rgba(31,41,51,.06),0 6px 18px rgba(31,41,51,.06);
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#15171a;--card:#1f2227;--ink:#f1f2f4;--mute:#9aa1ab;--line:#2f343b;--soft:#272b31;
-  --run:#4cc38a;--run-bg:#16291f;--stop:#ff7a59;--stop-bg:#33201b;--on:#0f1114;
+  --run:#4cc38a;--run-bg:#16291f;--stop:#ff9a3d;--stop-bg:#33251a;--on:#0f1114;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
 }}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -53,7 +53,8 @@ h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.2px}
 .big.stop{background:var(--stop);color:#fff}
 .big.on{background:var(--run);color:var(--on);box-shadow:0 0 0 4px rgba(31,138,91,.22),0 8px 26px rgba(31,138,91,.55);animation:glow 2.2s ease-in-out infinite}
 @keyframes glow{0%,100%{box-shadow:0 0 0 4px rgba(31,138,91,.22),0 8px 26px rgba(31,138,91,.45)}50%{box-shadow:0 0 0 8px rgba(31,138,91,.14),0 10px 34px rgba(31,138,91,.7)}}
-.big.go{background:var(--run);color:#fff;margin-top:10px}
+.big.go{background:var(--stop);color:var(--on);margin-top:10px;box-shadow:0 0 0 4px rgba(217,115,13,.22),0 8px 26px rgba(217,115,13,.5);animation:glowo 2.2s ease-in-out infinite}
+@keyframes glowo{0%,100%{box-shadow:0 0 0 4px rgba(217,115,13,.22),0 8px 26px rgba(217,115,13,.4)}50%{box-shadow:0 0 0 8px rgba(217,115,13,.14),0 10px 34px rgba(217,115,13,.65)}}
 .big:active{transform:scale(.98);filter:brightness(.94)}
 .sub{color:var(--mute);font-size:15px;margin:0 0 6px}
 h2{font-size:19px;font-weight:700;margin:0 0 14px}
@@ -228,7 +229,7 @@ function drawView(){
     return;
   }
   if(!st){
-    v.innerHTML=`<div class="card run"><p class="state"><i class="pulse"></i>${esc(selected)} работает</p><button class="big on" id="stop"><span>ЛИНИЯ ОСТАНОВИЛАСЬ</span></button></div>`;
+    v.innerHTML=`<div class="card run"><p class="state"><i class="pulse"></i>${esc(selected)} работает</p><button class="big on" id="stop"><span>ЛИНИЯ РАБОТАЕТ</span></button></div>`;
     $('stop').onclick=()=>{picking=true;render()};
     return;
   }
@@ -239,7 +240,7 @@ function drawView(){
     <input type="text" id="comment" placeholder="Комментарий (необязательно)" value="${esc(st.comment||'')}">
     <p class="sub" style="margin-top:14px">Забыли нажать вовремя? Сдвинуть начало раньше:</p>
     <div class="chips"><button data-s="5">−5 мин</button><button data-s="10">−10 мин</button><button data-s="30">−30 мин</button></div>
-    <button class="big go" id="go"><span>ЛИНИЯ ЗАПУЩЕНА</span></button>
+    <button class="big go" id="go"><span>ЛИНИЯ ОСТАНОВИЛАСЬ</span></button>
     <button class="link" id="chg">Изменить причину</button>
     <button class="link" id="mis">Нажали по ошибке — отменить</button>
   </div>`;
