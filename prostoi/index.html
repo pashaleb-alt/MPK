@@ -25,15 +25,10 @@
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:17px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans","Noto Sans KR","Malgun Gothic",Arial,sans-serif;padding:env(safe-area-inset-top) 16px calc(28px + env(safe-area-inset-bottom))}
 .wrap{max-width:520px;margin:0 auto}
-svg{width:1.4em;height:1.4em;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-svg .f{fill:currentColor;stroke:none}
 header{display:flex;justify-content:space-between;align-items:center;padding:16px 0 12px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.logo{width:40px;height:40px;border-radius:12px;background:var(--ink);color:var(--card);display:grid;place-items:center;flex:none}
-.logo svg{width:22px;height:22px}
 h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.2px}
 .clock{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:999px;padding:7px 12px;box-shadow:var(--shadow);font-variant-numeric:tabular-nums;font-weight:600;font-size:15px;color:var(--mute)}
-.clock svg{width:16px;height:16px}
 .demo{background:var(--soft);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--mute);margin-bottom:12px}
 .lines{display:grid;gap:10px;margin:4px 0 14px}
 .lines button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 12px;border-radius:16px;border:2px solid transparent;background:var(--card);color:var(--ink);font-weight:650;font-size:17px;font-family:inherit;box-shadow:var(--shadow);transition:transform .12s}
@@ -55,22 +50,20 @@ h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.2px}
 .pulse.red::after{border-color:var(--stop)}
 @keyframes ping{0%{opacity:.6;transform:scale(.6)}100%{opacity:0;transform:scale(1.5)}}
 .big{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:92px;padding:18px 14px;border-radius:22px;border:0;font-weight:750;font-size:21px;line-height:1.15;font-family:inherit;color:var(--on);margin-top:4px;transition:transform .12s,filter .12s}
-.big svg{width:30px;height:30px}
 .big.stop{background:var(--stop);color:#fff}
+.big.on{background:var(--run);color:var(--on);box-shadow:0 0 0 4px rgba(31,138,91,.22),0 8px 26px rgba(31,138,91,.55);animation:glow 2.2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 4px rgba(31,138,91,.22),0 8px 26px rgba(31,138,91,.45)}50%{box-shadow:0 0 0 8px rgba(31,138,91,.14),0 10px 34px rgba(31,138,91,.7)}}
 .big.go{background:var(--run);color:#fff;margin-top:10px}
 .big:active{transform:scale(.98);filter:brightness(.94)}
 .sub{color:var(--mute);font-size:15px;margin:0 0 6px}
 h2{font-size:19px;font-weight:700;margin:0 0 14px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .grid button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:96px;padding:14px 8px;border-radius:18px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:600;font-size:16.5px;line-height:1.2;font-family:inherit;text-align:center;transition:transform .12s,background .12s,border-color .12s}
-.grid button svg{width:30px;height:30px;color:var(--stop)}
 .grid button:active{transform:scale(.97);background:var(--stop-bg);border-color:var(--stop)}
 .grid .wide{grid-column:1/-1;min-height:72px;flex-direction:row;gap:12px}
 .link{display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:0;color:var(--mute);font:inherit;font-size:16px;padding:14px 0 2px;width:100%}
-.link svg{width:18px;height:18px}
 .timer{font-size:64px;line-height:1.05;font-weight:750;font-variant-numeric:tabular-nums;color:var(--stop);margin:0 0 10px;letter-spacing:-1.5px}
 .cause{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:16px;padding:12px 14px;margin:0 0 12px;font-weight:650}
-.cause svg{color:var(--stop);width:26px;height:26px}
 .chips{display:flex;gap:8px;margin:2px 0 14px}
 .chips button{flex:1;min-height:48px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;transition:transform .12s}
 .chips button:active{transform:scale(.97)}
@@ -90,7 +83,6 @@ td.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-
 td.sub,td[colspan]{background:none;padding-left:0}
 .card.today h2{margin-bottom:12px}
 #toast{position:fixed;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));max-width:488px;margin:0 auto;display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);padding:15px 18px;border-radius:18px;box-shadow:var(--shadow);opacity:0;transform:translateY(14px);transition:.25s;pointer-events:none;z-index:9;font-weight:600}
-#toast svg{color:var(--run)}
 #toast.on{opacity:1;transform:none}
 .foot{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--mute);margin:4px 4px 0}
 .foot .link{width:auto;padding:6px 0;font-size:14px;text-decoration:underline}
@@ -101,8 +93,8 @@ td.sub,td[colspan]{background:none;padding-left:0}
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><span class="logo"><svg viewBox="0 0 24 24"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M8 21v-4M13 21v-4M18 21v-4"/></svg></span><h1>Простои ЦРП</h1></div>
-    <div class="clock"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="clock"></span></div>
+    <div class="brand"><h1>Простои ЦРП</h1></div>
+    <div class="clock"><span id="clock"></span></div>
   </header>
   <div id="demo" class="demo hide">Пробный режим: нажатия сохраняются только на этом телефоне и никуда не отправляются.</div>
   <div id="lines" class="lines"></div>
@@ -130,29 +122,6 @@ const CONFIG = {
   tz: 'Europe/Moscow'
 };
 
-/* ---------- значки (без текста, понятны на любом языке) ---------- */
-const svg = (body,vb='0 0 24 24') => `<svg viewBox="${vb}" aria-hidden="true">${body}</svg>`;
-const I = {
-  pause: svg('<rect class="f" x="6" y="5" width="4" height="14" rx="1.3"/><rect class="f" x="14" y="5" width="4" height="14" rx="1.3"/>'),
-  play: svg('<path class="f" d="M7 4.5v15l12.5-7.5z"/>'),
-  back: svg('<path d="M15 5l-7 7 7 7"/>'),
-  check: svg('<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>'),
-  alert: svg('<path d="M12 4 3 20h18z"/><path d="M12 10v4M12 17h.01"/>'),
-  clock: svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
-  list: svg('<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>')
-};
-const CAUSE_ICON = {
-  'Машина не востребована': svg('<path d="M7 3h10M7 21h10M8 3v3.5a4 4 0 0 0 1.2 2.8L12 12l-2.8 2.7A4 4 0 0 0 8 17.5V21M16 3v3.5a4 4 0 0 1-1.2 2.8L12 12l2.8 2.7A4 4 0 0 1 16 17.5V21"/>'),
-  'Переналадка': svg('<path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10"/><circle cx="15" cy="6" r="2.2"/><circle cx="9" cy="12" r="2.2"/><circle cx="17" cy="18" r="2.2"/>'),
-  'Неисправность': I.alert,
-  'Закончилась пленка, этикетка': svg('<path d="M3 3h8l10 10-8 8L3 11z"/><circle cx="7.5" cy="7.5" r="1.3"/>'),
-  'Отсутствие сырья': svg('<path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>'),
-  'Смена заказа': svg('<path d="M4 8h14l-3-3M20 16H6l3 3"/>'),
-  'Прочее': svg('<circle class="f" cx="6" cy="12" r="1.8"/><circle class="f" cx="12" cy="12" r="1.8"/><circle class="f" cx="18" cy="12" r="1.8"/>'),
-  'Перерыв': svg('<path d="M4 8h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M16 9h2a2.5 2.5 0 0 1 0 5h-2M7 3v2M11 3v2"/>'),
-  'Окончание работы': svg('<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>')
-};
-const icon = c => CAUSE_ICON[c] || CAUSE_ICON['Прочее'];
 const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 /* ---------- время по Москве ---------- */
@@ -236,7 +205,7 @@ function shiftStart(min){
 function changeCause(c){
   const st=state[selected]; st.cause=c; picking=false; save(); render();
 }
-function toast(t){const e=document.getElementById('toast');e.innerHTML=I.check+'<span></span>';e.lastChild.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
+function toast(t){const e=document.getElementById('toast');e.innerHTML='<span></span>';e.lastChild.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
 
 /* ---------- отрисовка ---------- */
 const $=id=>document.getElementById(id);
@@ -252,25 +221,25 @@ function drawView(){
   const st=state[selected], v=$('view');
   if(picking){
     v.innerHTML=`<div class="card"><h2>${esc(selected)}: причина остановки</h2><div class="grid">${
-      CONFIG.causes.map((c,i)=>`<button data-c="${esc(c)}" class="${i===CONFIG.causes.length-1&&CONFIG.causes.length%2?'wide':''}">${icon(c)}<span>${esc(c)}</span></button>`).join('')
-    }</div><button class="link" id="cancelPick">${I.back}Назад</button></div>`;
+      CONFIG.causes.map((c,i)=>`<button data-c="${esc(c)}" class="${i===CONFIG.causes.length-1&&CONFIG.causes.length%2?'wide':''}"><span>${esc(c)}</span></button>`).join('')
+    }</div><button class="link" id="cancelPick">Назад</button></div>`;
     v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>st?changeCause(b.dataset.c):startDown(b.dataset.c));
     $('cancelPick').onclick=()=>{picking=false;render()};
     return;
   }
   if(!st){
-    v.innerHTML=`<div class="card run"><p class="state"><i class="pulse"></i>${esc(selected)} работает</p><button class="big stop" id="stop">${I.pause}<span>ЛИНИЯ ОСТАНОВИЛАСЬ</span></button></div>`;
+    v.innerHTML=`<div class="card run"><p class="state"><i class="pulse"></i>${esc(selected)} работает</p><button class="big on" id="stop"><span>ЛИНИЯ ОСТАНОВИЛАСЬ</span></button></div>`;
     $('stop').onclick=()=>{picking=true;render()};
     return;
   }
   v.innerHTML=`<div class="card down">
     <p class="state"><i class="pulse red"></i>${esc(selected)} стоит с ${fmtT(st.start)}</p>
     <div class="timer" id="timer">${mmss((Date.now()-st.start)/1000)}</div>
-    <div class="cause">${icon(st.cause)}<b>${esc(st.cause)}</b></div>
+    <div class="cause"><b>${esc(st.cause)}</b></div>
     <input type="text" id="comment" placeholder="Комментарий (необязательно)" value="${esc(st.comment||'')}">
     <p class="sub" style="margin-top:14px">Забыли нажать вовремя? Сдвинуть начало раньше:</p>
     <div class="chips"><button data-s="5">−5 мин</button><button data-s="10">−10 мин</button><button data-s="30">−30 мин</button></div>
-    <button class="big go" id="go">${I.play}<span>ЛИНИЯ ЗАПУЩЕНА</span></button>
+    <button class="big go" id="go"><span>ЛИНИЯ ЗАПУЩЕНА</span></button>
     <button class="link" id="chg">Изменить причину</button>
     <button class="link" id="mis">Нажали по ошибке — отменить</button>
   </div>`;
