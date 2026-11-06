@@ -88,6 +88,13 @@ td.sub,td[colspan]{background:none;padding-left:0}
 .foot{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--mute);margin:4px 4px 0}
 .foot .link{width:auto;padding:6px 0;font-size:14px;text-decoration:underline}
 .hide{display:none!important}
+.bi{display:block;text-align:inherit}
+.bi em{display:block;font-style:normal;font-weight:500;font-size:.8em;line-height:1.25;opacity:.82;margin-top:2px}
+.big .bi{text-align:center}
+.big .bi em{font-size:16px;opacity:.92}
+.grid button .bi em{font-size:13.5px}
+.state .bi em{font-size:14px}
+th.r{text-align:right}
 .link.reset{color:var(--stop);font-size:15px;padding-top:12px}
 #toggleLog{background:var(--soft);border-radius:14px;min-height:48px;color:var(--ink);font-weight:600;padding:12px;margin-bottom:6px}
 @media (prefers-reduced-motion:reduce){*,*::after{animation:none!important;transition:none!important}}
@@ -96,7 +103,7 @@ td.sub,td[colspan]{background:none;padding-left:0}
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><h1>Простои ЦРП</h1></div>
+    <div class="brand"><h1 id="title"></h1></div>
     <div class="clock"><span id="clock"></span></div>
   </header>
   <div id="demo" class="demo hide">Пробный режим: нажатия сохраняются только на этом телефоне и никуда не отправляются.</div>
@@ -105,13 +112,13 @@ td.sub,td[colspan]{background:none;padding-left:0}
   <div id="view"></div>
 
   <div class="card today">
-    <h2 id="todayTitle">Сегодня</h2>
-    <div class="sum"><div><b id="sCount">0</b><span>простоев</span></div><div><b id="sMin">0</b><span>минут</span></div></div>
-    <button class="link" id="toggleLog">Показать список простоев</button>
+    <h2 id="todayTitle"></h2>
+    <div class="sum"><div><b id="sCount">0</b><span id="lblCount"></span></div><div><b id="sMin">0</b><span id="lblMin"></span></div></div>
+    <button class="link" id="toggleLog"></button>
     <table id="log" class="hide"></table>
-    <button class="link reset" id="reset">Сбросить статистику</button>
+    <button class="link reset" id="reset"></button>
   </div>
-  <div class="foot"><span id="queue"></span><button class="link" id="csv">Скачать журнал (CSV)</button></div>
+  <div class="foot"><span id="queue"></span><button class="link" id="csv"></button></div>
 </div>
 <div id="toast"></div>
 
@@ -124,9 +131,16 @@ const CONFIG = {
   fields: {line:'entry.331374885', event:'entry.1118132647', cause:'entry.2039888318', start:'entry.1457364802', end:'entry.2110158197', seconds:'entry.1673117236', shift:'entry.2031487776', shiftDate:'entry.876001012', comment:'entry.2061596686'},
   lines: ['Линия 5'],  // пока только Л5, остальные (Линия 1–4, Линия 7) добавим после тренировки; те же названия — в листе «Справочник» таблицы
   causes: ['Машина не востребована','Переналадка','Неисправность','Закончилась пленка, этикетка','Отсутствие сырья','Смена заказа','Прочее','Перерыв','Окончание работы'],  // перечень Павла от 26.10.2026, «Окончание работы» добавлено 27.10.2026; те же названия — в листе «Справочник» таблицы
-  tz: 'Europe/Moscow'
+  tz: 'Europe/Moscow',
+  // корейский (северный вариант) — перевод переводчика от 05.11.2026; в записи в таблицу всегда уходит русское название причины
+  ko: {causes: {'Машина не востребована':'생산과제 없음','Переналадка':'설비 재조정','Неисправность':'고장','Закончилась пленка, этикетка':'필림, 상표 떨어짐','Отсутствие сырья':'원료 없음','Смена заказа':'주문 교체','Прочее':'기타','Перерыв':'휴식','Окончание работы':'작업 종료'}}
 };
 
+/* ---------- русский + корейский ---------- */
+const kl = l => '흐름선 ' + String(l).replace(/^Линия\s*/,'');   // Линия 5 → 흐름선 5
+const kc = c => CONFIG.ko.causes[c] || '';
+const bi = (ru,ko) => `<span class="bi">${esc(ru)}${ko?`<em lang="ko">${esc(ko)}</em>`:''}</span>`;
+const both = (ru,ko) => ko ? ru+' / '+ko : ru;   // для toast и окон подтверждения
 const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 /* ---------- время по Москве ---------- */
@@ -188,7 +202,7 @@ function startDown(cause){
   state[selected]={start:Date.now(),cause,comment:''};
   picking=false; save();
   post({line:selected,event:'Остановка',cause,startMs:state[selected].start});
-  render(); toast(`${selected}: остановка в ${fmtT(state[selected].start)}`);
+  render(); toast(`${selected}: остановка в ${fmtT(state[selected].start)}`,`${kl(selected)}: ${fmtT(state[selected].start)}에서 정지`);
 }
 function endDown(){
   const st=state[selected]; if(!st) return;
@@ -196,13 +210,13 @@ function endDown(){
   const rec={line:selected,cause:st.cause,comment:st.comment,startMs:st.start,endMs:now,seconds:sec};
   journal.push(rec); delete state[selected]; save();
   post({...rec,event:'Пуск'});
-  render(); toast(`Записано: ${minutes(sec)} мин, ${rec.cause}`);
+  render(); toast(`Записано: ${minutes(sec)} мин, ${rec.cause}`,`기록되였음: ${minutes(sec)}분, ${kc(rec.cause)||rec.cause}`);
 }
 function cancelDown(){
   const st=state[selected]; if(!st) return;
-  if(!confirm('Отменить эту остановку? Простой не будет засчитан.')) return;
+  if(!confirm('Отменить эту остановку? Простой не будет засчитан.\n\n정지를 취소하겠습니까? 정지 시간은 계산되지 않습니다.')) return;
   post({line:selected,event:'Отмена',cause:st.cause,startMs:st.start,endMs:Date.now(),seconds:0});
-  delete state[selected]; save(); render(); toast('Остановка отменена');
+  delete state[selected]; save(); render(); toast('Остановка отменена','정지 취소');
 }
 function shiftStart(min){
   const st=state[selected]; if(!st) return;
@@ -211,7 +225,7 @@ function shiftStart(min){
 function changeCause(c){
   const st=state[selected]; st.cause=c; picking=false; save(); render();
 }
-function toast(t){const e=document.getElementById('toast');e.innerHTML='<span></span>';e.lastChild.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
+function toast(ru,ko){const e=document.getElementById('toast');e.innerHTML=bi(ru,ko);e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
 
 /* ---------- отрисовка ---------- */
 const $=id=>document.getElementById(id);
@@ -219,35 +233,36 @@ function drawLines(){
   $('lines').style.gridTemplateColumns='repeat('+Math.min(3,CONFIG.lines.length)+',1fr)';
   $('lines').innerHTML=CONFIG.lines.map(l=>{
     const d=state[l];
-    return `<button data-l="${esc(l)}" class="${l===selected?'sel':''} ${d?'down':''}"><i class="dot"></i><span>${esc(CONFIG.lines.length>1?l.replace('Линия ','Л'):l)}</span><small>стоит</small></button>`;
+    return `<button data-l="${esc(l)}" class="${l===selected?'sel':''} ${d?'down':''}"><i class="dot"></i>${bi(CONFIG.lines.length>1?l.replace('Линия ','Л'):l,kl(l))}<small>стоит · 정지</small></button>`;
   }).join('');
   $('lines').querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.l;picking=false;save();render()});
 }
 function drawView(){
   const st=state[selected], v=$('view');
   if(picking){
-    v.innerHTML=`<div class="card"><h2>${esc(selected)}: причина остановки</h2><div class="grid">${
-      CONFIG.causes.map((c,i)=>`<button data-c="${esc(c)}" class="${i===CONFIG.causes.length-1&&CONFIG.causes.length%2?'wide':''}"><span>${esc(c)}</span></button>`).join('')
-    }</div><button class="link" id="cancelPick">Назад</button></div>`;
+    v.innerHTML=`<div class="card"><h2>${bi(selected+': причина остановки',kl(selected)+': 정지 원인')}</h2><div class="grid">${
+      CONFIG.causes.map((c,i)=>`<button data-c="${esc(c)}" class="${i===CONFIG.causes.length-1&&CONFIG.causes.length%2?'wide':''}">${bi(c,kc(c))}</button>`).join('')
+    }</div><button class="link" id="cancelPick">${bi('Назад','뒤로')}</button></div>`;
     v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>st?changeCause(b.dataset.c):startDown(b.dataset.c));
     $('cancelPick').onclick=()=>{picking=false;render()};
     return;
   }
   if(!st){
-    v.innerHTML=`<div class="card run"><p class="state"><i class="pulse"></i>${esc(selected)} работает</p><button class="big on" id="stop"><span>ЛИНИЯ РАБОТАЕТ</span></button></div>`;
+    v.innerHTML=`<div class="card run"><p class="state"><i class="pulse"></i>${bi(selected+' работает',kl(selected)+' 가동중')}</p><button class="big on" id="stop">${bi('ЛИНИЯ РАБОТАЕТ','흐름선 가동중')}</button></div>`;
     $('stop').onclick=()=>{picking=true;render()};
     return;
   }
   v.innerHTML=`<div class="card down">
-    <p class="state"><i class="pulse red"></i>${esc(selected)} стоит с ${fmtT(st.start)}</p>
+    <p class="state"><i class="pulse red"></i>${bi(selected+' стоит с '+fmtT(st.start),kl(selected)+' '+fmtT(st.start)+'부터 정지중')}</p>
     <div class="timer" id="timer">${mmss((Date.now()-st.start)/1000)}</div>
-    <div class="cause"><b>${esc(st.cause)}</b></div>
-    <input type="text" id="comment" placeholder="Комментарий (необязательно)" value="${esc(st.comment||'')}">
-    <p class="sub" style="margin-top:14px">Забыли нажать вовремя? Сдвинуть начало раньше:</p>
-    <div class="chips"><button data-s="5">−5 мин</button><button data-s="10">−10 мин</button><button data-s="30">−30 мин</button></div>
-    <button class="big go" id="go"><span>ЛИНИЯ ОСТАНОВИЛАСЬ</span></button>
-    <button class="link" id="chg">Изменить причину</button>
-    <button class="link" id="mis">Нажали по ошибке — отменить</button>
+    <div class="cause"><b>${bi(st.cause,kc(st.cause))}</b></div>
+    <div class="sub">${bi('Комментарий (необязательно)','참고사항 (쓰지 않아도 됨)')}</div>
+    <input type="text" id="comment" value="${esc(st.comment||'')}">
+    <div class="sub" style="margin-top:14px">${bi('Забыли нажать вовремя? Сдвинуть начало раньше:','제때에 누르지 못했습니까? 시작 시간을 앞당기십시오:')}</div>
+    <div class="chips"><button data-s="5">${bi('−5 мин','−5분')}</button><button data-s="10">${bi('−10 мин','−10분')}</button><button data-s="30">${bi('−30 мин','−30분')}</button></div>
+    <button class="big go" id="go">${bi('ЛИНИЯ ОСТАНОВИЛАСЬ','흐름선 정지')}</button>
+    <button class="link" id="chg">${bi('Изменить причину','원인 바꾸기')}</button>
+    <button class="link" id="mis">${bi('Нажали по ошибке — отменить','잘못 눌렀음 — 취소하기')}</button>
   </div>`;
   v.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>shiftStart(+b.dataset.s));
   $('comment').oninput=e=>{st.comment=e.target.value;save()};
@@ -256,26 +271,33 @@ function drawView(){
 function drawLog(){
   const today=dayKey(Date.now());
   const rows=journal.filter(r=>r.line===selected&&dayKey(r.endMs)===today).sort((a,b)=>b.endMs-a.endMs);
-  $('todayTitle').textContent=`${selected}, сегодня`;
+  $('todayTitle').innerHTML=bi(`${selected}, сегодня`,`${kl(selected)}, 오늘`);
   $('sCount').textContent=rows.length;
   $('sMin').textContent=minutes(rows.reduce((s,r)=>s+r.seconds,0));
-  $('log').innerHTML=rows.length?`<tr><th>Время</th><th>Причина</th><th class="r">Мин</th></tr>`+rows.slice(0,10).map(r=>`<tr><td>${fmtT(r.startMs)}–${fmtT(r.endMs)}</td><td>${esc(r.cause)}${r.comment?`<br><span class="sub">${esc(r.comment)}</span>`:''}</td><td class="r">${minutes(r.seconds)}</td></tr>`).join(''):'<tr><td class="sub" colspan="3">Пока без простоев</td></tr>';
+  $('log').innerHTML=rows.length?`<tr><th>${bi('Время','시간')}</th><th>${bi('Причина','원인')}</th><th class="r">${bi('Мин','분')}</th></tr>`+rows.slice(0,10).map(r=>`<tr><td>${fmtT(r.startMs)}–${fmtT(r.endMs)}</td><td>${bi(r.cause,kc(r.cause))}${r.comment?`<br><span class="sub">${esc(r.comment)}</span>`:''}</td><td class="r">${minutes(r.seconds)}</td></tr>`).join(''):`<tr><td class="sub" colspan="3">${bi('Пока без простоев','아직 정지한 적 없음')}</td></tr>`;
 }
 function drawLogToggle(){
   $('log').classList.toggle('hide',!logOpen);
-  $('toggleLog').textContent=logOpen?'Скрыть список простоев':'Показать список простоев';
+  $('toggleLog').innerHTML=logOpen?bi('Скрыть список простоев','정지 목록 숨기기'):bi('Показать список простоев','정지 목록 보기');
 }
-function drawQueue(){$('queue').textContent=CONFIG.endpoint?(queue.length?`Не отправлено: ${queue.length}`:'Всё отправлено'):''}
+function drawQueue(){$('queue').innerHTML=CONFIG.endpoint?(queue.length?bi(`Не отправлено: ${queue.length}`,`전송되지 못한 것: ${queue.length}`):bi('Всё отправлено','모두 전송되였음')):''}
 function render(){drawLines();drawView();drawLog();drawLogToggle();drawQueue()}
 
 $('toggleLog').onclick=()=>{logOpen=!logOpen;drawLogToggle()};
 $('reset').onclick=()=>{
   const today=dayKey(Date.now());
   const n=journal.filter(r=>r.line===selected&&dayKey(r.endMs)===today).length;
-  if(!confirm(`Сбросить статистику «${selected}» за сегодня (${n} шт.)? Записи в таблице останутся, очистится только счётчик на этом телефоне.`)) return;
+  if(!confirm(`Сбросить статистику «${selected}» за сегодня (${n} шт.)? Записи в таблице останутся, очистится только счётчик на этом телефоне.\n\n오늘 ${kl(selected)}의 통계를 지우겠습니까? (${n}건) 표에 있는 기록은 그대로 남고 이 전화기의 계수만 지워집니다.`)) return;
   journal=journal.filter(r=>!(r.line===selected&&dayKey(r.endMs)===today));
-  save(); render(); toast('Статистика сброшена');
+  save(); render(); toast('Статистика сброшена','통계를 지웠습니다');
 };
+
+/* ---------- статичные подписи ---------- */
+$('title').innerHTML=bi('Простои ЦРП','포장직장 정지');
+$('lblCount').innerHTML=bi('простоев','정지 회수');
+$('lblMin').innerHTML=bi('минут','정지 시간(분)');
+$('reset').innerHTML=bi('Сбросить статистику','통계 지우기');
+$('csv').innerHTML=bi('Скачать журнал (CSV)','기록 내려받기 (CSV)');
 
 /* ---------- таймеры ---------- */
 setInterval(()=>{
