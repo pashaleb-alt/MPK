@@ -317,6 +317,10 @@ $('csv').onclick=()=>{
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='простои.csv';a.click();
 };
 
+/* офлайн-запуск: копия страницы хранится в телефоне (sw.js), без связи открывается из неё */
+if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+/* если что-то сломается, ошибка видна сверху, а не молча */
+window.addEventListener('error',e=>{const d=$('demo');d.textContent='Ошибка на странице: '+(e.message||'')+' — сообщите Павлу.';d.classList.remove('hide')});
 if(!CONFIG.endpoint) $('demo').classList.remove('hide');
 $('clock').textContent=fmtT(Date.now());
 render(); flush();
