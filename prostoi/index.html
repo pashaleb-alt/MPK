@@ -182,20 +182,24 @@ function post(rec){
   put('start',fmtDT(rec.startMs)); put('end',rec.endMs?fmtDT(rec.endMs):'');
   put('seconds',rec.seconds!=null?String(rec.seconds):''); put('shift',sh.shift); put('shiftDate',sh.date); put('comment',rec.comment||'');
   if(!CONFIG.endpoint) return;
-  queue.push(p.toString()); save(); flush();
+  queue.push(p.toString()); save(); drawQueue(); flush();
 }
 let flushing=false;
 async function flush(){
   if(flushing||!CONFIG.endpoint) return; flushing=true;
   while(queue.length){
     try{
-      await fetch(CONFIG.endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:queue[0]});
+      const ac=new AbortController(), to=setTimeout(()=>ac.abort(),15000);   // зависший запрос не должен блокировать очередь
+      try{await fetch(CONFIG.endpoint,{method:'POST',mode:'no-cors',signal:ac.signal,headers:{'Content-Type':'application/x-www-form-urlencoded'},body:queue[0]})}finally{clearTimeout(to)}
       queue.shift(); save();
     }catch(e){break}
   }
   flushing=false; drawQueue();
 }
 window.addEventListener('online',flush);
+window.addEventListener('focus',flush);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)flush()});
+setInterval(()=>{if(queue.length)flush()},20000);   // без связи пробуем снова каждые 20 с, пока записи не уйдут
 
 /* ---------- действия ---------- */
 function startDown(cause){
