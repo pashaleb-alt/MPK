@@ -88,6 +88,8 @@ td.sub,td[colspan]{background:none;padding-left:0}
 .foot{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--mute);margin:4px 4px 0}
 .foot .link{width:auto;padding:6px 0;font-size:14px;text-decoration:underline}
 .hide{display:none!important}
+.link.reset{color:var(--stop);font-size:15px;padding-top:12px}
+#toggleLog{background:var(--soft);border-radius:14px;min-height:48px;color:var(--ink);font-weight:600;padding:12px;margin-bottom:6px}
 @media (prefers-reduced-motion:reduce){*,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -105,7 +107,9 @@ td.sub,td[colspan]{background:none;padding-left:0}
   <div class="card today">
     <h2 id="todayTitle">Сегодня</h2>
     <div class="sum"><div><b id="sCount">0</b><span>простоев</span></div><div><b id="sMin">0</b><span>минут</span></div></div>
-    <table id="log"></table>
+    <button class="link" id="toggleLog">Показать список простоев</button>
+    <table id="log" class="hide"></table>
+    <button class="link reset" id="reset">Сбросить статистику</button>
   </div>
   <div class="foot"><span id="queue"></span><button class="link" id="csv">Скачать журнал (CSV)</button></div>
 </div>
@@ -151,6 +155,7 @@ let journal = S.get('down_journal',[]);    // завершённые прост�
 let queue = S.get('down_queue',[]);        // неотправленные строки
 let selected = S.get('down_line',CONFIG.lines[0]);
 if(!CONFIG.lines.includes(selected)) selected = CONFIG.lines[0];
+let logOpen = false;                       // список простоев за сегодня раскрыт
 let picking = false;                       // открыта сетка причин
 const save = ()=>{S.set('down_state',state);S.set('down_journal',journal);S.set('down_queue',queue);S.set('down_line',selected)};
 
@@ -256,8 +261,21 @@ function drawLog(){
   $('sMin').textContent=minutes(rows.reduce((s,r)=>s+r.seconds,0));
   $('log').innerHTML=rows.length?`<tr><th>Время</th><th>Причина</th><th class="r">Мин</th></tr>`+rows.slice(0,10).map(r=>`<tr><td>${fmtT(r.startMs)}–${fmtT(r.endMs)}</td><td>${esc(r.cause)}${r.comment?`<br><span class="sub">${esc(r.comment)}</span>`:''}</td><td class="r">${minutes(r.seconds)}</td></tr>`).join(''):'<tr><td class="sub" colspan="3">Пока без простоев</td></tr>';
 }
+function drawLogToggle(){
+  $('log').classList.toggle('hide',!logOpen);
+  $('toggleLog').textContent=logOpen?'Скрыть список простоев':'Показать список простоев';
+}
 function drawQueue(){$('queue').textContent=CONFIG.endpoint?(queue.length?`Не отправлено: ${queue.length}`:'Всё отправлено'):''}
-function render(){drawLines();drawView();drawLog();drawQueue()}
+function render(){drawLines();drawView();drawLog();drawLogToggle();drawQueue()}
+
+$('toggleLog').onclick=()=>{logOpen=!logOpen;drawLogToggle()};
+$('reset').onclick=()=>{
+  const today=dayKey(Date.now());
+  const n=journal.filter(r=>r.line===selected&&dayKey(r.endMs)===today).length;
+  if(!confirm(`Сбросить статистику «${selected}» за сегодня (${n} шт.)? Записи в таблице останутся, очистится только счётчик на этом телефоне.`)) return;
+  journal=journal.filter(r=>!(r.line===selected&&dayKey(r.endMs)===today));
+  save(); render(); toast('Статистика сброшена');
+};
 
 /* ---------- таймеры ---------- */
 setInterval(()=>{
