@@ -59,6 +59,11 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
   .dashnav a svg{width:19px;height:19px}
   .wrap{padding-top:116px}
 }
+/* восемь вкладок в один ряд на компьютере (Павел, 07.11.2026): панель шире колонки контента, на окнах уже 1280 px — без значков, на узких — мельче */
+@media (min-width:641px){html .dashnav{--d:calc(max(8px,(100vw - 1080px)/2 + 20px) - max(8px,(100vw - 1280px)/2 + 20px));padding-left:max(8px,calc((100% - 1280px)/2 + 20px));padding-right:max(8px,calc((100% - 1280px)/2 + 20px))} html .dashnav .plrow{padding-left:var(--d)} html .dashnav .stcat{padding-left:calc(2px + var(--d))}}
+@media (min-width:1140px){html .dashnav .stcat{padding-left:calc((100vw - 1080px)/2 + 18px + var(--d))}}
+@media (min-width:641px) and (max-width:1279px){html .dashnav a svg{display:none}}
+@media (min-width:641px) and (max-width:1020px){html .dashnav a,html .dashnav a:first-child,html .dashnav a:last-child{font-size:11.5px;padding:7px 5px}}
 .sf{display:block} .sf>*+*{margin-top:8px} .sf .hr{grid-template-columns:1fr auto} .sf .tw{overflow-x:auto} .sf table{width:100%;border-collapse:collapse;font-size:13px} .sf th,.sf td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line-soft)} .sf th{color:var(--ink-2);font-weight:600;font-size:12px} .sf td.n{text-align:right;font-variant-numeric:tabular-nums}
 .todo{font-size:13px;color:var(--ink-2);background:var(--ground);border-radius:10px;padding:10px 12px;line-height:1.5} .todo b{color:var(--ink)}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px}
@@ -381,7 +386,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=87bfcdb6c5"></script>
+<script src="/MPK/director-data.js?v=bfef8c5206"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
