@@ -386,7 +386,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=52420b25a0"></script>
+<script src="/MPK/director-data.js?v=4e03bed317"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -944,7 +944,7 @@ function renderEquip(f,t,lab){
     +tile("Время работы",eqHM(A.fact),`из ${eqHM(A.plan)} · остановки −${fmt(A.stops,0)} мин`)
     +tile("Остановки",fmt(A.n)+" шт.",`${fmt(A.stops,0)} мин · в среднем ${fmt(A.n?A.stops/A.n:0,1)} мин`)
     +tile(one?"Начало работы":"Начало работы, в среднем",A.s!=null?eqClock(A.s):"—",one?(r0.sb==="pusk"?"пуск после «Окончания работы»":"по первой записи за сутки"):`дней ${A.days}`)
-    +tile(one?"Окончание работы":"Окончание работы, в среднем",A.e!=null?eqClock(A.e):"не зафиксировано",one?(A.e!=null?(A.e>=1440?"на след. сутки · ":"")+"начало «Окончания работы»":"нет записи «Окончание работы»"):(A.e!=null&&A.e>=1440?"после полуночи · ":"")+"по дням с записью");
+    +tile(one?"Окончание работы":"Окончание работы, в среднем",A.e!=null?eqClock(A.e):"не зафиксировано",one?(A.e!=null?(A.e>=1440?"на след. сутки · ":"")+(r0.eb==="ruchn"?"внесено вручную (кнопку не нажали)":"начало «Окончания работы»"):"нет записи «Окончание работы»"):(A.e!=null&&A.e>=1440?"после полуночи · ":"")+"по дням с записью");
   const tot=A.why.reduce((a,[c,w])=>a+w[0],0)||1, mx=Math.max(...A.why.map(([c,w])=>w[0]),1);
   const raz=n=>n%10===1&&n%100!==11?n+" раз":[2,3,4].includes(n%10)&&![12,13,14].includes(n%100)?n+" раза":n+" раз";
   const esc=x=>String(x).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch]);
