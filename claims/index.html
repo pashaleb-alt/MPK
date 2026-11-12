@@ -386,7 +386,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=03a815c617"></script>
+<script src="/MPK/director-data.js?v=2f60b03c12"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -499,8 +499,8 @@ function bars(el,xl,ax,valueOf,stf,opts={}){
 const prevRange=(f,t)=>{if(mode==="year") return null; const n=(utc(t)-utc(f))/86400000+1; if(mode==="month"){const m=moSel-1;return m>=1?[`2026-${String(m).padStart(2,"0")}-01`,lastOf(2026,m),MS[m-1]]:null} return [addDays(f,-n),addDays(f,-1),"пред. период"]};
 
 // ---------- полутуши ----------
-const stPt=v=>"none";   // высота — доля туш без несоответствий («туша целиком»), шкалы у неё нет
-const stPtW=v=>v==null?"none":v>=97?"good":v>=95?"warn":"crit";   // цвет — по оценке с весами несоответствий, как раньше: ≥97 %, 95–97 %, ниже 95 % (Павел, 21.10.2026: «верни цветовую кодировку»)
+const stPt=v=>"none";   // (не используется с 12.11.2026: цвет и высота — по одному числу, stPtW)
+const stPtW=v=>v==null?"none":v>=97?"good":v>=95?"warn":"crit";   // цвет — по показанному числу (доля туш без несоответствий; 12.11.2026), прежде по оценке с весами: ≥97 %, 95–97 %, ниже 95 % (Павел, 21.10.2026: «верни цветовую кодировку»)
 function ptW(f,t){const ds=Object.keys(DATA.pt).filter(d=>inR(d,f,t));if(!ds.length)return null;const n=ds.reduce((a,d)=>a+DATA.pt[d].n,0);return ds.reduce((a,d)=>a+(DATA.pt[d].score_w!=null?DATA.pt[d].score_w:DATA.pt[d].score)*DATA.pt[d].n,0)/n}
 function ptSr(f,t){const ds=Object.keys(DATA.pt).filter(d=>inR(d,f,t));if(!ds.length)return null;const n=ds.reduce((a,d)=>a+DATA.pt[d].n,0),sr=ds.reduce((a,d)=>a+(DATA.pt[d].serious||0),0);return {n,sr,rate:n?sr/n*100:null}}
 // режим «день», данных за выбранный день нет → берём последний день с данными до него; возвращает [f,t,подпись] или null
@@ -513,11 +513,11 @@ function renderPt(f,t,lab){
   const _sl=(mode==="day"&&DATA.pt[f]&&DATA.pt[f].slaughter)?` · убой ${DATA.pt[f].slaughter}`:"";
   document.getElementById("pt-note").textContent=lab+_sl+idleNote();
   const ax=axis(f,t); document.getElementById("pt-ct").textContent=ax.kind==="day"?"Уровень качества по дням убоя, %":"Уровень качества по месяцам, %";
-  bars(document.getElementById("pt-chart"),document.getElementById("pt-xl"),ax,it=>{const a=ptAgg(it.f,it.t);return a?a.score:null},stPt,{dec:0,line:true,stIt:it=>stPtW(ptW(it.f,it.t))});
+  bars(document.getElementById("pt-chart"),document.getElementById("pt-xl"),ax,it=>{const a=ptAgg(it.f,it.t);return a?a.score:null},stPtW,{dec:0,line:true});   // цвет — по тому же числу, что показано (доля туш без несоответствий), шкала 97 / 95 % (Павел, 12.11.2026: «54 % зелёным, а должно быть красным»)
   if(!A){T.innerHTML='<div class="empty">Проверок за этот период нет.</div>';L.innerHTML="";return}
   const defs={};A.ds.forEach(d=>Object.entries(DATA.pt[d].defects).forEach(([k,v])=>{const o=defs[k]||(defs[k]={w:v.w,n:0});o.n+=v.n}));
   const top=Object.entries(defs).sort((a,b)=>b[1].n-a[1].n)[0]; const srN=A.ds.reduce((a,d)=>a+(DATA.pt[d].serious||0),0); const pr=prevRange(f,t); const P=pr&&ptAgg(pr[0],pr[1]);
-  T.innerHTML=tile("Уровень качества",fmt(A.score,1)+" %",P?`${pr[2]}: ${fmt(P.score,1)} %`:"",stPtW(ptW(f,t)))+tile("Туш проверено",fmt(A.n),`${A.ds.length} дн. · в среднем ${fmt(A.n/A.ds.length)} в день`)+tile("С критическим несоответствием",fmt(srN/A.n*100,1)+" %",`${fmt(srN)} туш из ${fmt(A.n)}`)
+  T.innerHTML=tile("Уровень качества",fmt(A.score,1)+" %",P?`${pr[2]}: ${fmt(P.score,1)} %`:"",stPtW(A.score))+tile("Туш проверено",fmt(A.n),`${A.ds.length} дн. · в среднем ${fmt(A.n/A.ds.length)} в день`)+tile("С критическим несоответствием",fmt(srN/A.n*100,1)+" %",`${fmt(srN)} туш из ${fmt(A.n)}`)
     +`<div class="tile"><div class="l">Главное несоответствие</div><div class="v" style="font-size:18px;line-height:1.2">${top?top[0]:"—"}</div><div class="s">${top?`у ${fmt(top[1].n/A.n*100,0)} % туш`:""}</div></div>`;
   const dl=Object.entries(defs).filter(([k,v])=>v.n).sort((a,b)=>b[1].n-a[1].n); const dmx=dl[0]?dl[0][1].n:1;
   L.innerHTML=`<h3>Несоответствия<small>доля туш с несоответствием</small></h3>`+dl.map(([k,v])=>`<div class="hr"><span class="t" style="white-space:normal">${k}</span><span class="n"><b>${fmt(v.n/A.n*100,1)} %</b> · ${v.n} туш</span><div class="hb"><i class="o" style="width:${v.n/dmx*100}%;background:${v.w>=0.1?"var(--crit)":"#1e88ff"}"></i></div></div>`).join("");
