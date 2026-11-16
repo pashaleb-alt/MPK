@@ -391,7 +391,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=4a50bcb88e"></script>
+<script src="/MPK/director-data.js?v=089aa6d436"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -903,7 +903,7 @@ function enAgg(f,t){
 // стоки до/после 20:00; расход на голову убоя (убой — из отчёта убоя ЦУиППЖ)
 const WC=[["wash","Автомойка (8 корпус)","#2a9d8f"],["b2","Котельная №2","#e9a23b"],["fov","Канализация железной воды (ФОВ)","#8e6bbf"],["ctf","ЦТФ","#d9626b"],["am","Аммиачная компрессорная","#5aa469"],["oth","Прочее (9 корпус, КПП)","#9aa3b2"]];
 const WPROD=["prod","Производственные расходы (остаток)","var(--accent)"];
-function wSplit(r){ const c=r.wc||{}, v=k=>c[k]>0?c[k]:0, o={wash:v("wash"),b2:v("b2"),fov:v("fov"),ctf:v("ctf"),am:v("am"),oth:v("k9")+v("kpp")}, named=Object.values(o).reduce((a,b)=>a+b,0); o.prod=Math.max(0,r.st-named); return o}
+function wSplit(r){ const c=r.wc||{}, v=k=>c[k]>0?c[k]:0, o={wash:v("wash"),b2:v("b2"),fov:v("fov"),ctf:v("ctf"),am:v("am"),oth:v("k9")+v("kpp")}, named=Object.values(o).reduce((a,b)=>a+b,0); if(named>r.st){const k=r.st/named; for(const x in o) o[x]*=k; o.prod=0} else o.prod=r.st-named; return o}
 function wAgg(f,t){
   const rs=(DATA.energy||[]).filter(r=>inR(r.d,f,t)&&r.st>0); if(!rs.length) return null;
   const sp=rs.filter(r=>r.std!=null&&r.stn!=null), sum=(a,k)=>a.reduce((x,r)=>x+(r[k]||0),0), kd=rs.filter(r=>r.kill>0);
@@ -912,14 +912,15 @@ function wAgg(f,t){
 }
 function renderWater(f,t,lab){
   const E=DATA.energy||[], ax=axis(f,t), dm=ax.kind==="day"; let W=wAgg(f,t), fbn="";
-  if(!W){const fb=lastDayBefore(E.filter(r=>r.st>0).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=wAgg(f,t); fbn=" · за выбранный день показаний стоков нет, показаны последние данные "+dd(f)}}
-  document.getElementById("en-wct").textContent="Общий сток по потребителям"+(dm?" · по дням, м³":" · по месяцам, м³")+fbn;
+  if(!W){const fb=lastDayBefore(E.filter(r=>r.std!=null).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=wAgg(f,t); fbn=" · за выбранный день показаний стоков нет, показаны последние данные "+dd(f)}}
+  document.getElementById("en-wct").textContent="Вода: общее потребление по производственным стокам"+(dm?" · по дням, м³":" · по месяцам, м³")+fbn;
   const WT=document.getElementById("en-wt"), WC_=document.getElementById("en-wc"), WN=document.getElementById("en-wn"), LG=document.getElementById("en-wlg");
   const ALL=[...WC,WPROD];
-  LG.innerHTML=[WPROD,...WC.slice().reverse()].map(([k,n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("");
+  LG.innerHTML='<span><i style="background:var(--accent)"></i>до 20:00 (08:00–20:00)</span><span><i style="background:var(--ink-3)"></i>после 20:00 (20:00–08:00 следующего дня)</span>';
   const all=ax.items.map(it=>wAgg(it.f,it.t)).filter(Boolean), mx=Math.max(1,...all.map(a=>a.st));
   bars(document.getElementById("en-wch"),document.getElementById("en-wxl"),ax,it=>{const a=wAgg(it.f,it.t);return a?a.st:null},null,{dec:0,seg:(it,v)=>{const a=wAgg(it.f,it.t); if(!a) return "";
-    return [...WC.slice().reverse(),WPROD].map(([k,n,c])=>a.cons[k]>0?`<div class="seg" title="${n}: ${fmt(a.cons[k])} м³" style="height:${a.cons[k]/mx*100}%;background:${c}"></div>`:"").join("")}});
+    if(a.spDays===a.days) return `<div class="seg" style="height:${Math.max(1,a.stn/mx*100)}%;background:var(--ink-3)"></div><div class="seg" style="height:${Math.max(1,a.std/mx*100)}%;background:var(--accent)"></div>`;
+    return `<div class="seg" style="height:${Math.max(2,v/mx*100)}%;background:var(--line)"></div>`}});
   if(!W){WT.innerHTML='<div class="empty">Показаний стоков за этот период в отчёте нет.</div>';WC_.innerHTML="";WN.innerHTML="";return}
   const pr=prevRange(f,t), P=pr&&wAgg(pr[0],pr[1]), sb=(k,u)=>P&&P[k]!=null?`${pr[2]}: ${fmt(P[k],k==="st"?0:2)} ${u}`:"";
   const sp=W.spDays>0;
@@ -927,9 +928,14 @@ function renderWater(f,t,lab){
     +tile("До 20:00",sp?fmt(W.std)+" м³":"—",sp?`${fmt(W.std/(W.std+W.stn)*100,0)} % от суммы за дни с разбивкой`:"показание 20:00 в отчёте не внесено")
     +tile("После 20:00",sp?fmt(W.stn)+" м³":"—",sp?`${fmt(W.stn/(W.std+W.stn)*100,0)} % · дней с разбивкой ${W.spDays} из ${W.days}`:"")
     +tile("На голову убоя",W.head!=null?fmt(W.head,2)+" м³":"—",W.head!=null?`${sp&&W.headD!=null?"до 20:00 "+fmt(W.headD,2)+" · после "+fmt(W.headN,2)+" · ":""}${sb("head","м³")}`:"нет убоя за период");
-  const mc=Math.max(1,...ALL.map(([k])=>W.cons[k]));
-  WC_.innerHTML=`<h3>Из чего состоит общий сток<small>за период, м³ · доля</small></h3>`
-    +[WPROD,...WC].map(([k,n,c])=>`<div class="hr"><span class="t"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${c};margin-right:7px"></i>${n}</span><span class="n"><b>${fmt(W.cons[k],W.cons[k]>0&&W.cons[k]<10?1:0)}</b> · ${fmt(W.cons[k]/W.st*100,0)} %</span><div class="hb"><i class="o" style="width:${W.cons[k]/mc*100}%;background:${c}"></i></div></div>`).join("")
+  const lst=ALL.map(([k,n,c])=>({k,n,c,v:W.cons[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
+  // доли с одним знаком: методом наибольших остатков, чтобы сумма была ровно 100,0 %
+  const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
+  raw.map((r,i)=>[r-fl[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>fl[i]++);
+  const pc=i=>(fl[i]/10).toFixed(1).replace(".",",");
+  WC_.innerHTML=`<h3>Из чего состоит общий сток<small>за период, м³ · доля от общего стока</small></h3>`
+    +lst.map((x,i)=>`<div class="hr"><span class="t"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${x.c};margin-right:7px"></i>${x.n}</span><span class="n"><b>${fmt(x.v,x.v>0&&x.v<10?1:0)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%;background:${x.c}"></i></div></div>`).join("")
+    +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого — общий сток</b></span><span class="n"><b>${fmt(W.st)}</b> · 100,0 %</span></div>`
     +`<div class="hr"><span class="t" style="color:var(--ink-3)">Справка: добыто из скважин</span><span class="n">${fmt(W.wl)}</span></div>`;
   const rows=E.filter(r=>inR(r.d,f,t)&&r.st>0).slice(-14);
   WN.innerHTML=`<h3>Стоки до и после 20:00<small>${dm?"последние дни периода":"по дням"}, м³</small></h3>`+rows.map(r=>`<div class="hr"><span class="t">${dd(r.d)}</span><span class="n">${r.std!=null?`<b>${fmt(r.std)}</b> / <b>${fmt(r.stn)}</b> · всего ${fmt(r.st)}`:`<span style="color:var(--ink-3)">всего ${fmt(r.st)} · показание 20:00 не внесено</span>`}</span></div>`).join("")
