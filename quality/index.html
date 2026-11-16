@@ -386,6 +386,10 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="chart auto" id="en-gch"></div><div class="xl auto" id="en-gxl"></div>
     <div class="hl" id="en-gc" style="margin:14px 0"></div>
     <h3 class="ch-t" id="en-gct2" style="margin-top:14px"></h3><div class="chart auto" id="en-gch2"></div><div class="xl auto" id="en-gxl2"></div>
+    <h3 class="ch-t" style="margin-top:26px;font-size:17px">Углекислота (CO₂)</h3>
+    <div class="tiles" id="en-ot"></div>
+    <div class="chart auto" id="en-och"></div><div class="xl auto" id="en-oxl"></div>
+    <h3 class="ch-t" id="en-oct2" style="margin-top:14px"></h3><div class="chart auto" id="en-och2"></div><div class="xl auto" id="en-oxl2"></div>
     <div class="two" style="display:none"><div class="hl" id="en-st"></div><div class="hl" id="en-src"></div></div>
   </section>
 
@@ -402,7 +406,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=6a35f0f539"></script>
+<script src="/MPK/director-data.js?v=2d1dc1ed52"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -1007,6 +1011,24 @@ function renderGas(f,t,lab){
     +lst.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
     +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(tot)}</b> · 100,0 %</span></div>`;
 }
+// углекислота CO₂ (16.11.2026, Павел: «добавляй СО2»): суточный расход, кг, из таблицы «Учёт углекислоты»; разбивки по потребителям в отчёте нет; норм нет — цветовой оценки нет
+function oAgg(f,t){
+  const rs=(DATA.energy||[]).filter(r=>inR(r.d,f,t)&&r.co2>0); if(!rs.length) return null;
+  const kd=rs.filter(r=>r.kill>0), tot=rs.reduce((x,r)=>x+r.co2,0), kg=kd.reduce((x,r)=>x+r.co2,0), kk=kd.reduce((x,r)=>x+r.kill,0);
+  return {days:rs.length,co2:tot,head:kk?kg/kk:null,killT:kk};
+}
+function renderCo2(f,t,lab){
+  const E=DATA.energy||[], ax=axis(f,t); let W=oAgg(f,t);
+  if(!W){const fb=lastDayBefore(E.filter(r=>r.co2>0).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=oAgg(f,t)}}
+  const WT=document.getElementById("en-ot");
+  lineChart(document.getElementById("en-och"),document.getElementById("en-oxl"),ax,it=>{const a=oAgg(it.f,it.t);return a?a.co2:null},()=>"none",{dec:0});
+  document.getElementById("en-oct2").textContent="Потребление CO₂ на голову убоя, кг"+(ax.kind==="day"?" · по дням":" · по месяцам");
+  bars(document.getElementById("en-och2"),document.getElementById("en-oxl2"),ax,it=>{const a=oAgg(it.f,it.t);return a&&a.head!=null?a.head:null},()=>"none",{dec:2,line:true});
+  if(!W){WT.innerHTML='<div class="empty">Показаний CO₂ за этот период в отчёте нет.</div>';return}
+  WT.innerHTML=tile("Расход CO₂ на голову",W.head!=null?fmt(W.head,2)+" кг":"—","")
+    +tile("Общий расход",fmt(W.co2)+" кг",W.days>1?`в среднем ${fmt(W.co2/W.days)} кг в сутки`:"")
+    +tile("Отправлено на убой",fmt(W.killT),W.days>1?`дней ${W.days}`:"");
+}
 const EN_ONLY_WATER=true;   // 16.11.2026, Павел: «убери пока все энергоносители кроме воды» — электричество, газ и CO₂ скрыты; вернуть — поставить false
 function renderEnergy(f,t,lab){
   const T=document.getElementById("en-tiles"); let A=enAgg(f,t);
@@ -1020,7 +1042,7 @@ function renderEnergy(f,t,lab){
     document.getElementById("en-ct"+(i+1)).textContent=ttl+(dm?" · по дням":" · по месяцам");
     if(key==="st") document.getElementById("en-nt5").innerHTML=dm?`<span>Примечание: зелёный пунктир — норма ${fmt(NORM_W,1)} м³ на голову убоя.</span>`:"";
     bars(document.getElementById("en-ch"+(i+1)),document.getElementById("en-xl"+(i+1)),ax,it=>{const a=enAgg(it.f,it.t);return a&&a[key]!=null?a[key]:null},()=>"none",{dec,line:true,ref:key==="st"?()=>NORM_W:null,refTitle:"норма 0,4 м³ на голову"})});
-  renderWater(f,t,lab); renderEl(f,t,lab); renderGas(f,t,lab);
+  renderWater(f,t,lab); renderEl(f,t,lab); renderGas(f,t,lab); renderCo2(f,t,lab);
   const S=document.getElementById("en-st"),R=document.getElementById("en-src");
   if(!A){T.innerHTML='<div class="empty">Данных по энергоносителям за этот период нет.</div>';S.innerHTML="";R.innerHTML="";return}
   const pr=prevRange(f,t); const P=pr&&enAgg(pr[0],pr[1]);
