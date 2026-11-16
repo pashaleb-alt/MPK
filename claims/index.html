@@ -367,8 +367,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <h3 class="ch-t" id="en-wct" style="margin-top:6px"></h3>
     <div class="tiles" id="en-wt"></div>
     <div class="chart auto" id="en-wch"></div><div class="xl auto" id="en-wxl"></div>
-    <div class="legend" id="en-wlg"></div>
-    <div class="two" style="margin-bottom:14px"><div class="hl" id="en-wc"></div><div class="hl" id="en-wn"></div></div>
+    <div class="hl" id="en-wc" style="margin:14px 0"></div>
     <h3 class="ch-t" id="en-ct1"></h3><div class="chart auto" id="en-ch1"></div><div class="xl auto" id="en-xl1"></div>
     <h3 class="ch-t" id="en-ct2" style="margin-top:14px"></h3><div class="chart auto" id="en-ch2"></div><div class="xl auto" id="en-xl2"></div>
     <h3 class="ch-t" id="en-ct3" style="margin-top:14px"></h3><div class="chart auto" id="en-ch3"></div><div class="xl auto" id="en-xl3"></div>
@@ -391,7 +390,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=089aa6d436"></script>
+<script src="/MPK/director-data.js?v=4ec2aab5ea"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -914,14 +913,11 @@ function renderWater(f,t,lab){
   const E=DATA.energy||[], ax=axis(f,t), dm=ax.kind==="day"; let W=wAgg(f,t), fbn="";
   if(!W){const fb=lastDayBefore(E.filter(r=>r.std!=null).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=wAgg(f,t); fbn=" · за выбранный день показаний стоков нет, показаны последние данные "+dd(f)}}
   document.getElementById("en-wct").textContent="Вода: общее потребление по производственным стокам"+(dm?" · по дням, м³":" · по месяцам, м³")+fbn;
-  const WT=document.getElementById("en-wt"), WC_=document.getElementById("en-wc"), WN=document.getElementById("en-wn"), LG=document.getElementById("en-wlg");
+  const WT=document.getElementById("en-wt"), WC_=document.getElementById("en-wc");
   const ALL=[...WC,WPROD];
-  LG.innerHTML='<span><i style="background:var(--accent)"></i>до 20:00 (08:00–20:00)</span><span><i style="background:var(--ink-3)"></i>после 20:00 (20:00–08:00 следующего дня)</span>';
   const all=ax.items.map(it=>wAgg(it.f,it.t)).filter(Boolean), mx=Math.max(1,...all.map(a=>a.st));
-  bars(document.getElementById("en-wch"),document.getElementById("en-wxl"),ax,it=>{const a=wAgg(it.f,it.t);return a?a.st:null},null,{dec:0,seg:(it,v)=>{const a=wAgg(it.f,it.t); if(!a) return "";
-    if(a.spDays===a.days) return `<div class="seg" style="height:${Math.max(1,a.stn/mx*100)}%;background:var(--ink-3)"></div><div class="seg" style="height:${Math.max(1,a.std/mx*100)}%;background:var(--accent)"></div>`;
-    return `<div class="seg" style="height:${Math.max(2,v/mx*100)}%;background:var(--line)"></div>`}});
-  if(!W){WT.innerHTML='<div class="empty">Показаний стоков за этот период в отчёте нет.</div>';WC_.innerHTML="";WN.innerHTML="";return}
+  lineChart(document.getElementById("en-wch"),document.getElementById("en-wxl"),ax,it=>{const a=wAgg(it.f,it.t);return a?a.st:null},()=>"none",{dec:0});   // (16.11.2026, Павел) график общего стока вместо вертикальной гистограммы
+  if(!W){WT.innerHTML='<div class="empty">Показаний стоков за этот период в отчёте нет.</div>';WC_.innerHTML="";return}
   const pr=prevRange(f,t), P=pr&&wAgg(pr[0],pr[1]), sb=(k,u)=>P&&P[k]!=null?`${pr[2]}: ${fmt(P[k],k==="st"?0:2)} ${u}`:"";
   const sp=W.spDays>0;
   WT.innerHTML=tile("Общий сток",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки · дней ${W.days}`:(sb("st","м³")||""))
@@ -934,12 +930,9 @@ function renderWater(f,t,lab){
   raw.map((r,i)=>[r-fl[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>fl[i]++);
   const pc=i=>(fl[i]/10).toFixed(1).replace(".",",");
   WC_.innerHTML=`<h3>Из чего состоит общий сток<small>за период, м³ · доля от общего стока</small></h3>`
-    +lst.map((x,i)=>`<div class="hr"><span class="t"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${x.c};margin-right:7px"></i>${x.n}</span><span class="n"><b>${fmt(x.v,x.v>0&&x.v<10?1:0)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%;background:${x.c}"></i></div></div>`).join("")
+    +lst.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v,x.v>0&&x.v<10?1:0)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
     +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого — общий сток</b></span><span class="n"><b>${fmt(W.st)}</b> · 100,0 %</span></div>`
     +`<div class="hr"><span class="t" style="color:var(--ink-3)">Справка: добыто из скважин</span><span class="n">${fmt(W.wl)}</span></div>`;
-  const rows=E.filter(r=>inR(r.d,f,t)&&r.st>0).slice(-14);
-  WN.innerHTML=`<h3>Стоки до и после 20:00<small>${dm?"последние дни периода":"по дням"}, м³</small></h3>`+rows.map(r=>`<div class="hr"><span class="t">${dd(r.d)}</span><span class="n">${r.std!=null?`<b>${fmt(r.std)}</b> / <b>${fmt(r.stn)}</b> · всего ${fmt(r.st)}`:`<span style="color:var(--ink-3)">всего ${fmt(r.st)} · показание 20:00 не внесено</span>`}</span></div>`).join("")
-    +`<div class="empty" style="margin-top:8px">Формат: до 20:00 / после 20:00. «Всего» — суточный расход по счётчику производственных стоков.</div>`;
 }
 const EN_ONLY_WATER=true;   // 16.11.2026, Павел: «убери пока все энергоносители кроме воды» — электричество, газ и CO₂ скрыты; вернуть — поставить false
 function renderEnergy(f,t,lab){
