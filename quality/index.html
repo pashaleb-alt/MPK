@@ -390,7 +390,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=80dfb0f17e"></script>
+<script src="/MPK/director-data.js?v=4451e311a6"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -916,7 +916,7 @@ function wAgg(f,t){
 function renderWater(f,t,lab){
   const E=DATA.energy||[], ax=axis(f,t), dm=ax.kind==="day"; let W=wAgg(f,t), fbn="";
   if(!W){const fb=lastDayBefore(E.filter(r=>r.std!=null).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=wAgg(f,t); fbn=" · данные на "+dd(f)}}
-  document.getElementById("en-wct").textContent="Вода: общее потребление по производственным стокам"+(dm?" · по дням, м³":" · по месяцам, м³")+fbn;
+  document.getElementById("en-wct").style.display="none";   // (16.11.2026, Павел) заголовок-примечание над графиком убран
   const WT=document.getElementById("en-wt"), WC_=document.getElementById("en-wc");
   const ALL=[...WC,WPROD];
   const all=ax.items.map(it=>wAgg(it.f,it.t)).filter(Boolean), mx=Math.max(1,...all.map(a=>a.st));
@@ -933,9 +933,9 @@ function renderWater(f,t,lab){
   const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
   raw.map((r,i)=>[r-fl[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>fl[i]++);
   const pc=i=>(fl[i]/10).toFixed(1).replace(".",",");
-  WC_.innerHTML=`<h3>Из чего состоит общий сток<small>за период, м³ · доля от общего стока</small></h3>`
+  WC_.innerHTML=`<h3>Расход воды по потребителям<small>за период, м³ · доля</small></h3>`
     +lst.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v,x.v>0&&x.v<10?1:0)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
-    +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого — общий сток</b></span><span class="n"><b>${fmt(W.st)}</b> · 100,0 %</span></div>`
+    +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(W.st)}</b> · 100,0 %</span></div>`
     +`<div class="hr"><span class="t" style="color:var(--ink-3)">Справка: добыто из скважин</span><span class="n">${fmt(W.wl)}</span></div>`;
 }
 const EN_ONLY_WATER=true;   // 16.11.2026, Павел: «убери пока все энергоносители кроме воды» — электричество, газ и CO₂ скрыты; вернуть — поставить false
