@@ -397,7 +397,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=dd445b3211"></script>
+<script src="/MPK/director-data.js?v=af2c80aa85"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="equipment";
@@ -948,12 +948,12 @@ function renderWater(f,t,lab){
     +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(W.st)}</b> · 100,0 %</span></div>`;
 }
 // электроэнергия (16.11.2026, Павел: «по примеру отчёта по воде»): расход на голову убоя, общий расход, по потребителям (узлы отчёта диспетчерской), график на голову; норм нет — цветовой оценки нет
-const EL_NODES=[["gpk","Производственный корпус (1 корпус)"],["ahu","Аммиачная компрессорная (3 корпус)"],["frk","Фреоновая компрессорная (25 корпус)"],["ctf","ЦТФ (2 корпус)"]];   // 16.11.2026, Павел: ГПК = производственный корпус, АХУ = аммиачная компрессорная, «Фреон» и «25 корпус» отчёта = фреоновая компрессорная (25 корпус)
+const EL_NODES=[["gpk","Производственный корпус (1 корпус)"],["ahu","Аммиачная компрессорная (3 корпус)"],["frk","Фреоновая компрессорная (25 корпус)"],["ctf","ЦТФ (2 корпус)"],["kt2","Котельная (2 корпус)"],["kt9","Котельная (9 корпус)"],["vzu","Скважины (ВЗУ)"]];   // 16.11.2026, Павел: ГПК = производственный корпус, АХУ = аммиачная компрессорная, «Фреон» и «25 корпус» отчёта = фреоновая компрессорная (25 корпус)
 function eAgg(f,t){
   const rs=(DATA.energy||[]).filter(r=>inR(r.d,f,t)&&r.el>0); if(!rs.length) return null;
   const sum=(a,k)=>a.reduce((x,r)=>x+(r[k]||0),0), kd=rs.filter(r=>r.kill>0), n={}; EL_NODES.forEach(([k])=>n[k]=sum(rs,k)); n.frk=sum(rs,"fr")+sum(rs,"k25");
-  const mt={gpk:{},ahu:{},frk:{},ctf:{}}, add=(o,arr)=>(arr||[]).forEach(([a,v])=>o[a]=(o[a]||0)+v);
-  rs.forEach(r=>{const m=r.mt||{}; add(mt.gpk,m.gpk); add(mt.ahu,m.ahu); add(mt.frk,m.fr); add(mt.frk,m.k25); add(mt.ctf,m.ctf)});
+  const mt={gpk:{},ahu:{},frk:{},ctf:{},kt2:{},kt9:{},vzu:{}}, add=(o,arr)=>(arr||[]).forEach(([a,v])=>o[a]=(o[a]||0)+v);
+  rs.forEach(r=>{const m=r.mt||{}; add(mt.gpk,m.gpk); add(mt.ahu,m.ahu); add(mt.frk,m.fr); add(mt.frk,m.k25); add(mt.ctf,m.ctf); add(mt.kt2,m.kt2); add(mt.kt9,m.kt9); add(mt.vzu,m.vzu)});
   return {days:rs.length,el:sum(rs,"el"),nodes:n,mt,head:kd.length?sum(kd,"el")/sum(kd,"kill"):null,killT:sum(kd,"kill")};
 }
 function renderEl(f,t,lab){
