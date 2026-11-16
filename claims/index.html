@@ -397,7 +397,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=dd0cde05cb"></script>
+<script src="/MPK/director-data.js?v=dddd075dc3"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -958,20 +958,20 @@ function renderEl(f,t,lab){
   const E=DATA.energy||[], ax=axis(f,t); let W=eAgg(f,t);
   if(!W){const fb=lastDayBefore(E.filter(r=>r.el>0).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=eAgg(f,t)}}
   const WT=document.getElementById("en-et"), WC_=document.getElementById("en-ec");
-  lineChart(document.getElementById("en-ech"),document.getElementById("en-exl"),ax,it=>{const a=eAgg(it.f,it.t);return a?a.el:null},()=>"none",{dec:0});
+  lineChart(document.getElementById("en-ech"),document.getElementById("en-exl"),ax,it=>{const a=eAgg(it.f,it.t);return a?a.el/1000:null},()=>"none",{dec:1});   // МВт·ч
   document.getElementById("en-ect2").textContent="Потребление электроэнергии на голову убоя, кВт·ч"+(ax.kind==="day"?" · по дням":" · по месяцам");
   bars(document.getElementById("en-ech2"),document.getElementById("en-exl2"),ax,it=>{const a=enAgg(it.f,it.t);return a&&a.el!=null?a.el:null},()=>"none",{dec:1,line:true});
   if(!W){WT.innerHTML='<div class="empty">Показаний электроэнергии за этот период в отчёте нет.</div>';WC_.innerHTML="";return}
   WT.innerHTML=tile("Расход электроэнергии на голову",W.head!=null?fmt(W.head,1)+" кВт·ч":"—","")
-    +tile("Общий расход",fmt(W.el)+" кВт·ч",W.days>1?`в среднем ${fmt(W.el/W.days)} кВт·ч в сутки`:"")
+    +tile("Общий расход",fmt(W.el/1000,2)+" МВт·ч",W.days>1?`в среднем ${fmt(W.el/W.days/1000,2)} МВт·ч в сутки`:"")
     +tile("Убито голов",fmt(W.killT),W.days>1?`дней ${W.days}`:"");
   const lst=EL_NODES.map(([k,n])=>({n,v:W.nodes[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
   const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
   raw.map((r,i)=>[r-fl[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>fl[i]++);
   const pc=i=>(fl[i]/10).toFixed(1).replace(".",",");
-  WC_.innerHTML=`<h3>Расход электроэнергии по потребителям<small>за период, кВт·ч · доля</small></h3>`
-    +lst.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
-    +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(tot)}</b> · 100,0 %</span></div>`;
+  WC_.innerHTML=`<h3>Расход электроэнергии по потребителям<small>за период, МВт·ч · доля</small></h3>`
+    +lst.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v/1000,2)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
+    +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(tot/1000,2)}</b> · 100,0 %</span></div>`;
 }
 const EN_ONLY_WATER=true;   // 16.11.2026, Павел: «убери пока все энергоносители кроме воды» — электричество, газ и CO₂ скрыты; вернуть — поставить false
 function renderEnergy(f,t,lab){
