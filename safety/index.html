@@ -397,7 +397,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">23</div><div class="s">последняя травма 23.10.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=012977d25a"></script>
+<script src="/MPK/director-data.js?v=dd445b3211"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -948,12 +948,12 @@ function renderWater(f,t,lab){
     +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(W.st)}</b> · 100,0 %</span></div>`;
 }
 // электроэнергия (16.11.2026, Павел: «по примеру отчёта по воде»): расход на голову убоя, общий расход, по потребителям (узлы отчёта диспетчерской), график на голову; норм нет — цветовой оценки нет
-const EL_NODES=[["gpk","Производственный корпус (1 корпус)"],["ahu","Аммиачная компрессорная (3 корпус)"],["frk","Фреоновая компрессорная (25 корпус)"]];   // 16.11.2026, Павел: ГПК = производственный корпус, АХУ = аммиачная компрессорная, «Фреон» и «25 корпус» отчёта = фреоновая компрессорная (25 корпус)
+const EL_NODES=[["gpk","Производственный корпус (1 корпус)"],["ahu","Аммиачная компрессорная (3 корпус)"],["frk","Фреоновая компрессорная (25 корпус)"],["ctf","ЦТФ (2 корпус)"]];   // 16.11.2026, Павел: ГПК = производственный корпус, АХУ = аммиачная компрессорная, «Фреон» и «25 корпус» отчёта = фреоновая компрессорная (25 корпус)
 function eAgg(f,t){
   const rs=(DATA.energy||[]).filter(r=>inR(r.d,f,t)&&r.el>0); if(!rs.length) return null;
   const sum=(a,k)=>a.reduce((x,r)=>x+(r[k]||0),0), kd=rs.filter(r=>r.kill>0), n={}; EL_NODES.forEach(([k])=>n[k]=sum(rs,k)); n.frk=sum(rs,"fr")+sum(rs,"k25");
-  const mt={gpk:{},ahu:{},frk:{}}, add=(o,arr)=>(arr||[]).forEach(([a,v])=>o[a]=(o[a]||0)+v);
-  rs.forEach(r=>{const m=r.mt||{}; add(mt.gpk,m.gpk); add(mt.ahu,m.ahu); add(mt.frk,m.fr); add(mt.frk,m.k25)});
+  const mt={gpk:{},ahu:{},frk:{},ctf:{}}, add=(o,arr)=>(arr||[]).forEach(([a,v])=>o[a]=(o[a]||0)+v);
+  rs.forEach(r=>{const m=r.mt||{}; add(mt.gpk,m.gpk); add(mt.ahu,m.ahu); add(mt.frk,m.fr); add(mt.frk,m.k25); add(mt.ctf,m.ctf)});
   return {days:rs.length,el:sum(rs,"el"),nodes:n,mt,head:kd.length?sum(kd,"el")/sum(kd,"kill"):null,killT:sum(kd,"kill")};
 }
 function renderEl(f,t,lab){
@@ -973,10 +973,10 @@ function renderEl(f,t,lab){
   const pc=i=>(fl[i]/10).toFixed(1).replace(".",",");
   window.ELOPEN=window.ELOPEN||{};
   const pcts=vals=>{const s=vals.reduce((x,y)=>x+y,0)||1, r=vals.map(v=>v/s*1000), f=r.map(Math.floor); let l=1000-f.reduce((x,y)=>x+y,0); r.map((v,i)=>[v-f[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,l).forEach(([,i])=>f[i]++); return f.map(v=>(v/10).toFixed(1).replace(".",","))};
-  const detail=k=>{const it=Object.entries(W.mt[k]||{}).sort((x,y)=>y[1]-x[1]); if(!it.length) return '<div class="empty">состав по счётчикам в отчёте не указан</div>'; const p=pcts(it.map(x=>x[1])), m=Math.max(1,it[0][1]);
+  const detail=k=>{const it=Object.entries(W.mt[k]||{}).sort((x,y)=>y[1]-x[1]); if(!it.length||!it.some(x=>x[1]>0)) return '<div class="empty">показания счётчиков за период не внесены</div>'; const p=pcts(it.map(x=>x[1])), m=Math.max(1,it[0][1]);
     return it.map(([n,v],i)=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v/1000,2)}</b> · ${p[i]} %</span><div class="hb"><i class="o" style="width:${v/m*100}%"></i></div></div>`).join("")};
   WC_.innerHTML=`<h3>Расход электроэнергии по потребителям<small>за период, МВт·ч · доля · нажмите на строку, чтобы увидеть состав по счётчикам</small></h3>`
-    +lst.map((x,i)=>`<div class="hr elr" data-c="${x.k}" role="button" tabindex="0" style="cursor:pointer;user-select:none"><span class="t">${x.n} <span class="car" style="color:var(--ink-3)">${window.ELOPEN[x.k]?"▴":"▾"}</span></span><span class="n"><b>${fmt(x.v/1000,2)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div><div class="eld"${window.ELOPEN[x.k]?"":" hidden"} style="margin:2px 0 10px 16px">${detail(x.k)}</div>`).join("")
+    +lst.map((x,i)=>`<div class="hr elr" data-c="${x.k}" role="button" tabindex="0" style="cursor:pointer;user-select:none"><span class="t">${x.n} <span class="car" style="color:var(--ink-3)">${window.ELOPEN[x.k]?"▴":"▾"}</span></span><span class="n">${x.v>0?`<b>${fmt(x.v/1000,2)}</b> · ${pc(i)} %`:'<span style="color:var(--ink-3)">показания не внесены</span>'}</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div><div class="eld"${window.ELOPEN[x.k]?"":" hidden"} style="margin:2px 0 10px 16px">${detail(x.k)}</div>`).join("")
     +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(tot/1000,2)}</b> · 100,0 %</span></div>`;
   WC_.querySelectorAll(".elr").forEach(row=>{const tg=()=>{const c=row.dataset.c, box=row.nextElementSibling; window.ELOPEN[c]=!window.ELOPEN[c]; box.hidden=!window.ELOPEN[c]; row.querySelector(".car").textContent=window.ELOPEN[c]?"▴":"▾"}; row.onclick=tg; row.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg()}}});
 }
