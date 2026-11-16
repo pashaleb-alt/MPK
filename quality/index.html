@@ -381,6 +381,11 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="chart auto" id="en-ech"></div><div class="xl auto" id="en-exl"></div>
     <div class="hl" id="en-ec" style="margin:14px 0"></div>
     <h3 class="ch-t" id="en-ect2" style="margin-top:14px"></h3><div class="chart auto" id="en-ech2"></div><div class="xl auto" id="en-exl2"></div>
+    <h3 class="ch-t" style="margin-top:26px;font-size:17px">Природный газ</h3>
+    <div class="tiles" id="en-gt"></div>
+    <div class="chart auto" id="en-gch"></div><div class="xl auto" id="en-gxl"></div>
+    <div class="hl" id="en-gc" style="margin:14px 0"></div>
+    <h3 class="ch-t" id="en-gct2" style="margin-top:14px"></h3><div class="chart auto" id="en-gch2"></div><div class="xl auto" id="en-gxl2"></div>
     <div class="two" style="display:none"><div class="hl" id="en-st"></div><div class="hl" id="en-src"></div></div>
   </section>
 
@@ -397,7 +402,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=c2add08f0d"></script>
+<script src="/MPK/director-data.js?v=847b3d83a3"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -975,6 +980,33 @@ function renderEl(f,t,lab){
     +lst.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n">${x.v>0?`<b>${fmt(x.v/1000,2)}</b> · ${pc(i)} %`:'<span style="color:var(--ink-3)">показания не внесены</span>'}</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
     +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(tot/1000,2)}</b> · 100,0 %</span></div>`;
 }
+// природный газ (16.11.2026, Павел: «добавляй природный газ»): по образцу воды и электроэнергии; норм нет — цветовой оценки нет
+const GAS_NODES=[["kp4","Паровой котёл №4, 8 т/ч (2 корпус)"],["kp3","Паровой котёл №3, 4 т/ч (2 корпус)"],["kp2","Паровой котёл №2, 4 т/ч (2 корпус)"],["kv1","Водогрейный котёл №1 (2 корпус)"],["b9","Котельная (9 корпус)"],["op","Опалочные печи"]];
+function gAgg(f,t){
+  const rs=(DATA.energy||[]).filter(r=>inR(r.d,f,t)&&r.gas>0&&r.gp); if(!rs.length) return null;
+  const kd=rs.filter(r=>r.kill>0), n={}; GAS_NODES.forEach(([k])=>n[k]=rs.reduce((x,r)=>x+(r.gp[k]||0),0));
+  const tot=rs.reduce((x,r)=>x+r.gas,0), kg=kd.reduce((x,r)=>x+r.gas,0), kk=kd.reduce((x,r)=>x+r.kill,0);
+  return {days:rs.length,gas:tot,nodes:n,head:kk?kg/kk:null,killT:kk};
+}
+function renderGas(f,t,lab){
+  const E=DATA.energy||[], ax=axis(f,t); let W=gAgg(f,t);
+  if(!W){const fb=lastDayBefore(E.filter(r=>r.gas>0&&r.gp).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=gAgg(f,t)}}
+  const WT=document.getElementById("en-gt"), WC_=document.getElementById("en-gc");
+  lineChart(document.getElementById("en-gch"),document.getElementById("en-gxl"),ax,it=>{const a=gAgg(it.f,it.t);return a?a.gas:null},()=>"none",{dec:0});
+  document.getElementById("en-gct2").textContent="Потребление газа на голову убоя, м³"+(ax.kind==="day"?" · по дням":" · по месяцам");
+  bars(document.getElementById("en-gch2"),document.getElementById("en-gxl2"),ax,it=>{const a=gAgg(it.f,it.t);return a&&a.head!=null?a.head:null},()=>"none",{dec:2,line:true});
+  if(!W){WT.innerHTML='<div class="empty">Показаний газа за этот период в отчёте нет.</div>';WC_.innerHTML="";return}
+  WT.innerHTML=tile("Расход газа на голову",W.head!=null?fmt(W.head,2)+" м³":"—","")
+    +tile("Общий расход",fmt(W.gas)+" м³",W.days>1?`в среднем ${fmt(W.gas/W.days)} м³ в сутки`:"")
+    +tile("Убито голов",fmt(W.killT),W.days>1?`дней ${W.days}`:"");
+  const lst=GAS_NODES.map(([k,n])=>({k,n,v:W.nodes[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
+  const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
+  raw.map((r,i)=>[r-fl[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>fl[i]++);
+  const pc=i=>(fl[i]/10).toFixed(1).replace(".",",");
+  WC_.innerHTML=`<h3>Расход газа по потребителям<small>за период, м³ · доля</small></h3>`
+    +lst.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
+    +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(tot)}</b> · 100,0 %</span></div>`;
+}
 const EN_ONLY_WATER=true;   // 16.11.2026, Павел: «убери пока все энергоносители кроме воды» — электричество, газ и CO₂ скрыты; вернуть — поставить false
 function renderEnergy(f,t,lab){
   const T=document.getElementById("en-tiles"); let A=enAgg(f,t);
@@ -988,7 +1020,7 @@ function renderEnergy(f,t,lab){
     document.getElementById("en-ct"+(i+1)).textContent=ttl+(dm?" · по дням":" · по месяцам");
     if(key==="st") document.getElementById("en-nt5").innerHTML=dm?`<span>Примечание: зелёный пунктир — норма ${fmt(NORM_W,1)} м³ на голову убоя.</span>`:"";
     bars(document.getElementById("en-ch"+(i+1)),document.getElementById("en-xl"+(i+1)),ax,it=>{const a=enAgg(it.f,it.t);return a&&a[key]!=null?a[key]:null},()=>"none",{dec,line:true,ref:key==="st"?()=>NORM_W:null,refTitle:"норма 0,4 м³ на голову"})});
-  renderWater(f,t,lab); renderEl(f,t,lab);
+  renderWater(f,t,lab); renderEl(f,t,lab); renderGas(f,t,lab);
   const S=document.getElementById("en-st"),R=document.getElementById("en-src");
   if(!A){T.innerHTML='<div class="empty">Данных по энергоносителям за этот период нет.</div>';S.innerHTML="";R.innerHTML="";return}
   const pr=prevRange(f,t); const P=pr&&enAgg(pr[0],pr[1]);
