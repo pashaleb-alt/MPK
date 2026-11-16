@@ -390,7 +390,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=e2ea63a6d0"></script>
+<script src="/MPK/director-data.js?v=ee41e3897e"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -927,7 +927,8 @@ function renderWater(f,t,lab){
   const sp=W.spDays>0;
   WT.innerHTML=tile("Расход воды на голову",W.head!=null?fmt(W.head,2)+" м³":"—",`норма ${fmt(NORM_W,2)} м³`,W.head==null?"none":(Math.round(W.head*100)/100<=NORM_W?"good":"crit"))   // зелёный — не выше нормы, красный — выше (по показанному числу)
     +tile("Общий сток",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки`:"")
-    +tile("Убито голов",fmt(W.killT),W.days>1?`дней ${W.days}`:"");
+    +tile("Убито голов",fmt(W.killT),W.days>1?`дней ${W.days}`:"")
+    +tile("Остаток воды РЧВ","—","данные ожидаются");   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
   const lst=ALL.map(([k,n,c])=>({k,n,c,v:W.cons[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
   // доли с одним знаком: методом наибольших остатков, чтобы сумма была ровно 100,0 %
   const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
