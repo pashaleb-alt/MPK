@@ -70,7 +70,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .ph{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .ph h2{font-size:17px;font-weight:700;margin:0}
 .ph .note{font-size:12.5px;color:var(--ink-3)}
-.enp{cursor:pointer;user-select:none} .enp[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:-2px}
+.enb+.enb{margin-top:26px} .enp{cursor:pointer;user-select:none} .enp[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:-2px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .tile.click{cursor:pointer} .tile.click:hover{outline:2px solid var(--accent);outline-offset:-2px}
 .tile.big{grid-column:1/-1;text-align:center;padding:16px 14px} .tile.big .v{font-size:44px;letter-spacing:-1px} .tile.big .l{font-size:14px} .tile.big .s{font-size:13px}   /* счётчики «дней без …» (Павел, 16.09.2026) */
@@ -417,7 +417,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=b1b35f2977"></script>
+<script src="/MPK/director-data.js?v=b755120f54"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -1054,7 +1054,9 @@ function renderCo2(f,t,lab){
 }
 // верхние плашки вкладки (16.11.2026, Павел): расход на голову по каждому энергоносителю; по нажатию открывается отчёт по нему
 const EN_TOP=[["water","Вода","м³",2],["el","Электроэнергия","кВт·ч",1],["gas","Природный газ","м³",2],["co2","Углекислота (CO₂)","кг",2]];
+const EN_TILE_SWITCH=false;   // 16.11.2026, Павел: на телефоне плашки-переключатели неудобны — все отчёты идут по очереди; true вернёт верхние плашки с открытием отчёта по нажатию
 function renderEnTop(){
+  if(!EN_TILE_SWITCH){document.getElementById("en-tiles").innerHTML=""; document.querySelectorAll("#p-energy .enb").forEach(b=>b.hidden=false); return}
   const T=document.getElementById("en-tiles"), H=window.ENHEAD||{}; if(window.ENSEL===undefined) window.ENSEL=null;   // по умолчанию все отчёты закрыты — только плашки (Павел, 16.11.2026)
   T.innerHTML=EN_TOP.map(([k,n,u,d])=>{const v=H[k], st=k==="water"?(v==null?"none":(Math.round(v*100)/100<=NORM_W?"good":"crit")):"";
     return `<div class="tile enp ${st?"st-"+st:""}" data-k="${k}" role="button" tabindex="0" aria-pressed="${window.ENSEL===k}"><div class="l">${n} · расход на голову</div><div class="v">${v!=null?fmt(v,d)+" "+u:"—"}</div><div class="s">${k==="water"?"норма "+fmt(NORM_W,2)+" м³":"нажмите, чтобы открыть отчёт"}</div></div>`}).join("");
