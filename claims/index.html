@@ -415,7 +415,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=aeebfa1bbf"></script>
+<script src="/MPK/director-data.js?v=f410b343e3"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -1047,7 +1047,8 @@ function renderCo2(f,t,lab){
   if(!W){WT.innerHTML='<div class="empty">Показаний CO₂ за этот период в отчёте нет.</div>';return}
   WT.innerHTML=tile("Общий расход",fmt(W.co2)+" кг",W.days>1?`в среднем ${fmt(W.co2/W.days)} кг в сутки`:"")
     +tile("Расход CO₂ на голову",W.head!=null?fmt(W.head,2)+" кг":"—","")
-    +tile("Отправлено на убой",fmt(W.killT),W.days>1?`дней ${W.days}`:"");
+    +tile("Отправлено на убой",fmt(W.killT),W.days>1?`дней ${W.days}`:"")
+    +(rr=>rr?tile("Остаток CO₂",fmt(rr.co2e!=null?rr.co2e:rr.co2r)+" кг",`${rr.co2e!=null?"на конец":"на утро"} ${dd(rr.d).slice(0,5)}`):tile("Остаток CO₂","—","нет показаний"))(E.filter(r=>inR(r.d,f,t)&&(r.co2e!=null||r.co2r!=null)).slice(-1)[0]);
 }
 // верхние плашки вкладки (16.11.2026, Павел): расход на голову по каждому энергоносителю; по нажатию открывается отчёт по нему
 const EN_TOP=[["water","Вода","м³",2],["el","Электроэнергия","кВт·ч",1],["gas","Природный газ","м³",2],["co2","Углекислота (CO₂)","кг",2]];
