@@ -364,6 +364,11 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
   <section class="panel" id="p-energy" hidden="">
     <div class="ph"><h2>Энергоносители МПК</h2><span class="note" id="en-note"></span></div>
     <div class="tiles" id="en-tiles"></div>
+    <h3 class="ch-t" id="en-wct" style="margin-top:6px"></h3>
+    <div class="tiles" id="en-wt"></div>
+    <div class="chart auto" id="en-wch"></div><div class="xl auto" id="en-wxl"></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>до 20:00 (08:00–20:00)</span><span><i style="background:var(--ink-3)"></i>после 20:00 (20:00–08:00 следующего дня)</span></div>
+    <div class="two" style="margin-bottom:14px"><div class="hl" id="en-wc"></div><div class="hl" id="en-wn"></div></div>
     <h3 class="ch-t" id="en-ct1"></h3><div class="chart auto" id="en-ch1"></div><div class="xl auto" id="en-xl1"></div>
     <h3 class="ch-t" id="en-ct2" style="margin-top:14px"></h3><div class="chart auto" id="en-ch2"></div><div class="xl auto" id="en-xl2"></div>
     <h3 class="ch-t" id="en-ct3" style="margin-top:14px"></h3><div class="chart auto" id="en-ch3"></div><div class="xl auto" id="en-xl3"></div>
@@ -386,7 +391,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=4a0903fc76"></script>
+<script src="/MPK/director-data.js?v=fc7c58a29b"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="equipment";
@@ -894,6 +899,39 @@ function enAgg(f,t){
   const per=key=>kk(key)?sum(key)/kk(key):null, perL=key=>kk(key)?sum(key)*1000/kk(key):null;
   return {rs,days:rs.length,kill:kl,el:per("el"),gas:per("gas"),co2:per("co2"),wl:per("wl"),st:per("st"),wlT:tot("wl"),stT:tot("st"),elT:tot("el"),gasT:tot("gas"),co2T:tot("co2"),ahu:tot("ahu"),fr:tot("fr"),gpk:tot("gpk"),k25:tot("k25")};
 }
+// вода (16.11.2026, Павел): общее потребление — по производственным стокам (AQUA), стоки до/после 20:00, состав по счётчикам потребителей, расход на голову убоя (убой — из отчёта убоя ЦУиППЖ)
+const WC=[["v1","Производство (общие счётчики В1 №1 + №2)"],["wash","Автомойка (8 корпус)"],["b2","Котельная №2"],["fov","Канализация железной воды (ФОВ)"],["ctf","ЦТФ"],["am","Аммиачная компрессорная"],["k9","9 корпус"],["kpp","КПП (7 корпус)"]];
+function wAgg(f,t){
+  const rs=(DATA.energy||[]).filter(r=>inR(r.d,f,t)&&r.st>0); if(!rs.length) return null;
+  const sp=rs.filter(r=>r.std!=null&&r.stn!=null), sum=(a,k)=>a.reduce((x,r)=>x+(r[k]||0),0), kd=rs.filter(r=>r.kill>0);
+  const cons={}; WC.forEach(([k])=>{cons[k]=rs.reduce((x,r)=>x+((r.wc&&r.wc[k])||0),0)});
+  return {days:rs.length,st:sum(rs,"st"),std:sum(sp,"std"),stn:sum(sp,"stn"),spDays:sp.length,head:kd.length?sum(kd,"st")/sum(kd,"kill"):null,headD:kd.filter(r=>r.std!=null).length?sum(kd.filter(r=>r.std!=null),"std")/sum(kd.filter(r=>r.std!=null),"kill"):null,headN:kd.filter(r=>r.stn!=null).length?sum(kd.filter(r=>r.stn!=null),"stn")/sum(kd.filter(r=>r.stn!=null),"kill"):null,kdDays:kd.length,wl:sum(rs,"wl"),cons};
+}
+function renderWater(f,t,lab){
+  const E=DATA.energy||[], ax=axis(f,t), dm=ax.kind==="day"; let W=wAgg(f,t), fbn="";
+  if(!W){const fb=lastDayBefore(E.filter(r=>r.std!=null).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=wAgg(f,t); fbn=" · за выбранный день показаний стоков нет, показаны последние данные "+dd(f)}}
+  document.getElementById("en-wct").textContent="Вода: общее потребление по производственным стокам"+(dm?" · по дням, м³":" · по месяцам, м³")+fbn;
+  const WT=document.getElementById("en-wt"), WC_=document.getElementById("en-wc"), WN=document.getElementById("en-wn");
+  const all=ax.items.map(it=>wAgg(it.f,it.t)).filter(Boolean), mx=Math.max(1,...all.map(a=>a.st));
+  bars(document.getElementById("en-wch"),document.getElementById("en-wxl"),ax,it=>{const a=wAgg(it.f,it.t);return a?a.st:null},null,{dec:0,seg:(it,v)=>{const a=wAgg(it.f,it.t); if(!a) return "";
+    if(a.spDays===a.days) return `<div class="seg" style="height:${Math.max(1,a.stn/mx*100)}%;background:var(--ink-3)"></div><div class="seg" style="height:${Math.max(1,a.std/mx*100)}%;background:var(--accent)"></div>`;
+    return `<div class="seg" style="height:${Math.max(2,v/mx*100)}%;background:var(--line)"></div>`}});
+  if(!W){WT.innerHTML='<div class="empty">Показаний стоков за этот период в отчёте нет.</div>';WC_.innerHTML="";WN.innerHTML="";return}
+  const pr=prevRange(f,t), P=pr&&wAgg(pr[0],pr[1]), sb=(k,u)=>P&&P[k]!=null?`${pr[2]}: ${fmt(P[k],k==="st"?0:2)} ${u}`:"";
+  const sp=W.spDays>0;
+  WT.innerHTML=tile("Всего воды (по стокам)",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки · дней ${W.days}`:(sb("st","м³")||""))
+    +tile("До 20:00",sp?fmt(W.std)+" м³":"—",sp?`${fmt(W.std/(W.std+W.stn)*100,0)} % от суммы за дни с разбивкой`:"в этот период время 20:00 в отчёте не внесено")
+    +tile("После 20:00",sp?fmt(W.stn)+" м³":"—",sp?`${fmt(W.stn/(W.std+W.stn)*100,0)} % · дней с разбивкой ${W.spDays} из ${W.days}`:"")
+    +tile("На голову убоя (по стокам)",W.head!=null?fmt(W.head,2)+" м³":"—",W.head!=null?`${sp&&W.headD!=null?"до 20:00 "+fmt(W.headD,2)+" · после "+fmt(W.headN,2)+" · ":""}${sb("head","м³")}`:"нет убоя за период");
+  const mc=Math.max(1,...WC.map(([k])=>W.cons[k]));
+  WC_.innerHTML=`<h3>Из чего состоит расход воды<small>за период, м³ · по счётчикам</small></h3>`
+    +`<div class="hr"><span class="t">Добыто из скважин (общий счётчик)</span><span class="n"><b>${fmt(W.wl)}</b></span></div>`
+    +`<div class="hr"><span class="t">Производственные стоки (AQUA)</span><span class="n"><b>${fmt(W.st)}</b></span></div>`
+    +WC.map(([k,n])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(W.cons[k],W.cons[k]<10&&W.cons[k]>0?1:0)}</b></span><div class="hb"><i class="o" style="width:${W.cons[k]/mc*100}%"></i></div></div>`).join("");
+  const rows=E.filter(r=>inR(r.d,f,t)&&r.st>0).slice(-14);
+  WN.innerHTML=`<h3>Стоки до и после 20:00<small>${dm?"последние дни периода":"по дням"}, м³</small></h3>`+rows.map(r=>`<div class="hr"><span class="t">${dd(r.d)}</span><span class="n">${r.std!=null?`<b>${fmt(r.std)}</b> / <b>${fmt(r.stn)}</b> · всего ${fmt(r.st)}`:`<span style="color:var(--ink-3)">всего ${fmt(r.st)} · показание 20:00 не внесено</span>`}</span></div>`).join("")
+    +`<div class="empty" style="margin-top:8px">Формат: до 20:00 / после 20:00. «Всего» — суточный расход по счётчику производственных стоков.</div>`;
+}
 function renderEnergy(f,t,lab){
   const T=document.getElementById("en-tiles"); let A=enAgg(f,t);
   if(!A){const fb=lastDayBefore((DATA.energy||[]).map(r=>r.d),f,lab); if(fb){[f,t,lab]=fb; A=enAgg(f,t)}}
@@ -903,6 +941,7 @@ function renderEnergy(f,t,lab){
   defs.forEach(([key,ttl,dec],i)=>{
     document.getElementById("en-ct"+(i+1)).textContent=ttl+(dm?" · по дням":" · по месяцам");
     bars(document.getElementById("en-ch"+(i+1)),document.getElementById("en-xl"+(i+1)),ax,it=>{const a=enAgg(it.f,it.t);return a&&a[key]!=null?a[key]:null},()=>"none",{dec,line:true})});
+  renderWater(f,t,lab);
   const S=document.getElementById("en-st"),R=document.getElementById("en-src");
   if(!A){T.innerHTML='<div class="empty">Данных по энергоносителям за этот период нет.</div>';S.innerHTML="";R.innerHTML="";return}
   const pr=prevRange(f,t); const P=pr&&enAgg(pr[0],pr[1]);
@@ -916,7 +955,7 @@ function renderEnergy(f,t,lab){
   const nodes=[["АХУ",A.ahu],["Фреон",A.fr],["ГПК",A.gpk],["25 корпус",A.k25]], mx=Math.max(...nodes.map(x=>x[1]));
   S.innerHTML=!(A.elT>0)?`<h3>Электроэнергия по узлам</h3><div class="empty">за этот день показания электроэнергии в отчёте с ошибкой</div>`:`<h3>Электроэнергия по узлам<small>за период, кВт·ч</small></h3>`+nodes.map(([n,v])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v)}</b> · ${fmt(v/A.elT*100,0)} %</span><div class="hb"><i class="o" style="width:${v/mx*100}%"></i></div></div>`).join("");
   const lr=A.rs[A.rs.length-1];
-  R.innerHTML=`<h3>Источник и оговорки</h3><div class="hr"><span class="t" style="white-space:normal;color:var(--ink-2)">Пробная страница. Потребление — оперативный отчёт производственной диспетчерской (лист «МПК»), убой — сводный отчёт. Электроэнергия — сумма узлов АХУ, фреон, ГПК, 25 корпус. Газ — котельные корпусов 9 и 2. Вода — общий счётчик скважин ВЗУ (расход за сутки, м³), стоки — счётчик производственных стоков AQUA. Электроэнергия за дни с ошибками формул в отчёте не показывается. Данные до ${dd(DATA.energy[DATA.energy.length-1].d)}: строки с ошибками формул в отчёте диспетчерской не берутся.</span></div>`
+  R.innerHTML=`<h3>Источник и оговорки</h3><div class="hr"><span class="t" style="white-space:normal;color:var(--ink-2)">Пробная страница. Потребление — оперативный отчёт производственной диспетчерской (лист «МПК»), убой — сводный отчёт. Электроэнергия — сумма узлов АХУ, фреон, ГПК, 25 корпус. Газ — котельные корпусов 9 и 2. Вода — общее потребление берётся по счётчику производственных стоков AQUA (расход за сутки, м³); «до 20:00» — показание расходомера 20:00 минус утреннее, «после 20:00» — утреннее показание следующего дня минус показание 20:00; добыча — общий счётчик скважин ВЗУ. Убой для расхода на голову — из отчёта убоя ЦУиППЖ. Счётчики потребителей между собой и со стоками не сходятся — баланса воды в отчёте нет. Электроэнергия за дни с ошибками формул в отчёте не показывается. Данные до ${dd(DATA.energy[DATA.energy.length-1].d)}: строки с ошибками формул в отчёте диспетчерской не берутся.</span></div>`
     +"";
 }
 // ---------- оборудование: загрузка мощности линии 5 ЦРП (журнал простоев; план 15,5 ч = 930 мин в сутки; пороги Павла 07.11.2026) ----------
