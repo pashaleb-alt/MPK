@@ -374,6 +374,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <h3 class="ch-t" id="en-ct3" style="margin-top:14px"></h3><div class="chart auto" id="en-ch3"></div><div class="xl auto" id="en-xl3"></div>
     <h3 class="ch-t" id="en-ct4" style="margin-top:14px"></h3><div class="chart auto" id="en-ch4"></div><div class="xl auto" id="en-xl4"></div>
     <h3 class="ch-t" id="en-ct5" style="margin-top:14px"></h3><div class="chart auto" id="en-ch5"></div><div class="xl auto" id="en-xl5"></div>
+    <div class="legend" id="en-nt5" style="font-size:11px"></div>
     <div class="two" style="display:none"><div class="hl" id="en-st"></div><div class="hl" id="en-src"></div></div>
   </section>
 
@@ -390,7 +391,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">23</div><div class="s">последняя травма 23.10.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=419b2d79c1"></script>
+<script src="/MPK/director-data.js?v=4d71123d6b"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -929,7 +930,7 @@ function renderWater(f,t,lab){
   WT.innerHTML=tile("Расход воды на голову",W.head!=null?fmt(W.head,2)+" м³":"—",`норма ${fmt(NORM_W,2)} м³`,W.head==null?"none":(Math.round(W.head*100)/100<=NORM_W?"good":"crit"))   // зелёный — не выше нормы, красный — выше (по показанному числу)
     +tile("Общий расход (сток)",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки`:"")
     +tile("Убито голов",fmt(W.killT),W.days>1?`дней ${W.days}`:"")
-    +tile("Остаток воды РЧВ","—",`норма ${fmt(NORM_RCHV)} м³ · данные ожидаются`);   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
+    +tile("Остаток воды РЧВ","—",`максимальный объём ${fmt(NORM_RCHV)} м³ · данные ожидаются`);   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
   const lst=ALL.map(([k,n,c])=>({k,n,c,v:W.cons[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
   // доли с одним знаком: методом наибольших остатков, чтобы сумма была ровно 100,0 %
   const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
@@ -946,11 +947,12 @@ function renderEnergy(f,t,lab){
   if(!A){const fb=lastDayBefore((DATA.energy||[]).map(r=>r.d),f,lab); if(fb){[f,t,lab]=fb; A=enAgg(f,t)}}
   document.getElementById("en-note").textContent=lab+idleNote();
   const ax=axis(f,t), dm=ax.kind==="day";
-  const defs=[["el","Электроэнергия на голову убоя, кВт·ч",1],["gas","Газ на голову убоя, м³",2],["co2","Углекислота (CO₂) на голову убоя, кг",2],["wl","Вода из скважин (общий расход) на голову убоя, м³",2],["st","Производственные стоки на голову убоя, м³",2]];
+  const defs=[["el","Электроэнергия на голову убоя, кВт·ч",1],["gas","Газ на голову убоя, м³",2],["co2","Углекислота (CO₂) на голову убоя, кг",2],["wl","Вода из скважин (общий расход) на голову убоя, м³",2],["st","Потребление на голову убоя, м³",2]];
   defs.forEach(([key,ttl,dec],i)=>{
     if(EN_ONLY_WATER&&i<4){   // (16.11.2026, Павел) график «Вода из скважин на голову» тоже убран — ориентируемся на стоки
      ["en-ct","en-ch","en-xl"].forEach(p=>{const e=document.getElementById(p+(i+1)); if(e) e.style.display="none"}); return}
-    document.getElementById("en-ct"+(i+1)).textContent=ttl+(dm?" · по дням":" · по месяцам")+(key==="st"&&dm?" · зелёный пунктир — норма "+fmt(NORM_W,1)+" м³":"");
+    document.getElementById("en-ct"+(i+1)).textContent=ttl+(dm?" · по дням":" · по месяцам");
+    if(key==="st") document.getElementById("en-nt5").innerHTML=dm?`<span>Примечание: зелёный пунктир — норма ${fmt(NORM_W,1)} м³ на голову убоя.</span>`:"";
     bars(document.getElementById("en-ch"+(i+1)),document.getElementById("en-xl"+(i+1)),ax,it=>{const a=enAgg(it.f,it.t);return a&&a[key]!=null?a[key]:null},()=>"none",{dec,line:true,ref:key==="st"?()=>NORM_W:null,refTitle:"норма 0,4 м³ на голову"})});
   renderWater(f,t,lab);
   const S=document.getElementById("en-st"),R=document.getElementById("en-src");
