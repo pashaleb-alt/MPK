@@ -391,7 +391,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">23</div><div class="s">последняя травма 23.10.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=75e3f31eff"></script>
+<script src="/MPK/director-data.js?v=11469e4495"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -948,7 +948,8 @@ function renderEnergy(f,t,lab){
   const ax=axis(f,t), dm=ax.kind==="day";
   const defs=[["el","Электроэнергия на голову убоя, кВт·ч",1],["gas","Газ на голову убоя, м³",2],["co2","Углекислота (CO₂) на голову убоя, кг",2],["wl","Вода из скважин (общий расход) на голову убоя, м³",2],["st","Производственные стоки на голову убоя, м³",2]];
   defs.forEach(([key,ttl,dec],i)=>{
-    if(EN_ONLY_WATER&&i<3){["en-ct","en-ch","en-xl"].forEach(p=>{const e=document.getElementById(p+(i+1)); if(e) e.style.display="none"}); return}
+    if(EN_ONLY_WATER&&i<4){   // (16.11.2026, Павел) график «Вода из скважин на голову» тоже убран — ориентируемся на стоки
+     ["en-ct","en-ch","en-xl"].forEach(p=>{const e=document.getElementById(p+(i+1)); if(e) e.style.display="none"}); return}
     document.getElementById("en-ct"+(i+1)).textContent=ttl+(dm?" · по дням":" · по месяцам")+(key==="st"&&dm?" · пунктир — норма "+fmt(NORM_W,1)+" м³ на голову":"");
     bars(document.getElementById("en-ch"+(i+1)),document.getElementById("en-xl"+(i+1)),ax,it=>{const a=enAgg(it.f,it.t);return a&&a[key]!=null?a[key]:null},()=>"none",{dec,line:true,ref:key==="st"?()=>NORM_W:null,refTitle:"норма 0,4 м³ на голову"})});
   renderWater(f,t,lab);
@@ -959,7 +960,7 @@ function renderEnergy(f,t,lab){
   T.innerHTML=(EN_ONLY_WATER?"":tile("Электроэнергия на голову",A.el!=null?fmt(A.el,1)+" кВт·ч":"—",sb("el",1,"кВт·ч")||`всего ${fmt(A.elT/1000,0)} МВт·ч`))
     +(EN_ONLY_WATER?"":tile("Газ на голову",A.gas!=null?fmt(A.gas,2)+" м³":"—",sb("gas",2,"м³")||`всего ${fmt(A.gasT)} м³`))
     +(EN_ONLY_WATER?"":tile("CO₂ на голову",A.co2!=null?fmt(A.co2,2)+" кг":"—",sb("co2",2,"кг")||`всего ${fmt(A.co2T)} кг`))
-    +tile("Вода на голову",A.wl!=null?fmt(A.wl,2)+" м³":"—",sb("wl",2,"м³")||`всего ${fmt(A.wlT)} м³`)
+    +(EN_ONLY_WATER?"":tile("Вода на голову",A.wl!=null?fmt(A.wl,2)+" м³":"—",sb("wl",2,"м³")||`всего ${fmt(A.wlT)} м³`))
     +tile("Стоки на голову",A.st!=null?fmt(A.st,2)+" м³":"—",sb("st",2,"м³")||`всего ${fmt(A.stT)} м³`)
     +tile("Убой в расчёте",fmt(A.kill),`дней ${A.days}${A.days>1&&!EN_ONLY_WATER?" · всего "+fmt(A.elT/1000,0)+" МВт·ч, "+fmt(A.gasT)+" м³ газа":""}`);
   const nodes=[["АХУ",A.ahu],["Фреон",A.fr],["ГПК",A.gpk],["25 корпус",A.k25]], mx=Math.max(...nodes.map(x=>x[1]));
