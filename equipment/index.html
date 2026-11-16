@@ -390,7 +390,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=ee41e3897e"></script>
+<script src="/MPK/director-data.js?v=2fd3d50f38"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="equipment";
@@ -903,8 +903,9 @@ function enAgg(f,t){
 }
 // вода (16.11.2026, Павел): общее потребление — по производственным стокам (AQUA); общий сток делится между потребителями (счётчики потребителей) + остаток = производственные расходы;
 // стоки до/после 20:00; расход на голову убоя (убой — из отчёта убоя ЦУиППЖ)
+const NORM_RCHV=1680;   // норма остатка воды в РЧВ (резервуар чистой воды), м³ (Павел, 16.11.2026); данных по остатку пока нет
 const NORM_W=0.4;   // норма расхода воды, м³ на голову убоя (Павел, 16.11.2026)
-const WC=[["wash","Автомойка (8 корпус)","#2a9d8f"],["b2","Котельная (2 корпус)","#e9a23b"],["fov","ВЗУ регенерация ФОВ (14 корпус)","#8e6bbf"],["ctf","ЦТФ (2 корпус)","#d9626b"],["am","Аммиачная компрессорная (3 корпус)","#5aa469"],["kpp","КПП (8 корпус)","#4f86c6"],["oth","9 корпус","#9aa3b2"]];
+const WC=[["wash","Автомойка (8 корпус)","#2a9d8f"],["b2","Котельная (2 корпус)","#e9a23b"],["fov","ВЗУ регенерация ФОВ (14 корпус)","#8e6bbf"],["ctf","ЦТФ (2 корпус)","#d9626b"],["am","Аммиачная компрессорная (3 корпус)","#5aa469"],["kpp","КПП (8 корпус)","#4f86c6"],["oth","Инженерный корпус (9 корпус)","#9aa3b2"]];
 const WPROD=["prod","Производственные расходы (1 корпус)","var(--accent)"];
 function wSplit(r){ const c=r.wc||{}, v=k=>c[k]>0?c[k]:0, o={wash:v("wash"),b2:v("b2"),fov:v("fov"),ctf:v("ctf"),am:v("am"),oth:v("k9"),kpp:v("kpp")}, named=Object.values(o).reduce((a,b)=>a+b,0); if(named>r.st){const k=r.st/named; for(const x in o) o[x]*=k; o.prod=0} else o.prod=r.st-named; return o}
 function wAgg(f,t){
@@ -928,7 +929,7 @@ function renderWater(f,t,lab){
   WT.innerHTML=tile("Расход воды на голову",W.head!=null?fmt(W.head,2)+" м³":"—",`норма ${fmt(NORM_W,2)} м³`,W.head==null?"none":(Math.round(W.head*100)/100<=NORM_W?"good":"crit"))   // зелёный — не выше нормы, красный — выше (по показанному числу)
     +tile("Общий сток",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки`:"")
     +tile("Убито голов",fmt(W.killT),W.days>1?`дней ${W.days}`:"")
-    +tile("Остаток воды РЧВ","—","данные ожидаются");   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
+    +tile("Остаток воды РЧВ","—",`норма ${fmt(NORM_RCHV)} м³ · данные ожидаются`);   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
   const lst=ALL.map(([k,n,c])=>({k,n,c,v:W.cons[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
   // доли с одним знаком: методом наибольших остатков, чтобы сумма была ровно 100,0 %
   const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
