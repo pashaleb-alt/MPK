@@ -390,7 +390,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=aa4cffd63b"></script>
+<script src="/MPK/director-data.js?v=e2ea63a6d0"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="equipment";
@@ -904,13 +904,13 @@ function enAgg(f,t){
 // вода (16.11.2026, Павел): общее потребление — по производственным стокам (AQUA); общий сток делится между потребителями (счётчики потребителей) + остаток = производственные расходы;
 // стоки до/после 20:00; расход на голову убоя (убой — из отчёта убоя ЦУиППЖ)
 const NORM_W=0.4;   // норма расхода воды, м³ на голову убоя (Павел, 16.11.2026)
-const WC=[["wash","Автомойка (8 корпус)","#2a9d8f"],["b2","Котельная №2","#e9a23b"],["fov","Канализация железной воды (ФОВ)","#8e6bbf"],["ctf","ЦТФ","#d9626b"],["am","Аммиачная компрессорная","#5aa469"],["oth","Прочее (9 корпус, КПП)","#9aa3b2"]];
-const WPROD=["prod","Производственные расходы (остаток)","var(--accent)"];
-function wSplit(r){ const c=r.wc||{}, v=k=>c[k]>0?c[k]:0, o={wash:v("wash"),b2:v("b2"),fov:v("fov"),ctf:v("ctf"),am:v("am"),oth:v("k9")+v("kpp")}, named=Object.values(o).reduce((a,b)=>a+b,0); if(named>r.st){const k=r.st/named; for(const x in o) o[x]*=k; o.prod=0} else o.prod=r.st-named; return o}
+const WC=[["wash","Автомойка (8 корпус)","#2a9d8f"],["b2","Котельная (2 корпус)","#e9a23b"],["fov","ВЗУ регенерация ФОВ (14 корпус)","#8e6bbf"],["ctf","ЦТФ (2 корпус)","#d9626b"],["am","Аммиачная компрессорная (3 корпус)","#5aa469"],["kpp","КПП (8 корпус)","#4f86c6"],["oth","9 корпус","#9aa3b2"]];
+const WPROD=["prod","Производственные расходы (1 корпус)","var(--accent)"];
+function wSplit(r){ const c=r.wc||{}, v=k=>c[k]>0?c[k]:0, o={wash:v("wash"),b2:v("b2"),fov:v("fov"),ctf:v("ctf"),am:v("am"),oth:v("k9"),kpp:v("kpp")}, named=Object.values(o).reduce((a,b)=>a+b,0); if(named>r.st){const k=r.st/named; for(const x in o) o[x]*=k; o.prod=0} else o.prod=r.st-named; return o}
 function wAgg(f,t){
   const rs=(DATA.energy||[]).filter(r=>inR(r.d,f,t)&&r.st>0); if(!rs.length) return null;
   const sp=rs.filter(r=>r.std!=null&&r.stn!=null), sum=(a,k)=>a.reduce((x,r)=>x+(r[k]||0),0), kd=rs.filter(r=>r.kill>0);
-  const cons={prod:0,wash:0,b2:0,fov:0,ctf:0,am:0,oth:0}; rs.forEach(r=>{const o=wSplit(r); for(const k in cons) cons[k]+=o[k]});
+  const cons={prod:0,wash:0,b2:0,fov:0,ctf:0,am:0,kpp:0,oth:0}; rs.forEach(r=>{const o=wSplit(r); for(const k in cons) cons[k]+=o[k]});
   return {days:rs.length,st:sum(rs,"st"),std:sum(sp,"std"),stn:sum(sp,"stn"),spDays:sp.length,head:kd.length?sum(kd,"st")/sum(kd,"kill"):null,headD:kd.filter(r=>r.std!=null).length?sum(kd.filter(r=>r.std!=null),"std")/sum(kd.filter(r=>r.std!=null),"kill"):null,headN:kd.filter(r=>r.stn!=null).length?sum(kd.filter(r=>r.stn!=null),"stn")/sum(kd.filter(r=>r.stn!=null),"kill"):null,kdDays:kd.length,killT:sum(kd,"kill"),wl:sum(rs,"wl"),cons,norm:kd.length?NORM_W*sum(kd,"kill"):null};
 }
 function renderWater(f,t,lab){
