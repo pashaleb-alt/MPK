@@ -406,7 +406,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=2d1dc1ed52"></script>
+<script src="/MPK/director-data.js?v=b85309b56d"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -1003,13 +1003,20 @@ function renderGas(f,t,lab){
   WT.innerHTML=tile("Расход газа на голову",W.head!=null?fmt(W.head,2)+" м³":"—","")
     +tile("Общий расход",fmt(W.gas)+" м³",W.days>1?`в среднем ${fmt(W.gas/W.days)} м³ в сутки`:"")
     +tile("Отправлено на убой",fmt(W.killT),W.days>1?`дней ${W.days}`:"");
-  const lst=GAS_NODES.map(([k,n])=>({k,n,v:W.nodes[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
-  const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
-  raw.map((r,i)=>[r-fl[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>fl[i]++);
-  const pc=i=>(fl[i]/10).toFixed(1).replace(".",",");
-  WC_.innerHTML=`<h3>Расход газа по потребителям<small>за период, м³ · доля</small></h3>`
-    +lst.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
+  // (16.11.2026, Павел: «схлопни котлы корпуса 2 + водогрейный, раскрывай при нажатии») котлы корпуса 2 — одной строкой, состав по котлам раскрывается по нажатию
+  window.GASOPEN=window.GASOPEN||{};
+  const BOILERS=GAS_NODES.filter(([k])=>["kp4","kp3","kp2","kv1"].includes(k));
+  const pcts=vals=>{const s=vals.reduce((x,y)=>x+y,0)||1, r=vals.map(v=>v/s*1000), f=r.map(Math.floor); let l=1000-f.reduce((x,y)=>x+y,0); r.map((v,i)=>[v-f[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,l).forEach(([,i])=>f[i]++); return f.map(v=>(v/10).toFixed(1).replace(".",","))};
+  const lst=[{k:"kot2",n:"Котельная (2 корпус)",v:BOILERS.reduce((s,[k])=>s+W.nodes[k],0),fold:true},{k:"b9",n:"Котельная (9 корпус)",v:W.nodes.b9},{k:"op",n:"Опалочные печи",v:W.nodes.op}].sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
+  const pp=pcts(lst.map(x=>x.v));
+  const detail=()=>{const it=BOILERS.map(([k,n])=>[n.replace(" (2 корпус)",""),W.nodes[k]]).sort((x,y)=>y[1]-x[1]), p=pcts(it.map(x=>x[1])), m=Math.max(1,it[0][1]);
+    return it.map(([n,v],i)=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v)}</b> · ${p[i]} %</span><div class="hb"><i class="o" style="width:${v/m*100}%"></i></div></div>`).join("")};
+  WC_.innerHTML=`<h3>Расход газа по потребителям<small>за период, м³ · доля · нажмите на котельную, чтобы увидеть котлы</small></h3>`
+    +lst.map((x,i)=>x.fold
+      ?`<div class="hr gfr" role="button" tabindex="0" style="cursor:pointer;user-select:none"><span class="t">${x.n} <span class="car" style="color:var(--ink-3)">${window.GASOPEN.kot2?"▴":"▾"}</span></span><span class="n"><b>${fmt(x.v)}</b> · ${pp[i]} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div><div class="gfd"${window.GASOPEN.kot2?"":" hidden"} style="margin:2px 0 10px 16px">${detail()}</div>`
+      :`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v)}</b> · ${pp[i]} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
     +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(tot)}</b> · 100,0 %</span></div>`;
+  WC_.querySelectorAll(".gfr").forEach(row=>{const tg=()=>{const box=row.nextElementSibling; window.GASOPEN.kot2=!window.GASOPEN.kot2; box.hidden=!window.GASOPEN.kot2; row.querySelector(".car").textContent=window.GASOPEN.kot2?"▴":"▾"}; row.onclick=tg; row.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg()}}});
 }
 // углекислота CO₂ (16.11.2026, Павел: «добавляй СО2»): суточный расход, кг, из таблицы «Учёт углекислоты»; разбивки по потребителям в отчёте нет; норм нет — цветовой оценки нет
 function oAgg(f,t){
