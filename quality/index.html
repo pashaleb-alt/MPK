@@ -70,6 +70,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .ph{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .ph h2{font-size:17px;font-weight:700;margin:0}
 .ph .note{font-size:12.5px;color:var(--ink-3)}
+.enp{cursor:pointer;user-select:none} .enp[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:-2px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .tile.click{cursor:pointer} .tile.click:hover{outline:2px solid var(--accent);outline-offset:-2px}
 .tile.big{grid-column:1/-1;text-align:center;padding:16px 14px} .tile.big .v{font-size:44px;letter-spacing:-1px} .tile.big .l{font-size:14px} .tile.big .s{font-size:13px}   /* счётчики «дней без …» (Павел, 16.09.2026) */
@@ -364,6 +365,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
   <section class="panel" id="p-energy" hidden="">
     <div class="ph"><h2>Энергоносители МПК</h2><span class="note" id="en-note"></span></div>
     <div class="tiles" id="en-tiles"></div>
+    <div class="enb" id="enb-water">
     <h3 class="ch-t" style="margin-top:6px;font-size:17px">Вода</h3>
     <h3 class="ch-t" id="en-wct" style="margin-top:6px"></h3>
     <div class="tiles" id="en-wt"></div>
@@ -376,20 +378,27 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <h3 class="ch-t" id="en-ct4" style="margin-top:14px"></h3><div class="chart auto" id="en-ch4"></div><div class="xl auto" id="en-xl4"></div>
     <h3 class="ch-t" id="en-ct5" style="margin-top:14px"></h3><div class="chart auto" id="en-ch5"></div><div class="xl auto" id="en-xl5"></div>
     <div class="legend" id="en-nt5" style="font-size:11px"></div>
-    <h3 class="ch-t" style="margin-top:26px;font-size:17px">Электроэнергия</h3>
+    </div>
+    <div class="enb" id="enb-el" hidden="">
+    <h3 class="ch-t" style="margin-top:6px;font-size:17px">Электроэнергия</h3>
     <div class="tiles" id="en-et"></div>
     <div class="chart auto" id="en-ech"></div><div class="xl auto" id="en-exl"></div>
     <div class="hl" id="en-ec" style="margin:14px 0"></div>
     <h3 class="ch-t" id="en-ect2" style="margin-top:14px"></h3><div class="chart auto" id="en-ech2"></div><div class="xl auto" id="en-exl2"></div>
-    <h3 class="ch-t" style="margin-top:26px;font-size:17px">Природный газ</h3>
+    </div>
+    <div class="enb" id="enb-gas" hidden="">
+    <h3 class="ch-t" style="margin-top:6px;font-size:17px">Природный газ</h3>
     <div class="tiles" id="en-gt"></div>
     <div class="chart auto" id="en-gch"></div><div class="xl auto" id="en-gxl"></div>
     <div class="hl" id="en-gc" style="margin:14px 0"></div>
     <h3 class="ch-t" id="en-gct2" style="margin-top:14px"></h3><div class="chart auto" id="en-gch2"></div><div class="xl auto" id="en-gxl2"></div>
-    <h3 class="ch-t" style="margin-top:26px;font-size:17px">Углекислота (CO₂)</h3>
+    </div>
+    <div class="enb" id="enb-co2" hidden="">
+    <h3 class="ch-t" style="margin-top:6px;font-size:17px">Углекислота (CO₂)</h3>
     <div class="tiles" id="en-ot"></div>
     <div class="chart auto" id="en-och"></div><div class="xl auto" id="en-oxl"></div>
     <h3 class="ch-t" id="en-oct2" style="margin-top:14px"></h3><div class="chart auto" id="en-och2"></div><div class="xl auto" id="en-oxl2"></div>
+    </div>
     <div class="two" style="display:none"><div class="hl" id="en-st"></div><div class="hl" id="en-src"></div></div>
   </section>
 
@@ -406,7 +415,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=747c6b3f7a"></script>
+<script src="/MPK/director-data.js?v=aeebfa1bbf"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -934,6 +943,7 @@ function renderWater(f,t,lab){
   const E=DATA.energy||[], ax=axis(f,t), dm=ax.kind==="day"; let W=wAgg(f,t), fbn="";
   if(!W){const fb=lastDayBefore(E.filter(r=>r.std!=null).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=wAgg(f,t); fbn=" · данные на "+dd(f)}}
   document.getElementById("en-wct").style.display="none";   // (16.11.2026, Павел) заголовок-примечание над графиком убран
+  (window.ENHEAD=window.ENHEAD||{}).water=W&&W.head!=null?W.head:null;
   const WT=document.getElementById("en-wt"), WC_=document.getElementById("en-wc");
   const ALL=[...WC,WPROD];
   const all=ax.items.map(it=>wAgg(it.f,it.t)).filter(Boolean), mx=Math.max(1,...all.map(a=>a.st));
@@ -968,6 +978,7 @@ function eAgg(f,t){
 function renderEl(f,t,lab){
   const E=DATA.energy||[], ax=axis(f,t); let W=eAgg(f,t);
   if(!W){const fb=lastDayBefore(E.filter(r=>r.el>0).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=eAgg(f,t)}}
+  (window.ENHEAD=window.ENHEAD||{}).el=W&&W.head!=null?W.head:null;
   const WT=document.getElementById("en-et"), WC_=document.getElementById("en-ec");
   lineChart(document.getElementById("en-ech"),document.getElementById("en-exl"),ax,it=>{const a=eAgg(it.f,it.t);return a?a.el/1000:null},()=>"none",{dec:1});   // МВт·ч
   document.getElementById("en-ect2").textContent="Потребление электроэнергии на голову убоя, кВт·ч"+(ax.kind==="day"?" · по дням":" · по месяцам");
@@ -995,6 +1006,7 @@ function gAgg(f,t){
 function renderGas(f,t,lab){
   const E=DATA.energy||[], ax=axis(f,t); let W=gAgg(f,t);
   if(!W){const fb=lastDayBefore(E.filter(r=>r.gas>0&&r.gp).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=gAgg(f,t)}}
+  (window.ENHEAD=window.ENHEAD||{}).gas=W&&W.head!=null?W.head:null;
   const WT=document.getElementById("en-gt"), WC_=document.getElementById("en-gc");
   lineChart(document.getElementById("en-gch"),document.getElementById("en-gxl"),ax,it=>{const a=gAgg(it.f,it.t);return a?a.gas:null},()=>"none",{dec:0});
   document.getElementById("en-gct2").textContent="Потребление газа на голову убоя, м³"+(ax.kind==="day"?" · по дням":" · по месяцам");
@@ -1027,6 +1039,7 @@ function oAgg(f,t){
 function renderCo2(f,t,lab){
   const E=DATA.energy||[], ax=axis(f,t); let W=oAgg(f,t);
   if(!W){const fb=lastDayBefore(E.filter(r=>r.co2>0).map(r=>r.d),f,lab); if(fb){[f,t]=fb; W=oAgg(f,t)}}
+  (window.ENHEAD=window.ENHEAD||{}).co2=W&&W.head!=null?W.head:null;
   const WT=document.getElementById("en-ot");
   lineChart(document.getElementById("en-och"),document.getElementById("en-oxl"),ax,it=>{const a=oAgg(it.f,it.t);return a?a.co2:null},()=>"none",{dec:0});
   document.getElementById("en-oct2").textContent="Потребление CO₂ на голову убоя, кг"+(ax.kind==="day"?" · по дням":" · по месяцам");
@@ -1035,6 +1048,16 @@ function renderCo2(f,t,lab){
   WT.innerHTML=tile("Общий расход",fmt(W.co2)+" кг",W.days>1?`в среднем ${fmt(W.co2/W.days)} кг в сутки`:"")
     +tile("Расход CO₂ на голову",W.head!=null?fmt(W.head,2)+" кг":"—","")
     +tile("Отправлено на убой",fmt(W.killT),W.days>1?`дней ${W.days}`:"");
+}
+// верхние плашки вкладки (16.11.2026, Павел): расход на голову по каждому энергоносителю; по нажатию открывается отчёт по нему
+const EN_TOP=[["water","Вода","м³",2],["el","Электроэнергия","кВт·ч",1],["gas","Природный газ","м³",2],["co2","Углекислота (CO₂)","кг",2]];
+function renderEnTop(){
+  const T=document.getElementById("en-tiles"), H=window.ENHEAD||{}; if(!window.ENSEL) window.ENSEL="water";
+  T.innerHTML=EN_TOP.map(([k,n,u,d])=>{const v=H[k], st=k==="water"?(v==null?"none":(Math.round(v*100)/100<=NORM_W?"good":"crit")):"";
+    return `<div class="tile enp ${st?"st-"+st:""}" data-k="${k}" role="button" tabindex="0" aria-pressed="${window.ENSEL===k}"><div class="l">${n} · расход на голову</div><div class="v">${v!=null?fmt(v,d)+" "+u:"—"}</div><div class="s">${k==="water"?"норма "+fmt(NORM_W,2)+" м³":"нажмите, чтобы открыть отчёт"}</div></div>`}).join("");
+  const show=()=>{document.querySelectorAll("#p-energy .enb").forEach(b=>b.hidden=b.id!=="enb-"+window.ENSEL); T.querySelectorAll(".enp").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===window.ENSEL))};
+  T.querySelectorAll(".enp").forEach(x=>{const go=()=>{window.ENSEL=x.dataset.k; show()}; x.onclick=go; x.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}});
+  show();
 }
 const EN_ONLY_WATER=true;   // 16.11.2026, Павел: «убери пока все энергоносители кроме воды» — электричество, газ и CO₂ скрыты; вернуть — поставить false
 function renderEnergy(f,t,lab){
@@ -1051,7 +1074,7 @@ function renderEnergy(f,t,lab){
     bars(document.getElementById("en-ch"+(i+1)),document.getElementById("en-xl"+(i+1)),ax,it=>{const a=enAgg(it.f,it.t);return a&&a[key]!=null?a[key]:null},()=>"none",{dec,line:true,ref:key==="st"?()=>NORM_W:null,refTitle:"норма 0,4 м³ на голову"})});
   renderWater(f,t,lab); renderEl(f,t,lab); renderGas(f,t,lab); renderCo2(f,t,lab);
   const S=document.getElementById("en-st"),R=document.getElementById("en-src");
-  if(!A){T.innerHTML='<div class="empty">Данных по энергоносителям за этот период нет.</div>';S.innerHTML="";R.innerHTML="";return}
+  if(!A){if(EN_ONLY_WATER) renderEnTop(); else T.innerHTML='<div class="empty">Данных по энергоносителям за этот период нет.</div>';S.innerHTML="";R.innerHTML="";return}
   const pr=prevRange(f,t); const P=pr&&enAgg(pr[0],pr[1]);
   const sb=(key,dec,u)=>P&&P[key]!=null?`${pr[2]}: ${fmt(P[key],dec)} ${u}`:"";
   T.innerHTML=(EN_ONLY_WATER?"":tile("Электроэнергия на голову",A.el!=null?fmt(A.el,1)+" кВт·ч":"—",sb("el",1,"кВт·ч")||`всего ${fmt(A.elT/1000,0)} МВт·ч`))
@@ -1060,7 +1083,7 @@ function renderEnergy(f,t,lab){
     +(EN_ONLY_WATER?"":tile("Вода на голову",A.wl!=null?fmt(A.wl,2)+" м³":"—",sb("wl",2,"м³")||`всего ${fmt(A.wlT)} м³`))
     +tile("Стоки на голову",A.st!=null?fmt(A.st,2)+" м³":"—",sb("st",2,"м³")||`всего ${fmt(A.stT)} м³`)
     +tile("Убой в расчёте",fmt(A.kill),`дней ${A.days}${A.days>1&&!EN_ONLY_WATER?" · всего "+fmt(A.elT/1000,0)+" МВт·ч, "+fmt(A.gasT)+" м³ газа":""}`);
-  if(EN_ONLY_WATER) T.innerHTML="";
+  if(EN_ONLY_WATER) renderEnTop();
   const nodes=[["АХУ",A.ahu],["Фреон",A.fr],["ГПК",A.gpk],["25 корпус",A.k25]], mx=Math.max(...nodes.map(x=>x[1]));
   if(EN_ONLY_WATER) S.innerHTML=""; else S.innerHTML=!(A.elT>0)?`<h3>Электроэнергия по узлам</h3><div class="empty">за этот день показания электроэнергии в отчёте с ошибкой</div>`:`<h3>Электроэнергия по узлам<small>за период, кВт·ч</small></h3>`+nodes.map(([n,v])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v)}</b> · ${fmt(v/A.elT*100,0)} %</span><div class="hb"><i class="o" style="width:${v/mx*100}%"></i></div></div>`).join("");
   const lr=A.rs[A.rs.length-1];
