@@ -415,7 +415,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">23</div><div class="s">последняя травма 23.10.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=f410b343e3"></script>
+<script src="/MPK/director-data.js?v=12a57c9973"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -1053,11 +1053,11 @@ function renderCo2(f,t,lab){
 // верхние плашки вкладки (16.11.2026, Павел): расход на голову по каждому энергоносителю; по нажатию открывается отчёт по нему
 const EN_TOP=[["water","Вода","м³",2],["el","Электроэнергия","кВт·ч",1],["gas","Природный газ","м³",2],["co2","Углекислота (CO₂)","кг",2]];
 function renderEnTop(){
-  const T=document.getElementById("en-tiles"), H=window.ENHEAD||{}; if(!window.ENSEL) window.ENSEL="water";
+  const T=document.getElementById("en-tiles"), H=window.ENHEAD||{}; if(window.ENSEL===undefined) window.ENSEL=null;   // по умолчанию все отчёты закрыты — только плашки (Павел, 16.11.2026)
   T.innerHTML=EN_TOP.map(([k,n,u,d])=>{const v=H[k], st=k==="water"?(v==null?"none":(Math.round(v*100)/100<=NORM_W?"good":"crit")):"";
     return `<div class="tile enp ${st?"st-"+st:""}" data-k="${k}" role="button" tabindex="0" aria-pressed="${window.ENSEL===k}"><div class="l">${n} · расход на голову</div><div class="v">${v!=null?fmt(v,d)+" "+u:"—"}</div><div class="s">${k==="water"?"норма "+fmt(NORM_W,2)+" м³":"нажмите, чтобы открыть отчёт"}</div></div>`}).join("");
-  const show=()=>{document.querySelectorAll("#p-energy .enb").forEach(b=>b.hidden=b.id!=="enb-"+window.ENSEL); T.querySelectorAll(".enp").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===window.ENSEL))};
-  T.querySelectorAll(".enp").forEach(x=>{const go=()=>{window.ENSEL=x.dataset.k; show()}; x.onclick=go; x.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}});
+  const show=()=>{document.querySelectorAll("#p-energy .enb").forEach(b=>b.hidden=b.id!=="enb-"+window.ENSEL); T.querySelectorAll(".enp").forEach(x=>{x.setAttribute("aria-pressed",x.dataset.k===window.ENSEL); if(x.dataset.k!=="water") x.querySelector(".s").textContent="нажмите, чтобы "+(x.dataset.k===window.ENSEL?"закрыть":"открыть")+" отчёт"})};
+  T.querySelectorAll(".enp").forEach(x=>{const go=()=>{window.ENSEL=window.ENSEL===x.dataset.k?null:x.dataset.k; show()}; x.onclick=go; x.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}});
   show();
 }
 const EN_ONLY_WATER=true;   // 16.11.2026, Павел: «убери пока все энергоносители кроме воды» — электричество, газ и CO₂ скрыты; вернуть — поставить false
