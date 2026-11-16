@@ -397,7 +397,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=f75f33059f"></script>
+<script src="/MPK/director-data.js?v=dd0cde05cb"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -935,6 +935,7 @@ function renderWater(f,t,lab){
   const sp=W.spDays>0;
   WT.innerHTML=tile("Расход воды на голову",W.head!=null?fmt(W.head,2)+" м³":"—",`норма ${fmt(NORM_W,2)} м³`,W.head==null?"none":(Math.round(W.head*100)/100<=NORM_W?"good":"crit"))   // зелёный — не выше нормы, красный — выше (по показанному числу)
     +tile("Общий расход (сток)",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки`:"")
+    +tile("Добыто из скважин",fmt(W.wl)+" м³",W.days>1?`в среднем ${fmt(W.wl/W.days)} м³ в сутки`:"")
     +tile("Убито голов",fmt(W.killT),W.days>1?`дней ${W.days}`:"")
     +tile("Остаток воды РЧВ","—",`максимальный объём ${fmt(NORM_RCHV)} м³ · данные ожидаются`);   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
   const lst=ALL.map(([k,n,c])=>({k,n,c,v:W.cons[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
@@ -944,8 +945,7 @@ function renderWater(f,t,lab){
   const pc=i=>(fl[i]/10).toFixed(1).replace(".",",");
   WC_.innerHTML=`<h3>Расход воды по потребителям<small>за период, м³ · доля</small></h3>`
     +lst.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v,x.v>0&&x.v<10?1:0)}</b> · ${pc(i)} %</span><div class="hb"><i class="o" style="width:${x.v/mc*100}%"></i></div></div>`).join("")
-    +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(W.st)}</b> · 100,0 %</span></div>`
-    +`<div class="hr"><span class="t" style="color:var(--ink-3)">Справка: добыто из скважин</span><span class="n">${fmt(W.wl)}</span></div>`;
+    +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(W.st)}</b> · 100,0 %</span></div>`;
 }
 // электроэнергия (16.11.2026, Павел: «по примеру отчёта по воде»): расход на голову убоя, общий расход, по потребителям (узлы отчёта диспетчерской), график на голову; норм нет — цветовой оценки нет
 const EL_NODES=[["ahu","АХУ"],["fr","Фреон"],["gpk","ГПК"],["k25","25 корпус"]];
