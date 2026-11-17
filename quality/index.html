@@ -417,7 +417,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=d5c5082ee4"></script>
+<script src="/MPK/director-data.js?v=98e98e6823"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -440,6 +440,7 @@ const MS=["янв","фев","мар","апр","май","июн","июл","авг
 const fmt=(x,d=0)=>x==null||isNaN(x)?"—":x.toLocaleString("ru-RU",{minimumFractionDigits:d,maximumFractionDigits:d});
 const dd=s=>s.slice(8,10)+"."+s.slice(5,7)+"."+s.slice(0,4);
 const cls={good:"g",warn:"w",crit:"c",none:""};
+const killTx=k=>`отправлено на убой: ${k>0?fmt(k)+" гол":"—"}`;   // (17.11.2026, Павел) число голов убоя — в плашке расхода на голову, отдельных плашек «Отправлено на убой» нет
 const tile=(l,v,s,st)=>`<div class="tile ${st?"st-"+st:""}"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s||""}</div></div>`;
 // даты — только через UTC, иначе toISOString сдвигает день (часовой пояс)
 const utc=d=>new Date(Date.UTC(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8,10)));
@@ -952,13 +953,12 @@ function renderWater(f,t,lab){
   const all=ax.items.map(it=>wAgg(it.f,it.t)).filter(Boolean), mx=Math.max(1,...all.map(a=>a.st));
   lineChart(document.getElementById("en-wch"),document.getElementById("en-wxl"),ax,it=>{const a=wAgg(it.f,it.t);return a?a.st:null},()=>"none",{dec:0});
   document.getElementById("en-wlg").innerHTML="";
-  if(!W){WT.innerHTML=tile("Общий расход (сток)","—","")+tile("Расход воды на голову","—",`норма ${fmt(NORM_W,2)} м³`,"none")+tile("Добыто из скважин","—","")+tile("Отправлено на убой","—","")+tile("Остаток воды РЧВ","—",`максимальный объём ${fmt(NORM_RCHV)} м³ · данные ожидаются`);WC_.innerHTML='<h3>Расход воды по потребителям<small>за период, м³ · доля</small></h3><div class="empty">—</div>';return}
+  if(!W){WT.innerHTML=tile("Общий расход (сток)","—","")+tile("Расход воды на голову","—",`норма ${fmt(NORM_W,2)} м³<br>${killTx(0)}`,"none")+tile("Добыто из скважин","—","")+tile("Остаток воды РЧВ","—",`максимальный объём ${fmt(NORM_RCHV)} м³ · данные ожидаются`);WC_.innerHTML='<h3>Расход воды по потребителям<small>за период, м³ · доля</small></h3><div class="empty">—</div>';return}
   const pr=prevRange(f,t), P=pr&&wAgg(pr[0],pr[1]), sb=(k,u)=>P&&P[k]!=null?`${pr[2]}: ${fmt(P[k],k==="st"?0:2)} ${u}`:"";
   const sp=W.spDays>0;
   WT.innerHTML=tile("Общий расход (сток)",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки`:"")
-    +tile("Расход воды на голову",W.head!=null?fmt(W.head,2)+" м³":"—",`норма ${fmt(NORM_W,2)} м³`,W.head==null?"none":(Math.round(W.head*100)/100<=NORM_W?"good":"crit"))   // зелёный — не выше нормы, красный — выше (по показанному числу)
+    +tile("Расход воды на голову",W.head!=null?fmt(W.head,2)+" м³":"—",`норма ${fmt(NORM_W,2)} м³<br>${killTx(W.killT)}`,W.head==null?"none":(Math.round(W.head*100)/100<=NORM_W?"good":"crit"))   // зелёный — не выше нормы, красный — выше (по показанному числу)
     +tile("Добыто из скважин",W.wl!=null?fmt(W.wl)+" м³":"—",W.wl!=null&&W.days>1?`в среднем ${fmt(W.wl/W.days)} м³ в сутки`:"")
-    +tile("Отправлено на убой",W.killT>0?fmt(W.killT)+" гол":"—",W.days>1?`дней ${W.days}`:"")
     +tile("Остаток воды РЧВ","—",`максимальный объём ${fmt(NORM_RCHV)} м³ · данные ожидаются`);   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
   const lst=ALL.map(([k,n,c])=>({k,n,c,v:W.cons[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
   // доли с одним знаком: методом наибольших остатков, чтобы сумма была ровно 100,0 %
@@ -991,10 +991,9 @@ function renderEl(f,t,lab){
   lineChart(document.getElementById("en-ech"),document.getElementById("en-exl"),ax,it=>{const a=eAgg(it.f,it.t);return a?a.el/1000:null},()=>"none",{dec:1});   // МВт·ч
   document.getElementById("en-ect2").textContent="Потребление электроэнергии на голову убоя, кВт·ч"+(ax.kind==="day"?" · по дням":" · по месяцам");
   bars(document.getElementById("en-ech2"),document.getElementById("en-exl2"),ax,it=>{const a=enAgg(it.f,it.t);return a&&a.el!=null?a.el:null},()=>"none",{dec:1,line:true});
-  if(!W){WT.innerHTML=tile("Общий расход","—","")+tile("Расход электроэнергии на голову","—","")+tile("Отправлено на убой","—","");WC_.innerHTML='<h3>Расход электроэнергии по потребителям<small>за период, МВт·ч · доля</small></h3><div class="empty">—</div>';return}
+  if(!W){WT.innerHTML=tile("Общий расход","—","")+tile("Расход электроэнергии на голову","—",killTx(0));WC_.innerHTML='<h3>Расход электроэнергии по потребителям<small>за период, МВт·ч · доля</small></h3><div class="empty">—</div>';return}
   WT.innerHTML=tile("Общий расход",fmt(W.el/1000,2)+" МВт·ч",W.days>1?`в среднем ${fmt(W.el/W.days/1000,2)} МВт·ч в сутки`:"")
-    +tile("Расход электроэнергии на голову",W.head!=null?fmt(W.head,1)+" кВт·ч":"—","")
-    +tile("Отправлено на убой",W.killT>0?fmt(W.killT)+" гол":"—",W.days>1?`дней ${W.days}`:"");
+    +tile("Расход электроэнергии на голову",W.head!=null?fmt(W.head,1)+" кВт·ч":"—",killTx(W.killT));
   const lst=EL_NODES.map(([k,n])=>({k,n,v:W.nodes[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
   const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
   raw.map((r,i)=>[r-fl[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>fl[i]++);
@@ -1018,10 +1017,9 @@ function renderGas(f,t,lab){
   lineChart(document.getElementById("en-gch"),document.getElementById("en-gxl"),ax,it=>{const a=gAgg(it.f,it.t);return a?a.gas:null},()=>"none",{dec:0});
   document.getElementById("en-gct2").textContent="Потребление газа на голову убоя, м³"+(ax.kind==="day"?" · по дням":" · по месяцам");
   bars(document.getElementById("en-gch2"),document.getElementById("en-gxl2"),ax,it=>{const a=gAgg(it.f,it.t);return a&&a.head!=null?a.head:null},()=>"none",{dec:2,line:true});
-  if(!W){WT.innerHTML=tile("Общий расход","—","")+tile("Расход газа на голову","—","")+tile("Отправлено на убой","—","");WC_.innerHTML='<h3>Расход газа по потребителям<small>за период, м³ · доля</small></h3><div class="empty">—</div>';return}
+  if(!W){WT.innerHTML=tile("Общий расход","—","")+tile("Расход газа на голову","—",killTx(0));WC_.innerHTML='<h3>Расход газа по потребителям<small>за период, м³ · доля</small></h3><div class="empty">—</div>';return}
   WT.innerHTML=tile("Общий расход",fmt(W.gas)+" м³",W.days>1?`в среднем ${fmt(W.gas/W.days)} м³ в сутки`:"")
-    +tile("Расход газа на голову",W.head!=null?fmt(W.head,2)+" м³":"—","")
-    +tile("Отправлено на убой",W.killT>0?fmt(W.killT)+" гол":"—",W.days>1?`дней ${W.days}`:"");
+    +tile("Расход газа на голову",W.head!=null?fmt(W.head,2)+" м³":"—",killTx(W.killT));
   // (16.11.2026, Павел: «схлопни котлы корпуса 2 + водогрейный, раскрывай при нажатии») котлы корпуса 2 — одной строкой, состав по котлам раскрывается по нажатию
   window.GASOPEN=window.GASOPEN||{};
   const BOILERS=GAS_NODES.filter(([k])=>["kp4","kp3","kp2","kv1"].includes(k));
@@ -1051,10 +1049,9 @@ function renderCo2(f,t,lab){
   document.getElementById("en-oct2").textContent="Потребление CO₂ на голову убоя, кг"+(ax.kind==="day"?" · по дням":" · по месяцам");
   bars(document.getElementById("en-och2"),document.getElementById("en-oxl2"),ax,it=>{const a=oAgg(it.f,it.t);return a&&a.head!=null?a.head:null},()=>"none",{dec:2,line:true});
   const ost=(rr=>rr?tile("Остаток CO₂",fmt(rr.co2e!=null?rr.co2e:rr.co2r)+" кг",`${rr.co2e!=null?"на конец":"на утро"} ${dd(rr.d).slice(0,5)}`):tile("Остаток CO₂","—","нет показаний"))(E.filter(r=>inR(r.d,f,t)&&(r.co2e!=null||r.co2r!=null)).slice(-1)[0]);
-  if(!W){WT.innerHTML=tile("Общий расход","—","")+tile("Расход CO₂ на голову","—","")+tile("Отправлено на убой","—","")+ost;return}
+  if(!W){WT.innerHTML=tile("Общий расход","—","")+tile("Расход CO₂ на голову","—",killTx(0))+ost;return}
   WT.innerHTML=tile("Общий расход",fmt(W.co2)+" кг",W.days>1?`в среднем ${fmt(W.co2/W.days)} кг в сутки`:"")
-    +tile("Расход CO₂ на голову",W.head!=null?fmt(W.head,2)+" кг":"—","")
-    +tile("Отправлено на убой",W.killT>0?fmt(W.killT)+" гол":"—",W.days>1?`дней ${W.days}`:"")
+    +tile("Расход CO₂ на голову",W.head!=null?fmt(W.head,2)+" кг":"—",killTx(W.killT))
     +ost;
 }
 // верхние плашки вкладки (16.11.2026, Павел): расход на голову по каждому энергоносителю; по нажатию открывается отчёт по нему
