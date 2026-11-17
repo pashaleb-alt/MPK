@@ -417,7 +417,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=98e98e6823"></script>
+<script src="/MPK/director-data.js?v=53eaa9fe36"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -943,6 +943,8 @@ function wAgg(f,t){
   const pz=pd+pn, prodD=pz>0?cons.prod*pd/pz:null, prodN=pz>0?cons.prod*pn/pz:null;   // производственные расходы: день (до 20:00) и ночь (после 20:00) — по доле дневных и ночных стоков
   return {days:rs.length,st:sum(rs,"st"),std:sum(sp,"std"),stn:sum(sp,"stn"),spDays:sp.length,head:kd.length?sum(kd,"st")/sum(kd,"kill"):null,headD:kd.filter(r=>r.std!=null).length?sum(kd.filter(r=>r.std!=null),"std")/sum(kd.filter(r=>r.std!=null),"kill"):null,headN:kd.filter(r=>r.stn!=null).length?sum(kd.filter(r=>r.stn!=null),"stn")/sum(kd.filter(r=>r.stn!=null),"kill"):null,kdDays:kd.length,killT:sum(kd,"kill"),wl:rs.some(r=>r.wl>0)?sum(rs,"wl"):null,prodD,prodN,cons,norm:kd.length?NORM_W*sum(kd,"kill"):null};
 }
+// остаток воды РЧВ (17.11.2026, Павел): значение из столбца «Остаток воды РЧВ» таблицы воды; за период — последнее внесённое; нет данных — прочерк
+const rchvTile=(E,f,t)=>{const rr=E.filter(r=>inR(r.d,f,t)&&r.rchv!=null).slice(-1)[0]; return rr?tile("Остаток воды РЧВ",fmt(rr.rchv)+" м³",(rr.d===f&&f===t?"":`на ${dd(rr.d).slice(0,5)} · `)+`максимальный объём ${fmt(NORM_RCHV)} м³`):tile("Остаток воды РЧВ","—",`максимальный объём ${fmt(NORM_RCHV)} м³ · данные ожидаются`)};
 function renderWater(f,t,lab){
   const E=DATA.energy||[], ax=axis(f,t), dm=ax.kind==="day"; let W=wAgg(f,t), fbn="";
   // (16.11.2026, Павел) если за выбранный день показателя в отчёте нет — прочерк, данные прошлого дня не подставляются
@@ -953,13 +955,13 @@ function renderWater(f,t,lab){
   const all=ax.items.map(it=>wAgg(it.f,it.t)).filter(Boolean), mx=Math.max(1,...all.map(a=>a.st));
   lineChart(document.getElementById("en-wch"),document.getElementById("en-wxl"),ax,it=>{const a=wAgg(it.f,it.t);return a?a.st:null},()=>"none",{dec:0});
   document.getElementById("en-wlg").innerHTML="";
-  if(!W){WT.innerHTML=tile("Общий расход (сток)","—","")+tile("Расход воды на голову","—",`норма ${fmt(NORM_W,2)} м³<br>${killTx(0)}`,"none")+tile("Добыто из скважин","—","")+tile("Остаток воды РЧВ","—",`максимальный объём ${fmt(NORM_RCHV)} м³ · данные ожидаются`);WC_.innerHTML='<h3>Расход воды по потребителям<small>за период, м³ · доля</small></h3><div class="empty">—</div>';return}
+  if(!W){WT.innerHTML=tile("Общий расход (сток)","—","")+tile("Расход воды на голову","—",`норма ${fmt(NORM_W,2)} м³<br>${killTx(0)}`,"none")+tile("Добыто из скважин","—","")+rchvTile(E,f,t);WC_.innerHTML='<h3>Расход воды по потребителям<small>за период, м³ · доля</small></h3><div class="empty">—</div>';return}
   const pr=prevRange(f,t), P=pr&&wAgg(pr[0],pr[1]), sb=(k,u)=>P&&P[k]!=null?`${pr[2]}: ${fmt(P[k],k==="st"?0:2)} ${u}`:"";
   const sp=W.spDays>0;
   WT.innerHTML=tile("Общий расход (сток)",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки`:"")
     +tile("Расход воды на голову",W.head!=null?fmt(W.head,2)+" м³":"—",`норма ${fmt(NORM_W,2)} м³<br>${killTx(W.killT)}`,W.head==null?"none":(Math.round(W.head*100)/100<=NORM_W?"good":"crit"))   // зелёный — не выше нормы, красный — выше (по показанному числу)
     +tile("Добыто из скважин",W.wl!=null?fmt(W.wl)+" м³":"—",W.wl!=null&&W.days>1?`в среднем ${fmt(W.wl/W.days)} м³ в сутки`:"")
-    +tile("Остаток воды РЧВ","—",`максимальный объём ${fmt(NORM_RCHV)} м³ · данные ожидаются`);   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
+    +rchvTile(E,f,t);   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
   const lst=ALL.map(([k,n,c])=>({k,n,c,v:W.cons[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
   // доли с одним знаком: методом наибольших остатков, чтобы сумма была ровно 100,0 %
   const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
