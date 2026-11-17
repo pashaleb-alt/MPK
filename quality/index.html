@@ -417,7 +417,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=b755120f54"></script>
+<script src="/MPK/director-data.js?v=8d0d40ffb9"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -957,7 +957,7 @@ function renderWater(f,t,lab){
   WT.innerHTML=tile("Общий расход (сток)",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки`:"")
     +tile("Расход воды на голову",W.head!=null?fmt(W.head,2)+" м³":"—",`норма ${fmt(NORM_W,2)} м³`,W.head==null?"none":(Math.round(W.head*100)/100<=NORM_W?"good":"crit"))   // зелёный — не выше нормы, красный — выше (по показанному числу)
     +tile("Добыто из скважин",fmt(W.wl)+" м³",W.days>1?`в среднем ${fmt(W.wl/W.days)} м³ в сутки`:"")
-    +tile("Отправлено на убой",fmt(W.killT),W.days>1?`дней ${W.days}`:"")
+    +tile("Отправлено на убой",fmt(W.killT)+" гол",W.days>1?`дней ${W.days}`:"")
     +tile("Остаток воды РЧВ","—",`максимальный объём ${fmt(NORM_RCHV)} м³ · данные ожидаются`);   // (16.11.2026, Павел) плашка-заготовка: источник данных появится позже
   const lst=ALL.map(([k,n,c])=>({k,n,c,v:W.cons[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
   // доли с одним знаком: методом наибольших остатков, чтобы сумма была ровно 100,0 %
@@ -988,7 +988,7 @@ function renderEl(f,t,lab){
   if(!W){WT.innerHTML='<div class="empty">Показаний электроэнергии за этот период в отчёте нет.</div>';WC_.innerHTML="";return}
   WT.innerHTML=tile("Общий расход",fmt(W.el/1000,2)+" МВт·ч",W.days>1?`в среднем ${fmt(W.el/W.days/1000,2)} МВт·ч в сутки`:"")
     +tile("Расход электроэнергии на голову",W.head!=null?fmt(W.head,1)+" кВт·ч":"—","")
-    +tile("Отправлено на убой",fmt(W.killT),W.days>1?`дней ${W.days}`:"");
+    +tile("Отправлено на убой",fmt(W.killT)+" гол",W.days>1?`дней ${W.days}`:"");
   const lst=EL_NODES.map(([k,n])=>({k,n,v:W.nodes[k]})).sort((x,y)=>y.v-x.v), tot=lst.reduce((s,x)=>s+x.v,0)||1, mc=Math.max(1,lst[0].v);
   const raw=lst.map(x=>x.v/tot*1000), fl=raw.map(Math.floor); let left=1000-fl.reduce((s,x)=>s+x,0);
   raw.map((r,i)=>[r-fl[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>fl[i]++);
@@ -1016,7 +1016,7 @@ function renderGas(f,t,lab){
   if(!W){WT.innerHTML='<div class="empty">Показаний газа за этот период в отчёте нет.</div>';WC_.innerHTML="";return}
   WT.innerHTML=tile("Общий расход",fmt(W.gas)+" м³",W.days>1?`в среднем ${fmt(W.gas/W.days)} м³ в сутки`:"")
     +tile("Расход газа на голову",W.head!=null?fmt(W.head,2)+" м³":"—","")
-    +tile("Отправлено на убой",fmt(W.killT),W.days>1?`дней ${W.days}`:"");
+    +tile("Отправлено на убой",fmt(W.killT)+" гол",W.days>1?`дней ${W.days}`:"");
   // (16.11.2026, Павел: «схлопни котлы корпуса 2 + водогрейный, раскрывай при нажатии») котлы корпуса 2 — одной строкой, состав по котлам раскрывается по нажатию
   window.GASOPEN=window.GASOPEN||{};
   const BOILERS=GAS_NODES.filter(([k])=>["kp4","kp3","kp2","kv1"].includes(k));
@@ -1049,7 +1049,7 @@ function renderCo2(f,t,lab){
   if(!W){WT.innerHTML='<div class="empty">Показаний CO₂ за этот период в отчёте нет.</div>';return}
   WT.innerHTML=tile("Общий расход",fmt(W.co2)+" кг",W.days>1?`в среднем ${fmt(W.co2/W.days)} кг в сутки`:"")
     +tile("Расход CO₂ на голову",W.head!=null?fmt(W.head,2)+" кг":"—","")
-    +tile("Отправлено на убой",fmt(W.killT),W.days>1?`дней ${W.days}`:"")
+    +tile("Отправлено на убой",fmt(W.killT)+" гол",W.days>1?`дней ${W.days}`:"")
     +(rr=>rr?tile("Остаток CO₂",fmt(rr.co2e!=null?rr.co2e:rr.co2r)+" кг",`${rr.co2e!=null?"на конец":"на утро"} ${dd(rr.d).slice(0,5)}`):tile("Остаток CO₂","—","нет показаний"))(E.filter(r=>inR(r.d,f,t)&&(r.co2e!=null||r.co2r!=null)).slice(-1)[0]);
 }
 // верхние плашки вкладки (16.11.2026, Павел): расход на голову по каждому энергоносителю; по нажатию открывается отчёт по нему
