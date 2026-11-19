@@ -417,7 +417,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=c6c8723b42"></script>
+<script src="/MPK/director-data.js?v=60ef6a9c98"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -458,9 +458,11 @@ const _core=[...Object.keys(DATA.pt),...DATA.crp_days.map(r=>r.d),...DATA.mon.cg
 // День отчёта = последний закрытый день производства (Павел, 27.09.2026: «все остальные вкладки и модули
 // надо тоже показать на 26.09»). Чек-листы и осмотры за более поздний день не открывают его раньше времени,
 // а простой завода не отбрасывает вкладки назад — модули без данных сами показывают последние или «проверок не было».
-const LAST=(DATA.last_day_q&&DATA.last_day_q>(DATA.last_day||""))?DATA.last_day_q:(DATA.last_day||_core[_core.length-1]||"2026-01-01"), FIRST="2026-01-01";
+// (19.11.2026, Павел: «в энергоносителях даты идут не так, как в других отчётах — сделай одинаково»): календарь «Энергоносителей» — как в «Производстве»: только дни, по которым есть данные, открывается на последнем из них
+const _ENL=PAGE==="energy"?(DATA.energy||[]).filter(r=>r.st!=null||r.el>0||r.gas>0||r.co2>0).map(r=>r.d).filter(d=>d.startsWith("2026")).sort():null;
+const LAST=(_ENL&&_ENL.length)?_ENL[_ENL.length-1]:((DATA.last_day_q&&DATA.last_day_q>(DATA.last_day||""))?DATA.last_day_q:(DATA.last_day||_core[_core.length-1]||"2026-01-01")), FIRST="2026-01-01";
 // дни для выбора — только до последнего закрытого дня (сменные чек-листы за текущий день не открывают его раньше времени)
-const DAYSET=new Set([...Object.keys(DATA.pt),...Object.keys(DATA.qual),...DATA.bio.map(r=>r.d),...DATA.voz.map(r=>r.d),...DATA.mon.cgp.map(r=>r.d),...DATA.tech.map(r=>r.d),...DATA.vyh.map(r=>r.d),...DATA.germ.map(r=>r.d),...DATA.mon.crp2.map(r=>r.d),...DATA.crp_days.map(r=>r.d),...DATA.pod.map(r=>r.d),...DATA.claims_list.map(c=>c.d),...(DATA.ot.days||[]).map(x=>x.d),...(DATA.prod_days||[]),...(DATA.energy||[]).map(r=>r.d),...(DATA.equip||[]).map(r=>r.d)].filter(d=>d<=LAST));
+const DAYSET=(_ENL&&_ENL.length)?new Set(_ENL):new Set([...Object.keys(DATA.pt),...Object.keys(DATA.qual),...DATA.bio.map(r=>r.d),...DATA.voz.map(r=>r.d),...DATA.mon.cgp.map(r=>r.d),...DATA.tech.map(r=>r.d),...DATA.vyh.map(r=>r.d),...DATA.germ.map(r=>r.d),...DATA.mon.crp2.map(r=>r.d),...DATA.crp_days.map(r=>r.d),...DATA.pod.map(r=>r.d),...DATA.claims_list.map(c=>c.d),...(DATA.ot.days||[]).map(x=>x.d),...(DATA.prod_days||[]),...(DATA.energy||[]).map(r=>r.d),...(DATA.equip||[]).map(r=>r.d)].filter(d=>d<=LAST));
 const ALLDAYS=[...DAYSET].filter(d=>d.startsWith("2026")).sort();
 const monthsAvail=[...new Set(ALLDAYS.map(d=>+d.slice(5,7)))].sort((a,b)=>a-b);
 const WEEKS=(()=>{const w={};for(const d of ALLDAYS){if(d>LAST) continue;const n=isoWeek(d);if(!w[n])w[n]={n,from:monday(d),to:addDays(monday(d),6)}}return Object.values(w).sort((a,b)=>a.n-b.n)})();
