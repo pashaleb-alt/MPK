@@ -125,6 +125,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .wlrow{padding:10px 0;border-top:1px solid var(--line)} .wlrow:first-child{border-top:0}
 .wlrow .h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap} .wlrow .nm{font-weight:600;font-size:14px} .wlrow .st{font-size:13px;margin-left:8px;font-weight:600}
 .wlrow .vl{font-size:13px;font-variant-numeric:tabular-nums} .wlrow svg{width:100%;height:68px;display:block;margin-top:4px} .wlrow .sub{font-size:12px;color:var(--ink-3)}
+.wdt{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums} .wdt th,.wdt td{padding:4px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap} .wdt th:first-child,.wdt td:first-child{text-align:left} .wdt th{color:var(--ink-3);font-weight:600} .wdt tr.sel td{background:var(--accent-soft);font-weight:600}
 .hr .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hr .hb{height:8px;border-radius:3px;background:var(--track);position:relative;grid-column:1/-1;margin-top:-2px}
 .hr .hb i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--accent-2)}
@@ -428,7 +429,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=afb13ab08c"></script>
+<script src="/MPK/director-data.js?v=a61d285ede"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -1035,6 +1036,13 @@ function renderWells(f,t,lab){
     return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Динамика добычи, % от предыдущих ${n} суток"><line x1="${PAD}" x2="${W-PAD}" y1="${Y(100).toFixed(1)}" y2="${Y(100).toFixed(1)}" stroke="var(--ink-3)" stroke-opacity=".6" stroke-width="1" stroke-dasharray="4 3"/><path d="${path(pts)}" fill="none" stroke="var(--ink-3)" stroke-opacity=".4" stroke-width="1" stroke-linejoin="round"/><path d="${path(mas)}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${X(e.x).toFixed(1)}" cy="${Y(e.v).toFixed(1)}" r="3" fill="${col}"/></svg>`;
   };
   WR.innerHTML=rows.map(r=>`<div class="wlrow"><div class="h"><span><span class="nm">Скважина №${r.k}</span><span class="st" style="color:${colr[r.st[1]]}">${arr[r.st[1]]} ${r.st[0]}</span></span><span class="vl"><b>${fmt(r.c)}</b> м³/сут${r.d==null?"":` · ${sg(r.d)}`}</span></div>${spark(r.k,r.p,colr[r.st[1]])}<div class="sub">за выбранный период: <b>${PR.length?fmt(ps(r.k))+" м³ · "+pShare(r.k)+" %":"—"}</b></div><div class="sub">доля в общей добыче за ${n} дн. ${fmt(r.shC,1)} % (было ${fmt(r.shP,1)} %) · загрузка от проекта ${fmt(r.c/WELL_DESIGN*100)} %</div></div>`).join("");
+  // добыча по скважинам по дням — раскрывающаяся таблица (Павел, 23.11.2026): последние 30 дней с данными до выбранного дня, строки выбранного периода выделены; по умолчанию свёрнута
+  const DR=E.slice(-30).reverse(), wo=!!window.WELLDAYS, c0=v=>v==null?"—":fmt(v);
+  WR.innerHTML+=`<div class="hr wdr" role="button" tabindex="0" style="cursor:pointer;user-select:none;margin-top:6px;padding-top:8px;border-top:1px solid var(--line)"><span class="t"><b>Добыча по скважинам по дням</b> <small style="color:var(--ink-3)">м³ · последние ${DR.length} дн.</small> <span class="car" style="color:var(--ink-3)">${wo?"▴":"▾"}</span></span></div>`
+    +`<div class="wdb"${wo?"":" hidden"} style="overflow-x:auto;margin-top:4px"><table class="wdt"><thead><tr><th>Дата</th>${K.map(k=>`<th>№${k}</th>`).join("")}<th>Сумма</th><th>Общий</th></tr></thead><tbody>`
+    +DR.map(r=>`<tr${inR(r.d,f,t)?' class="sel"':""}><td>${dd(r.d).slice(0,5)}</td>${K.map(k=>`<td>${c0(r.wells[k])}</td>`).join("")}<td>${fmt(vt(r))}</td><td>${r.wl>0?fmt(r.wl):"—"}</td></tr>`).join("")
+    +`</tbody></table></div>`;
+  const wdr=WR.querySelector(".wdr"); wdr.onclick=()=>{window.WELLDAYS=!window.WELLDAYS; WR.querySelector(".wdb").hidden=!window.WELLDAYS; wdr.querySelector(".car").textContent=window.WELLDAYS?"▴":"▾"}; wdr.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();wdr.click()}};
   NT.innerHTML=`<span>Примечание: график за последние ${2*n} суток, пунктир — 100 % (среднее предыдущих ${n} суток), цветная линия — среднее за 7 дней, серая — добыча за сутки; линия вниз — добыча снижается. Добыча за сутки зависит и от режима работы насосов, поэтому для оценки дебита смотрите и на долю скважины в общей добыче. Дни без данных в график не входят.</span>`;
 }
 // электроэнергия (16.11.2026, Павел: «по примеру отчёта по воде»): расход на голову убоя, общий расход, по потребителям (узлы отчёта диспетчерской), график на голову; норм нет — цветовой оценки нет
