@@ -124,7 +124,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .hr{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px}
 .wlrow{padding:10px 0;border-top:1px solid var(--line)} .wlrow:first-child{border-top:0}
 .wlrow .h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap} .wlrow .nm{font-weight:600;font-size:14px} .wlrow .st{font-size:13px;margin-left:8px;font-weight:600}
-.wlrow .vl{font-size:13px;font-variant-numeric:tabular-nums} .wlrow svg{width:100%;height:44px;display:block;margin-top:4px} .wlrow .sub{font-size:12px;color:var(--ink-3)}
+.wlrow .vl{font-size:13px;font-variant-numeric:tabular-nums} .wlrow svg{width:100%;height:68px;display:block;margin-top:4px} .wlrow .sub{font-size:12px;color:var(--ink-3)}
 .hr .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hr .hb{height:8px;border-radius:3px;background:var(--track);position:relative;grid-column:1/-1;margin-top:-2px}
 .hr .hb i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--accent-2)}
@@ -377,7 +377,6 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="chart auto" id="en-wch"></div><div class="xl auto" id="en-wxl"></div>
     <div class="legend" id="en-wlg"></div>
     <div class="hl" id="en-wc" style="margin:14px 0"></div>
-    <div class="hl" id="en-wells" style="margin:0 0 14px"></div>
     <h3 class="ch-t" id="en-ct1"></h3><div class="chart auto" id="en-ch1"></div><div class="xl auto" id="en-xl1"></div>
     <h3 class="ch-t" id="en-ct2" style="margin-top:14px"></h3><div class="chart auto" id="en-ch2"></div><div class="xl auto" id="en-xl2"></div>
     <h3 class="ch-t" id="en-ct3" style="margin-top:14px"></h3><div class="chart auto" id="en-ch3"></div><div class="xl auto" id="en-xl3"></div>
@@ -388,7 +387,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="legend" id="en-rnt" style="font-size:11px"></div>
     </div>
     <div class="enb" id="enb-wl">
-    <h3 class="ch-t" style="margin-top:6px;font-size:17px">Скважины: динамика добычи</h3>
+    <h3 class="ch-t" style="margin-top:6px;font-size:17px">Скважины</h3>
     <div class="tiles" id="wl-t"></div>
     <div id="wl-rows" style="margin-top:6px"></div>
     <div class="legend" id="wl-nt" style="font-size:11px"></div>
@@ -429,7 +428,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">4</div><div class="s">последняя травма 18.11.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=1ed8de8025"></script>
+<script src="/MPK/director-data.js?v=6211505ec5"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -975,7 +974,7 @@ function renderWater(f,t,lab){
   document.getElementById("en-rct").textContent="Остаток воды РЧВ, м³"+(ax.kind==="day"?" · по дням":" · по месяцам");
   lineChart(document.getElementById("en-rch"),document.getElementById("en-rxl"),ax,it=>{const rr=E.filter(r=>inR(r.d,it.f,it.t)&&r.rchv!=null).slice(-1)[0]; return rr?rr.rchv:null},()=>"none",{dec:0,ref:()=>MIN_RCHV,refColor:"var(--crit)",refDash:"10 4 2 4",refTitle:`минимальный объём ${fmt(MIN_RCHV)} м³`});
   document.getElementById("en-rnt").innerHTML=ax.kind==="day"?`<span>Примечание: штрихпунктир — минимальный объём воды в РЧВ ${fmt(MIN_RCHV)} м³.</span>`:"";
-  if(!W){WT.innerHTML=tile("Общий расход (сток)","—","")+tile("Расход воды на голову","—",`норма ${fmt(NORM_W,2)} м³<br>${killTx(0)}`,"none")+tile("Добыто из скважин","—","")+rchvTile(E,f,t);WC_.innerHTML='<h3>Расход воды по потребителям<small>за период, м³ · доля</small></h3><div class="empty">—</div>';document.getElementById("en-wells").innerHTML="";return}
+  if(!W){WT.innerHTML=tile("Общий расход (сток)","—","")+tile("Расход воды на голову","—",`норма ${fmt(NORM_W,2)} м³<br>${killTx(0)}`,"none")+tile("Добыто из скважин","—","")+rchvTile(E,f,t);WC_.innerHTML='<h3>Расход воды по потребителям<small>за период, м³ · доля</small></h3><div class="empty">—</div>';return}
   const pr=prevRange(f,t), P=pr&&wAgg(pr[0],pr[1]), sb=(k,u)=>P&&P[k]!=null?`${pr[2]}: ${fmt(P[k],k==="st"?0:2)} ${u}`:"";
   const sp=W.spDays>0;
   WT.innerHTML=tile("Общий расход (сток)",fmt(W.st)+" м³",W.days>1?`в среднем ${fmt(W.st/W.days)} м³ в сутки`:"")
@@ -996,23 +995,6 @@ function renderWater(f,t,lab){
         +dn.map(([n,v],j)=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v,v>0&&v<10?1:0)}</b> · ${(df[j]/10).toFixed(1).replace(".",",")} %</span><div class="hb"><i class="o" style="width:${v/dm_*100}%"></i></div></div>`).join("")+`</div>`}).join("")
     +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого</b></span><span class="n"><b>${fmt(W.st)}</b> · 100,0 %</span></div>`;
   WC_.querySelectorAll(".wfr").forEach(row=>{const tg=()=>{const box=row.nextElementSibling; window.WATOPEN=!window.WATOPEN; box.hidden=!window.WATOPEN; row.querySelector(".car").textContent=window.WATOPEN?"▴":"▾"}; row.onclick=tg; row.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg()}}});
-  // добыча воды по скважинам — раскрывающийся список (Павел, 23.11.2026): № 1…8 из таблицы воды, по убыванию, доли в сумме 100,0 %; по умолчанию свёрнут
-  const WB=document.getElementById("en-wells");
-  if(!W.wells){WB.innerHTML=""} else {
-    const wl_=Object.keys(W.wells).map(k=>({n:`Скважина №${k}`,v:W.wells[k]})).sort((x,y)=>y.v-x.v), wt=wl_.reduce((q,x)=>q+x.v,0)||1, wm=Math.max(1,wl_[0].v);
-    const wr=wl_.map(x=>x.v/wt*1000), wf=wr.map(Math.floor); let wlf=1000-wf.reduce((q,x)=>q+x,0);
-    wr.map((r,i)=>[r-wf[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,wlf).forEach(([,i])=>wf[i]++);
-    const wo=!!window.WELLOPEN, wd_=Math.max(1,W.wellsDays||1);   // wd_ — дней с данными в периоде: загрузка считается по среднему за сутки
-    WB.innerHTML=`<div class="hr wlr" role="button" tabindex="0" style="cursor:pointer;user-select:none"><span class="t"><b>Добыча воды по скважинам</b> <small style="color:var(--ink-3)">м³ · доля · загрузка</small> <span class="car" style="color:var(--ink-3)">${wo?"▴":"▾"}</span></span><span class="n"><b>${fmt(wt)}</b></span></div>`
-      +`<div class="wld"${wo?"":" hidden"} style="margin:2px 0 6px 16px">`
-      +wl_.map((x,i)=>`<div class="hr"><span class="t">${x.n}</span><span class="n"><b>${fmt(x.v)}</b> · ${(wf[i]/10).toFixed(1).replace(".",",")} % · <span style="color:var(--ink-3)">${fmt(x.v/wd_/WELL_DESIGN*100)} %</span></span><div class="hb"><i class="o" style="width:${x.v/wm*100}%"></i></div></div>`).join("")
-      +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого по скважинам</b></span><span class="n"><b>${fmt(wt)}</b> · 100,0 % · <span style="color:var(--ink-3)">${fmt(wt/wd_/(WELL_DESIGN*8)*100)} %</span></span></div>`
-      +`<div class="hr"><span class="t" style="color:var(--ink-3)">Проектная производительность</span><span class="n" style="color:var(--ink-3)">10 м³/ч · ${fmt(WELL_DESIGN)} м³/сут на скважину</span></div>`
-      +(W.wl!=null?`<div class="hr"><span class="t" style="color:var(--ink-3)">По общему счётчику скважин</span><span class="n" style="color:var(--ink-3)">${fmt(W.wl)}</span></div>`:"")
-      +`</div>`;
-    WB.querySelector(".wlr").onclick=()=>{window.WELLOPEN=!window.WELLOPEN; const bx=WB.querySelector(".wld"); bx.hidden=!window.WELLOPEN; WB.querySelector(".car").textContent=window.WELLOPEN?"▴":"▾"};
-    WB.querySelector(".wlr").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();WB.querySelector(".wlr").click()}};
-  }
 }
 // отчёт «Скважины: динамика добычи» (Павел, 23.11.2026: «видно, уменьшается дебит скважин или нет»): добыча по скважинам за сутки из таблицы воды,
 // сравнение последних 14 суток с предыдущими 14 (меньше — по половине истории), доля скважины в общей добыче, мини-график (сутки и среднее за 7 дней); окно заканчивается на выбранном дне
@@ -1031,20 +1013,29 @@ function renderWells(f,t,lab){
     return {k,c,p,d,shC,shP,st:stt};
   }).sort((a,b)=>(a.d==null?0:a.d)-(b.d==null?0:b.d));
   const low=rows.filter(r=>r.st[1]==="crit"||r.st[1]==="warn");
-  WT.innerHTML=tile(`Добыча, в среднем за сутки · ${n} дн.`,fmt(ct)+" м³",dTot==null?"":`к предыдущим ${n} дням: ${sg(dTot)}`)
+  // выбранный период (день/неделя/месяц…): добыча по скважинам, доли (в сумме 100,0 %) и сверка с общим счётчиком — тот же отчёт, что был раскрывающимся списком в «Воде» (Павел, 23.11.2026: «соедини, чтобы всё было в одном месте»)
+  const PR=(DATA.energy||[]).filter(r=>r.wells&&inR(r.d,f,t)&&Object.values(r.wells).some(x=>x>0)), ps=k=>PR.reduce((a,r)=>a+vk(r,k),0), pT=K.reduce((a,k)=>a+ps(k),0), pGen=PR.reduce((a,r)=>a+(r.wl>0?r.wl:0),0);
+  const pr_=K.map(k=>ps(k)/(pT||1)*1000), pf_=pr_.map(Math.floor); let pl_=1000-pf_.reduce((a,b)=>a+b,0); pr_.map((v,i)=>[v-pf_[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,pl_).forEach(([,i])=>pf_[i]++);
+  const pShare=k=>(pf_[k-1]/10).toFixed(1).replace(".",",");
+  WT.innerHTML=tile("Добыто по скважинам",PR.length?fmt(pT)+" м³":"—",PR.length&&pGen>0?`по общему счётчику ${fmt(pGen)} м³`:"")
+    +tile(`Среднее за сутки · ${n} дн.`,fmt(ct)+" м³",dTot==null?"":`к предыдущим ${n} дням: ${sg(dTot)}`)
     +tile("Загрузка от проекта",fmt(ct/(WELL_DESIGN*8)*100)+" %",`проект ${fmt(WELL_DESIGN*8)} м³/сут (8 × 10 м³/ч)`)
     +tile("Скважины со снижением добычи",`${low.length} из 8`,low.length?low.map(r=>`№${r.k} ${sg(r.d)}`).join(" · "):"снижения нет",low.length?(low.some(r=>r.st[1]==="crit")?"crit":"warn"):"good");
   const colr={crit:"var(--crit)",warn:"var(--warn)",good:"var(--good)",up:"var(--accent)",none:"var(--ink-3)"}, arr={crit:"↓",warn:"↓",good:"→",up:"↑",none:""};
-  const spark=k=>{
-    const pts=E.map(r=>({x:dayN(r.d),v:vk(r,k)})), ma=pts.map(p=>{const w=pts.filter(q=>q.x<=p.x&&q.x>p.x-7); return w.length>=3?{x:p.x,v:w.reduce((s,q)=>s+q.v,0)/w.length}:null}).filter(Boolean);
-    const all=pts.map(p=>p.v).concat(ma.map(p=>p.v)), lo=Math.min(...all), hi=Math.max(...all), sp=(hi-lo)||1, W=240,H=44,PAD=4;
-    const X=x=>PAD+x*(W-2*PAD)/Math.max(1,NN-1), Y=v=>H-PAD-(v-lo)/sp*(H-2*PAD);
-    const path=a=>{let d="",px=null; a.forEach(p=>{d+=(px!==null&&p.x-px<=3?" L":" M")+X(p.x).toFixed(1)+" "+Y(p.v).toFixed(1); px=p.x}); return d};
-    const e=ma[ma.length-1]||pts[pts.length-1];
-    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Динамика добычи"><path d="${path(pts)}" fill="none" stroke="var(--ink-3)" stroke-opacity=".45" stroke-width="1" stroke-linejoin="round"/><path d="${path(ma)}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${X(e.x).toFixed(1)}" cy="${Y(e.v).toFixed(1)}" r="3" fill="var(--accent)"/></svg>`;
+  // график (Павел, 23.11.2026: «уменьшение дебета — график вниз»): окно = те же 2×N суток, что и в сравнении; 100 % (пунктир) = среднее предыдущих N суток; линия — среднее за 7 дней в % от него, шкала одинакова у всех скважин: падение добычи — линия идёт вниз и уходит ниже пунктира
+  const w0=E.length-2*n, NW=2*n;   // окно — последние 2×N дней с данными (пропуски в данных не показываем пустым местом)
+  const spark=(k,base,col)=>{
+    if(!base) return "";
+    const v=E.map(r=>vk(r,k)), ma=v.map((_,i)=>{const w=v.slice(Math.max(0,i-6),i+1); return w.length>=3?w.reduce((a,b)=>a+b,0)/w.length/base*100:null});
+    const pts=[],mas=[]; for(let i=w0;i<E.length;i++){pts.push({x:i-w0,v:v[i]/base*100}); if(ma[i]!=null) mas.push({x:i-w0,v:ma[i]})}
+    const W=240,H=68,PAD=5,LO=70,HI=130;
+    const X=x=>PAD+x*(W-2*PAD)/Math.max(1,NW-1), Y=pc=>H-PAD-(Math.max(LO,Math.min(HI,pc))-LO)/(HI-LO)*(H-2*PAD);
+    const path=a=>a.map((p,i)=>(i?" L":"M")+X(p.x).toFixed(1)+" "+Y(p.v).toFixed(1)).join("");
+    const e=mas[mas.length-1]||pts[pts.length-1];
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Динамика добычи, % от предыдущих ${n} суток"><line x1="${PAD}" x2="${W-PAD}" y1="${Y(100).toFixed(1)}" y2="${Y(100).toFixed(1)}" stroke="var(--ink-3)" stroke-opacity=".6" stroke-width="1" stroke-dasharray="4 3"/><path d="${path(pts)}" fill="none" stroke="var(--ink-3)" stroke-opacity=".4" stroke-width="1" stroke-linejoin="round"/><path d="${path(mas)}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${X(e.x).toFixed(1)}" cy="${Y(e.v).toFixed(1)}" r="3" fill="${col}"/></svg>`;
   };
-  WR.innerHTML=rows.map(r=>`<div class="wlrow"><div class="h"><span><span class="nm">Скважина №${r.k}</span><span class="st" style="color:${colr[r.st[1]]}">${arr[r.st[1]]} ${r.st[0]}</span></span><span class="vl"><b>${fmt(r.c)}</b> м³/сут${r.d==null?"":` · ${sg(r.d)}`}</span></div>${spark(r.k)}<div class="sub">доля в общей добыче ${fmt(r.shC,1)} % (было ${fmt(r.shP,1)} %) · загрузка от проекта ${fmt(r.c/WELL_DESIGN*100)} %</div></div>`).join("");
-  NT.innerHTML=`<span>Примечание: серая линия — добыча за сутки, синяя — среднее за 7 дней; сравнение — последние ${n} суток с предыдущими ${n}. Добыча за сутки зависит и от режима работы насосов, поэтому для оценки дебита смотрите на долю скважины в общей добыче. Данные с ${dd(E[0].d).slice(0,5)}, пропуски линия не соединяет.</span>`;
+  WR.innerHTML=rows.map(r=>`<div class="wlrow"><div class="h"><span><span class="nm">Скважина №${r.k}</span><span class="st" style="color:${colr[r.st[1]]}">${arr[r.st[1]]} ${r.st[0]}</span></span><span class="vl"><b>${fmt(r.c)}</b> м³/сут${r.d==null?"":` · ${sg(r.d)}`}</span></div>${spark(r.k,r.p,colr[r.st[1]])}<div class="sub">за выбранный период: <b>${PR.length?fmt(ps(r.k))+" м³ · "+pShare(r.k)+" %":"—"}</b></div><div class="sub">доля в общей добыче за ${n} дн. ${fmt(r.shC,1)} % (было ${fmt(r.shP,1)} %) · загрузка от проекта ${fmt(r.c/WELL_DESIGN*100)} %</div></div>`).join("");
+  NT.innerHTML=`<span>Примечание: график за последние ${2*n} суток, пунктир — 100 % (среднее предыдущих ${n} суток), цветная линия — среднее за 7 дней, серая — добыча за сутки; линия вниз — добыча снижается. Добыча за сутки зависит и от режима работы насосов, поэтому для оценки дебита смотрите и на долю скважины в общей добыче. Дни без данных в график не входят.</span>`;
 }
 // электроэнергия (16.11.2026, Павел: «по примеру отчёта по воде»): расход на голову убоя, общий расход, по потребителям (узлы отчёта диспетчерской), график на голову; норм нет — цветовой оценки нет
 const EL_NODES=[["gpk","Производственный корпус (1 корпус)"],["ahu","Аммиачная компрессорная (3 корпус)"],["frk","Фреоновая компрессорная (25 корпус)"],["ctf","ЦТФ (2 корпус)"],["kt2","Котельная (2 корпус)"],["kt9","Котельная (9 корпус)"],["vzu","Скважины (ВЗУ)"]];   // 16.11.2026, Павел: ГПК = производственный корпус, АХУ = аммиачная компрессорная, «Фреон» и «25 корпус» отчёта = фреоновая компрессорная (25 корпус)
