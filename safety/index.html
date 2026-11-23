@@ -428,7 +428,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">4</div><div class="s">последняя травма 18.11.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=6211505ec5"></script>
+<script src="/MPK/director-data.js?v=afb13ab08c"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -1021,7 +1021,7 @@ function renderWells(f,t,lab){
     +tile(`Среднее за сутки · ${n} дн.`,fmt(ct)+" м³",dTot==null?"":`к предыдущим ${n} дням: ${sg(dTot)}`)
     +tile("Загрузка от проекта",fmt(ct/(WELL_DESIGN*8)*100)+" %",`проект ${fmt(WELL_DESIGN*8)} м³/сут (8 × 10 м³/ч)`)
     +tile("Скважины со снижением добычи",`${low.length} из 8`,low.length?low.map(r=>`№${r.k} ${sg(r.d)}`).join(" · "):"снижения нет",low.length?(low.some(r=>r.st[1]==="crit")?"crit":"warn"):"good");
-  const colr={crit:"var(--crit)",warn:"var(--warn)",good:"var(--good)",up:"var(--accent)",none:"var(--ink-3)"}, arr={crit:"↓",warn:"↓",good:"→",up:"↑",none:""};
+  const colr={crit:"var(--crit)",warn:"var(--warn)",good:"var(--accent)",up:"var(--good)",none:"var(--ink-3)"}   /* 23.11.2026 (Павел): зелёный — растёт, синий — стабильно */, arr={crit:"↓",warn:"↓",good:"→",up:"↑",none:""};
   // график (Павел, 23.11.2026: «уменьшение дебета — график вниз»): окно = те же 2×N суток, что и в сравнении; 100 % (пунктир) = среднее предыдущих N суток; линия — среднее за 7 дней в % от него, шкала одинакова у всех скважин: падение добычи — линия идёт вниз и уходит ниже пунктира
   const w0=E.length-2*n, NW=2*n;   // окно — последние 2×N дней с данными (пропуски в данных не показываем пустым местом)
   const spark=(k,base,col)=>{
