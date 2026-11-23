@@ -380,6 +380,8 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <h3 class="ch-t" id="en-ct4" style="margin-top:14px"></h3><div class="chart auto" id="en-ch4"></div><div class="xl auto" id="en-xl4"></div>
     <h3 class="ch-t" id="en-ct5" style="margin-top:14px"></h3><div class="chart auto" id="en-ch5"></div><div class="xl auto" id="en-xl5"></div>
     <div class="legend" id="en-nt5" style="font-size:11px"></div>
+    <h3 class="ch-t" id="en-rct" style="margin-top:14px"></h3><div class="chart auto" id="en-rch"></div><div class="xl auto" id="en-rxl"></div>
+    <div class="legend" id="en-rnt" style="font-size:11px"></div>
     </div>
     <div class="enb" id="enb-el" hidden="">
     <h3 class="ch-t" style="margin-top:6px;font-size:17px">Электроэнергия</h3>
@@ -417,7 +419,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=dd355ad9c8"></script>
+<script src="/MPK/director-data.js?v=251a09631c"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -516,7 +518,7 @@ function lineChart(el,xl,ax,valueOf,stf,opts={}){
     return `<g class="pt${sel?" sel":""}" data-k="${p.it.key}"><circle class="hit" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="14"/><circle class="${cls[st]||""}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${sel?6:4.5}"/>${ln>=0?`<text x="${x.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle">${fmt(p.v,opts.dec??1)}</text>`:""}<title>${p.it.title||p.it.label}: ${fmt(p.v,opts.dec??1)}${opts.unit||""}</title></g>`}).join("");
   const xs=ax.items.map((it,i)=>(i%step===0||isSel(it))?`<text class="x ${isSel(it)?"sel":""}" x="${X(i).toFixed(1)}" y="${H-5}" text-anchor="middle">${it.label}</text>`:"").join("");
   let rd="",rp=null; refs.forEach(p=>{rd+=(rp!==null&&p.i-rp<=3?" L":" M")+X(p.i).toFixed(1)+" "+Y(p.v).toFixed(1); rp=p.i});
-  const refSvg=rd?`<path d="${rd}" fill="none" stroke="var(--good)" stroke-width="2.5" stroke-dasharray="6 5" stroke-linejoin="round"><title>${opts.refTitle||"норма"}</title></path>`:"";
+  const refSvg=rd?`<path d="${rd}" fill="none" stroke="${opts.refColor||"var(--good)"}" stroke-width="2.5" stroke-dasharray="${opts.refDash||"6 5"}" stroke-linejoin="round"><title>${opts.refTitle||"норма"}</title></path>`:"";
   el.classList.remove("auto"); el.innerHTML=`<svg class="ln" viewBox="0 0 ${W} ${H}" role="img"><path class="area" d="${area}"/>${refSvg}<path class="line" d="${path}"/>${dots}${xs}</svg>`;
   el.querySelectorAll(".pt").forEach(g=>g.onclick=()=>{const k=g.dataset.k; if(ax.kind==="day"){mode="day";day=k;mon=+k.slice(5,7)} else {mode="month";moSel=+k} renderKeep(el)});
 }
@@ -933,6 +935,7 @@ function enAgg(f,t){
 }
 // вода (16.11.2026, Павел): общее потребление — по производственным стокам (AQUA); общий сток делится между потребителями (счётчики потребителей) + остаток = производственные расходы;
 // стоки до/после 20:00; расход на голову убоя (убой — из отчёта убоя ЦУиППЖ)
+const MIN_RCHV=1200;   // минимальный объём воды в РЧВ, м³ (Павел, 23.11.2026) — штрихпунктирная линия на графике остатка РЧВ
 const NORM_RCHV=1680;   // норма остатка воды в РЧВ (резервуар чистой воды), м³ (Павел, 16.11.2026); данных по остатку пока нет
 const NORM_W=0.4;   // норма расхода воды, м³ на голову убоя (Павел, 16.11.2026)
 const WC=[["wash","Автомойка (8 корпус)","#2a9d8f"],["b2","Котельная (2 корпус)","#e9a23b"],["fov","ВЗУ регенерация ФОВ (14 корпус)","#8e6bbf"],["ctf","ЦТФ (2 корпус)","#d9626b"],["am","Аммиачная компрессорная (3 корпус)","#5aa469"],["kpp","КПП (8 корпус)","#4f86c6"],["oth","Инженерный корпус (9 корпус)","#9aa3b2"]];
@@ -957,6 +960,10 @@ function renderWater(f,t,lab){
   const all=ax.items.map(it=>wAgg(it.f,it.t)).filter(Boolean), mx=Math.max(1,...all.map(a=>a.st));
   lineChart(document.getElementById("en-wch"),document.getElementById("en-wxl"),ax,it=>{const a=wAgg(it.f,it.t);return a?a.st:null},()=>"none",{dec:0});
   document.getElementById("en-wlg").innerHTML="";
+  // график остатка воды РЧВ по дням (Павел, 23.11.2026), м³; за период (месяц) — последнее внесённое значение месяца
+  document.getElementById("en-rct").textContent="Остаток воды РЧВ, м³"+(ax.kind==="day"?" · по дням":" · по месяцам");
+  lineChart(document.getElementById("en-rch"),document.getElementById("en-rxl"),ax,it=>{const rr=E.filter(r=>inR(r.d,it.f,it.t)&&r.rchv!=null).slice(-1)[0]; return rr?rr.rchv:null},()=>"none",{dec:0,ref:()=>MIN_RCHV,refColor:"var(--crit)",refDash:"10 4 2 4",refTitle:`минимальный объём ${fmt(MIN_RCHV)} м³`});
+  document.getElementById("en-rnt").innerHTML=ax.kind==="day"?`<span>Примечание: штрихпунктир — минимальный объём воды в РЧВ ${fmt(MIN_RCHV)} м³.</span>`:"";
   if(!W){WT.innerHTML=tile("Общий расход (сток)","—","")+tile("Расход воды на голову","—",`норма ${fmt(NORM_W,2)} м³<br>${killTx(0)}`,"none")+tile("Добыто из скважин","—","")+rchvTile(E,f,t);WC_.innerHTML='<h3>Расход воды по потребителям<small>за период, м³ · доля</small></h3><div class="empty">—</div>';return}
   const pr=prevRange(f,t), P=pr&&wAgg(pr[0],pr[1]), sb=(k,u)=>P&&P[k]!=null?`${pr[2]}: ${fmt(P[k],k==="st"?0:2)} ${u}`:"";
   const sp=W.spDays>0;
