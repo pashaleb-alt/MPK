@@ -388,7 +388,8 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="legend" id="en-rnt" style="font-size:11px"></div>
     </div>
     <div class="enb" id="enb-wl">
-    <h3 class="ch-t" style="margin-top:6px;font-size:17px">Скважины</h3>
+    <h3 class="ch-t" style="margin-top:6px;font-size:17px">Скважины: добыча воды</h3>
+    <div style="font-size:12px;color:var(--ink-3);margin:2px 0 8px">Показана добыча воды за сутки (м³/сут). Дебит скважины (м³/ч) — это добыча на час работы насоса; часов работы в отчёте диспетчерской нет, поэтому дебит не считается.</div>
     <div class="tiles" id="wl-t"></div>
     <div id="wl-rows" style="margin-top:6px"></div>
     <div class="legend" id="wl-nt" style="font-size:11px"></div>
@@ -429,7 +430,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">4</div><div class="s">последняя травма 18.11.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=4aa062a16c"></script>
+<script src="/MPK/director-data.js?v=f13f0b4492"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -1019,7 +1020,7 @@ function renderWells(f,t,lab){
   const pr_=K.map(k=>ps(k)/(pT||1)*1000), pf_=pr_.map(Math.floor); let pl_=1000-pf_.reduce((a,b)=>a+b,0); pr_.map((v,i)=>[v-pf_[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,pl_).forEach(([,i])=>pf_[i]++);
   const pShare=k=>(pf_[k-1]/10).toFixed(1).replace(".",",");
   WT.innerHTML=tile("Добыто по скважинам",PR.length?fmt(pT)+" м³":"—",PR.length&&pGen>0?`по общему счётчику ${fmt(pGen)} м³`:"")
-    +tile(`Среднее за сутки · ${n} дн.`,fmt(ct)+" м³",dTot==null?"":`к предыдущим ${n} дням: ${sg(dTot)}`)
+    +tile(`Добыча за сутки, в среднем · ${n} дн.`,fmt(ct)+" м³",dTot==null?"":`к предыдущим ${n} дням: ${sg(dTot)}`)
     +tile("Загрузка от проекта",fmt(ct/(WELL_DESIGN*8)*100)+" %",`проект ${fmt(WELL_DESIGN*8)} м³/сут (8 × 10 м³/ч)`)
     +tile("Скважины со снижением добычи",`${low.length} из 8`,low.length?low.map(r=>`№${r.k} ${sg(r.d)}`).join(" · "):"снижения нет",low.length?(low.some(r=>r.st[1]==="crit")?"crit":"warn"):"good");
   const colr={crit:"var(--crit)",warn:"var(--warn)",good:"var(--accent)",up:"var(--good)",none:"var(--ink-3)"}   /* 23.11.2026 (Павел): зелёный — растёт, синий — стабильно */, arr={crit:"↓",warn:"↓",good:"→",up:"↑",none:""};
