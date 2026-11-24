@@ -429,7 +429,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=087e09efe4"></script>
+<script src="/MPK/director-data.js?v=0e1ff9a180"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -945,7 +945,7 @@ function enAgg(f,t){
 }
 // вода (16.11.2026, Павел): общее потребление — по производственным стокам (AQUA); общий сток делится между потребителями (счётчики потребителей) + остаток = производственные расходы;
 // стоки до/после 20:00; расход на голову убоя (убой — из отчёта убоя ЦУиППЖ)
-const WELL_DESIGN=240;   // проектная производительность скважины, м³/сут (10 м³/ч по проекту ВЗУ: 8 скважин × 10 = 80 м³/ч) — Павел, 23.11.2026
+const WELL_DESIGN=150;   // проектная норма добычи скважины, м³/сут: 10 м³/ч по проекту ВЗУ (ПЗ 2013/2-7) и паспорту скважины № 1 («дебит 10,0 м³/час или 150,0 м³/сут»); 8 скважин = 1 200 м³/сут (Павел, 24.11.2026: «бери нормы добычи проектные»)
 const MIN_RCHV=1200;   // минимальный объём воды в РЧВ, м³ (Павел, 23.11.2026) — штрихпунктирная линия на графике остатка РЧВ
 const NORM_RCHV=1680;   // норма остатка воды в РЧВ (резервуар чистой воды), м³ (Павел, 16.11.2026); данных по остатку пока нет
 const NORM_W=0.4;   // норма расхода воды, м³ на голову убоя (Павел, 16.11.2026)
@@ -1020,7 +1020,7 @@ function renderWells(f,t,lab){
   const pShare=k=>(pf_[k-1]/10).toFixed(1).replace(".",",");
   WT.innerHTML=tile("Добыто по скважинам",PR.length?fmt(pT)+" м³":"—",PR.length&&pGen>0?`по общему счётчику ${fmt(pGen)} м³`:"")
     +tile(`Добыча за сутки, в среднем · ${n} дн.`,fmt(ct)+" м³",dTot==null?"":`к предыдущим ${n} дням: ${sg(dTot)}`)
-    +tile("Загрузка от проекта",fmt(ct/(WELL_DESIGN*8)*100)+" %",`проект ${fmt(WELL_DESIGN*8)} м³/сут (8 × 10 м³/ч)`)
+    +tile("Загрузка от проекта",fmt(ct/(WELL_DESIGN*8)*100)+" %",`проектная норма ${fmt(WELL_DESIGN*8)} м³/сут (8 × ${fmt(WELL_DESIGN)})`)
     +tile("Скважины со снижением добычи",`${low.length} из 8`,low.length?low.map(r=>`№${r.k} ${sg(r.d)}`).join(" · "):"снижения нет",low.length?(low.some(r=>r.st[1]==="crit")?"crit":"warn"):"good");
   const colr={crit:"var(--crit)",warn:"var(--warn)",good:"var(--accent)",up:"var(--good)",none:"var(--ink-3)"}   /* 23.11.2026 (Павел): зелёный — растёт, синий — стабильно */, arr={crit:"↓",warn:"↓",good:"→",up:"↑",none:""};
   // график (Павел, 23.11.2026: «уменьшение дебета — график вниз»): окно = те же 2×N суток, что и в сравнении; 100 % (пунктир) = среднее предыдущих N суток; линия — среднее за 7 дней в % от него, шкала одинакова у всех скважин: падение добычи — линия идёт вниз и уходит ниже пунктира
@@ -1036,12 +1036,13 @@ function renderWells(f,t,lab){
     return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Динамика добычи, % от предыдущих ${n} суток"><line x1="${PAD}" x2="${W-PAD}" y1="${Y(100).toFixed(1)}" y2="${Y(100).toFixed(1)}" stroke="var(--ink-3)" stroke-opacity=".6" stroke-width="1" stroke-dasharray="4 3"/><path d="${path(pts)}" fill="none" stroke="var(--ink-3)" stroke-opacity=".4" stroke-width="1" stroke-linejoin="round"/><path d="${path(mas)}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${X(e.x).toFixed(1)}" cy="${Y(e.v).toFixed(1)}" r="3" fill="${col}"/></svg>`;
   };
   // (Павел, 24.11.2026) сначала — добыча по скважинам за выбранный день (горизонтальные гистограммы по каждой скважине); динамика (статусы и графики) — свёрнута по умолчанию
-  const bw=K.map(k=>({k,v:ps(k)})).sort((a,b)=>b.v-a.v), bmax=Math.max(1,...bw.map(x=>x.v)), pdays=Math.max(1,PR.length);
+  const bw=K.map(k=>({k,v:ps(k)})).sort((a,b)=>b.v-a.v), bmax=Math.max(WELL_DESIGN*Math.max(1,PR.length),...bw.map(x=>x.v)), pdays=Math.max(1,PR.length), nrm=WELL_DESIGN*pdays;   // шкала включает проектную норму (за период — норма × число дней)
   const bTitle=mode==="day"?`Добыча по скважинам за ${dd(f)}, м³`:`Добыча по скважинам за период ${dd(f)} — ${dd(t)}, м³`;
-  const BARS=`<div style="font-weight:600;font-size:14px;margin:4px 0 6px">${bTitle}</div>`+(PR.length?bw.map(x=>`<div class="hr"><span class="t">Скважина №${x.k}</span><span class="n"><b>${fmt(x.v)}</b> · ${pShare(x.k)} % · <span style="color:var(--ink-3)">загрузка ${fmt(x.v/pdays/WELL_DESIGN*100)} %</span></span><div class="hb"><i class="o" style="width:${x.v/bmax*100}%"></i></div></div>`).join("")
+  const BARS=`<div style="font-weight:600;font-size:14px;margin:4px 0 6px">${bTitle}</div>`+(PR.length?bw.map(x=>`<div class="hr"><span class="t">Скважина №${x.k}</span><span class="n"><b>${fmt(x.v)}</b> · ${pShare(x.k)} % · <span style="color:var(--ink-3)">норма ${fmt(x.v/nrm*100)} %</span></span><div class="hb" style="position:relative"><i class="o" style="width:${x.v/bmax*100}%"></i><u style="position:absolute;left:${nrm/bmax*100}%;top:-3px;bottom:-3px;border-left:2px solid var(--ink-2);text-decoration:none"></u></div></div>`).join("")
       +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого по скважинам</b></span><span class="n"><b>${fmt(pT)}</b>${pGen>0?` · <span style="color:var(--ink-3)">по общему счётчику ${fmt(pGen)}</span>`:""}</span></div>`:'<div class="empty">За выбранный период данных по скважинам нет.</div>');
+  const BARNOTE=PR.length?`<div style="font-size:11px;color:var(--ink-3);margin-top:4px">Штрих на полоске — проектная норма: 10 м³/ч, ${fmt(WELL_DESIGN)} м³/сут на скважину (за период — на число дней). Справа — доля добычи по скважинам и % к проектной норме.</div>`:"";
   const wtr=!!window.WELLTREND;
-  WR.innerHTML=BARS+`<div class="hr wtr" role="button" tabindex="0" style="cursor:pointer;user-select:none;margin-top:10px;padding-top:8px;border-top:1px solid var(--line)"><span class="t"><b>Динамика добычи по скважинам</b> <small style="color:var(--ink-3)">статус и график за ${2*n} суток</small> <span class="car" style="color:var(--ink-3)">${wtr?"▴":"▾"}</span></span></div><div class="wtb"${wtr?"":" hidden"}>`
+  WR.innerHTML=BARS+BARNOTE+`<div class="hr wtr" role="button" tabindex="0" style="cursor:pointer;user-select:none;margin-top:10px;padding-top:8px;border-top:1px solid var(--line)"><span class="t"><b>Динамика добычи по скважинам</b> <small style="color:var(--ink-3)">статус и график за ${2*n} суток</small> <span class="car" style="color:var(--ink-3)">${wtr?"▴":"▾"}</span></span></div><div class="wtb"${wtr?"":" hidden"}>`
     +rows.map(r=>`<div class="wlrow"><div class="h"><span><span class="nm">Скважина №${r.k}</span><span class="st" style="color:${colr[r.st[1]]}">${arr[r.st[1]]} ${r.st[0]}</span></span><span class="vl"><b>${fmt(r.c)}</b> м³/сут${r.d==null?"":` · ${sg(r.d)}`}</span></div>${spark(r.k,r.p,colr[r.st[1]])}<div class="sub">доля в общей добыче за ${n} дн. ${fmt(r.shC,1)} % (было ${fmt(r.shP,1)} %) · загрузка от проекта ${fmt(r.c/WELL_DESIGN*100)} %</div></div>`).join("")+`</div>`;
   // добыча по скважинам по дням — раскрывающийся график (Павел, 23.11.2026: «лучше графиком, а не гистограммой»): последние 30 дней с данными до выбранного дня,
   // кнопки «Все / №1…№8» переключают скважину; клик по точке выбирает день; по умолчанию свёрнут
@@ -1049,8 +1050,8 @@ function renderWells(f,t,lab){
   const dvm=new Map(DR.map(r=>[r.d,wsel?vk(r,wsel):vt(r)])), dprj=wsel?WELL_DESIGN:WELL_DESIGN*8;
   const dAx=(()=>{const it=[]; let c=DR[0].d; const last=DR[DR.length-1].d; while(c<=last){it.push({key:c,f:c,t:c,label:String(+c.slice(8,10))}); c=addDays(c,1)} return {kind:"day",items:it}})();
   WR.innerHTML+=`<div class="hr wdr" role="button" tabindex="0" style="cursor:pointer;user-select:none;margin-top:6px;padding-top:8px;border-top:1px solid var(--line)"><span class="t"><b>Добыча по скважинам по дням</b> <small style="color:var(--ink-3)">м³ · последние ${DR.length} дн.</small> <span class="car" style="color:var(--ink-3)">${wo?"▴":"▾"}</span></span></div>`
-    +`<div class="wdb"${wo?"":" hidden"} style="margin-top:6px"><div class="chips wdc" style="margin-bottom:6px">${[0,...K].map(k=>`<button class="chip${wsel===k?" on":""}" data-k="${k}" style="padding:3px 9px;font-size:12px${wsel===k?";background:var(--accent);color:#fff;border-color:var(--accent)":""}">${k?"№"+k:"Все"}</button>`).join("")}</div><div class="chart auto" id="wl-dch"></div><div class="xl auto" id="wl-dxl"></div><div style="font-size:11px;color:var(--ink-3);margin-top:4px">${wsel?`Скважина №${wsel}`:"Все скважины"}: м³ за сутки; проект ${fmt(dprj)} м³/сут. Нажмите на точку, чтобы выбрать день.</div></div>`;
-  lineChart(document.getElementById("wl-dch"),document.getElementById("wl-dxl"),dAx,it=>dvm.has(it.key)?dvm.get(it.key):null,()=>"none",{dec:0});
+    +`<div class="wdb"${wo?"":" hidden"} style="margin-top:6px"><div class="chips wdc" style="margin-bottom:6px">${[0,...K].map(k=>`<button class="chip${wsel===k?" on":""}" data-k="${k}" style="padding:3px 9px;font-size:12px${wsel===k?";background:var(--accent);color:#fff;border-color:var(--accent)":""}">${k?"№"+k:"Все"}</button>`).join("")}</div><div class="chart auto" id="wl-dch"></div><div class="xl auto" id="wl-dxl"></div><div style="font-size:11px;color:var(--ink-3);margin-top:4px">${wsel?`Скважина №${wsel}`:"Все скважины"}: м³ за сутки; пунктир — проектная норма ${fmt(dprj)} м³/сут. Нажмите на точку, чтобы выбрать день.</div></div>`;
+  lineChart(document.getElementById("wl-dch"),document.getElementById("wl-dxl"),dAx,it=>dvm.has(it.key)?dvm.get(it.key):null,()=>"none",{dec:0,ref:()=>dprj,refColor:"var(--ink-2)",refDash:"6 5",refTitle:`проектная норма ${fmt(dprj)} м³/сут`});
   const wdr=WR.querySelector(".wdr"); wdr.onclick=()=>{window.WELLDAYS=!window.WELLDAYS; WR.querySelector(".wdb").hidden=!window.WELLDAYS; wdr.querySelector(".car").textContent=window.WELLDAYS?"▴":"▾"}; wdr.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();wdr.click()}};
   WR.querySelectorAll(".wdc .chip").forEach(b=>b.onclick=()=>{window.WELLSEL=+b.dataset.k; renderWells(f,t,lab)});
   const wtrH=WR.querySelector(".wtr"); wtrH.onclick=()=>{window.WELLTREND=!window.WELLTREND; WR.querySelector(".wtb").hidden=!window.WELLTREND; wtrH.querySelector(".car").textContent=window.WELLTREND?"▴":"▾"}; wtrH.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();wtrH.click()}};
