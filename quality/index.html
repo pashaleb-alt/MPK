@@ -467,7 +467,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=cabb973334"></script>
+<script src="/MPK/director-data.js?v=3036bf3c80"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -1195,7 +1195,7 @@ function renderCeo(f,t,lab){
     return bar(name,`<span class="vl"><b style="color:var(--ink)">${fmt(a.f/sc,d)}</b> / ${fmt(a.p/sc,d)} ${unit}${k==="vyh"?` · отклонение ${a.f-a.p>=0?"+":"−"}${fmt(Math.abs(a.f-a.p),1)} п. п.`:""}</span>`,a.pc,st)};
   // строки как на «Производстве»: пороги те же (выполнение: <90 красный, <98 жёлтый; вес — 90/100; выход п/т — 74,39/75,39 %; падёж — не больше плана)
   const XM={ubl:{n:"Убой",u:"гол"},ves:{n:"Средний вес тов.св.",u:"кг",val:1,dec:1,bands:[90,100]},vyh:{n:"Выход п/т",u:"%",val:1,dec:1,abs:[74.39,75.39],norm:75.39},
-    obv:{n:"Обвалка",u:"гол"},crp:{n:"Розничная продукция ЦРП",u:"т",sc:1000,dec:1},mkm:{n:"Мясокостная мука",u:"т",sc:1000,dec:1},jir:{n:"Жир технический",u:"т",sc:1000,dec:1},pad:{n:"Переработано падежа",u:"т",sc:1000,dec:1,inv:1}};
+    obv:{n:"Обвалка",u:"гол"},crp:{n:"Розничная продукция ЦРП",u:"т",sc:1000,dec:1},mkm:{n:"Мясокостная мука",u:"т",sc:1000,dec:1,wt:1},jir:{n:"Жир технический",u:"т",sc:1000,dec:1,wt:1},pad:{n:"Переработано падежа",u:"т",sc:1000,dec:1,inv:1}};
   const MG3=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
   const sf=(x,d)=>fmt(x,d);
   const xval=(m,r,k)=>{const q=r[k]; if(!q||q[1]==null) return null; if(m.val) return q[1]; return q[0]?q[1]/q[0]*100:null};
@@ -1208,8 +1208,8 @@ function renderCeo(f,t,lab){
       else if(pcr!=null){const b=m.bands||[90,98]; st=m.inv?(pcr<=100?"good":pcr<120?"warn":"crit"):(pcr<b[0]?"crit":pcr<b[1]?"warn":"good")}
       const sh=m.val?a.f:pcr, scale=140;
       w=sh==null?0:m.norm?Math.max(1.5,Math.min(sh/m.norm*100,scale)/scale*100):m.val?(pcr==null?0:Math.max(1.5,Math.min(pcr,scale)/scale*100)):Math.max(1.5,Math.min(sh,scale)/scale*100);
-      num=m.val?sf(a.f,d)+`<i> ${m.u}</i>`:(pcr==null?sf(a.f/sc,d)+`<i> ${m.u}</i>`:sf(pcr,0)+"<i>%</i>");
-      const good=m.inv?dev<=0:dev>=0, dt=` · <b class="${good?"pos":"neg"}">${dev>0?"+":dev<0?"−":""}${sf(Math.abs(dev)/sc,d)} ${m.u}</b>`;
+      num=(m.val||m.wt)?sf(a.f/sc,d)+`<i> ${m.u}</i>`:(pcr==null?sf(a.f/sc,d)+`<i> ${m.u}</i>`:sf(pcr,0)+"<i>%</i>");
+      const good=m.inv?dev<=0:dev>=0, dt=` · <b class="${good?"pos":"neg"}">${Number((Math.abs(dev)/sc).toFixed(d))===0?"":dev>0?"+":"−"}${sf(Math.abs(dev)/sc,d)} ${m.u}</b>`;
       sub=m.val?`${PD.length>1?"в среднем ":""}${sf(a.p,d)} / ${sf(a.f,d)} ${m.u}${dt}`:`${sf(a.p/sc,d)} / ${sf(a.f/sc,d)} ${m.u}${PD.length>1?" за период":""}${dt}`;
     }
     let spark='<svg class="spark" aria-hidden="true"></svg>';
@@ -1225,12 +1225,17 @@ function renderCeo(f,t,lab){
       const rs=PD.filter(r=>r.why).reverse();
       ext=`<div class="why" data-k="why"${window.CEOOPEN.why?"":" hidden"}><h4>Причины отклонений по убою</h4>`+(rs.length?rs.map(r=>{const pl=r.ubl[0], fa=r.ubl[1], dv=(pl!=null&&fa!=null)?fa-pl:null;
         return `<div class="wi"><div class="wh"><b>${+r.d.slice(8,10)} ${MG3[+r.d.slice(5,7)-1]}</b>${dv==null?"":` · план ${sf(pl,0)} / факт ${sf(fa,0)} · <b class="${dv>=0?"pos":"neg"}">${dv>0?"+":dv<0?"−":""}${sf(Math.abs(dv),0)} гол</b>`}${r.why.h?" · простой "+r.why.h:""}</div><div class="wt">${esc(r.why.t)}</div></div>`}).join(""):`<div class="none">${PD.length>1?"За выбранный период причины отклонений в книге не указаны.":"За этот день причина отклонения в книге не указана."}</div>`)+`</div>`}
+    if(k==="obv"){
+      const rs=PD.filter(r=>r.whyo).reverse();
+      ext=`<div class="why" data-k="whyo"${window.CEOOPEN.whyo?"":" hidden"}><h4>Причины отклонений по обвалке</h4>`+(rs.length?rs.map(r=>{const pl=r.obv[0], fa=r.obv[1], dv=(pl!=null&&fa!=null)?fa-pl:null;
+        return `<div class="wi"><div class="wh"><b>${+r.d.slice(8,10)} ${MG3[+r.d.slice(5,7)-1]}</b>${dv==null?"":` · план ${sf(pl,0)} / факт ${sf(fa,0)} · <b class="${dv>=0?"pos":"neg"}">${dv>0?"+":dv<0?"−":""}${sf(Math.abs(dv),0)} гол</b>`}${r.whyo.h?" · простой "+r.whyo.h:""}</div><div class="wt">${esc(r.whyo.t)}</div></div>`}).join(""):`<div class="none">${PD.length>1?"За выбранный период причины отклонений в книге не указаны.":"За этот день причина отклонения в книге не указана."}</div>`)+`</div>`}
     if(k==="ves"){
       const fm={}; (DATA.vyh||[]).filter(r=>inR(r.d,f,t)).forEach(r=>Object.entries(r.farms||{}).forEach(([n,v])=>{const x=fm[n]||(fm[n]=[0,0]); x[0]+=v[1]; x[1]+=v[2]}));
       const fl=Object.entries(fm).filter(([n,v])=>v[0]>0).map(([n,v])=>[n,v[1]/v[0],v[0]]).sort((a,b)=>b[1]-a[1]);
       ext=`<div class="why" data-k="vesf"${window.CEOOPEN.vesf?"":" hidden"}><h4>Средний вес по фермам</h4>`+(fl.length?fl.map(([n,w,h])=>`<div class="fr"><b>${n}</b><b>${sf(w,1)} кг <span>· ${sf(h,0)} гол</span></b></div>`).join(""):`<div class="none">Нет данных по поставке за выбранный период.</div>`)+`</div>`}
-    const clk=ext?` clk" data-o="${k==="ubl"?"why":"vesf"}" role="button" tabindex="0`:"";
-    return `<div class="xr st-${st}${clk}"><div class="nm">${m.n}${ext?`<b class="chv">${window.CEOOPEN[k==="ubl"?"why":"vesf"]?"▴":"▾"} ${k==="ubl"?"причины":"по фермам"}</b>`:""}<span>${sub}</span></div><div class="val">${num}</div><div class="track"><div class="fill" style="width:${w.toFixed(1)}%"></div><div class="ref" style="left:${(100/140*100).toFixed(1)}%"></div></div>${spark}${ext}</div>`};
+    const OK={ubl:"why",ves:"vesf",obv:"whyo"}, OL={ubl:"причины",ves:"по фермам",obv:"причины"};
+    const clk=ext?` clk" data-o="${OK[k]}" role="button" tabindex="0`:"";
+    return `<div class="xr st-${st}${clk}"><div class="nm">${m.n}${ext?`<b class="chv">${window.CEOOPEN[OK[k]]?"▴":"▾"} ${OL[k]}</b>`:""}<span>${sub}</span></div><div class="val">${num}</div><div class="track"><div class="fill" style="width:${w.toFixed(1)}%"></div><div class="ref" style="left:${(100/140*100).toFixed(1)}%"></div></div>${spark}${ext}</div>`};
   document.getElementById("ceo-plan").innerHTML=["ubl","ves","obv","crp"].map(xrow).join("");
   document.getElementById("ceo-ctf").innerHTML=["mkm","jir","pad"].map(xrow).join("");
   document.querySelectorAll("#ceo-plan .xr.clk").forEach(row=>{const tg=e=>{if(e.target.closest(".why")||e.target.closest("svg.spark")) return; const o=row.dataset.o; window.CEOOPEN[o]=!window.CEOOPEN[o]; row.querySelector(".why").hidden=!window.CEOOPEN[o]; const c=row.querySelector(".chv"); c.textContent=c.textContent.replace(/^./,window.CEOOPEN[o]?"▴":"▾")}; row.onclick=tg; row.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg(e)}}});
@@ -1243,11 +1248,12 @@ function renderCeo(f,t,lab){
   if(!VY.length){sup.innerHTML=tile("Принято живка","—","")+tile("Живой вес","—","")+tile("Средний вес головы","—","")+tile("Партий (машин)","—",""); fb.innerHTML=""} else {
     const heads=VY.reduce((a,r)=>a+r.heads,0), live=VY.reduce((a,r)=>a+r.live,0), farms={}; let batches=0;
     VY.forEach(r=>Object.entries(r.farms||{}).forEach(([n,v])=>{const x=farms[n]||(farms[n]=[0,0,0]); x[0]+=v[0]; x[1]+=v[1]; x[2]+=v[2]; batches+=v[0]}));
-    const fw=Object.entries(farms).filter(([n,v])=>v[1]>0&&v[2]>0).map(([n,v])=>[n,v[2]/v[1]]).sort((a,b)=>a[1]-b[1]), minF=fw[0]||null;
+    const lwPl=PD.reduce((a,r)=>a+((r.ubl&&r.ubl[0]&&r.ves&&r.ves[0])?r.ubl[0]*r.ves[0]:0),0)/1000;   // план живого веса = план убоя × плановый средний вес
+    const fw=Object.entries(farms).filter(([n,v])=>v[1]>0&&v[2]>0).map(([n,v])=>[n,v[2]/v[1],v[1]]).sort((a,b)=>a[1]-b[1]), minF=fw[0]||null;
     const pa=agg("ubl"), tot=gTot!=null?gTot:heads, pl=gTot!=null?gPlan:(pa?pa.p:null), pc=pl?tot/pl*100:null, ps=stc(pc);
     sup.innerHTML=tile("Принято живка, гол",fmt(tot),pl?`план ${fmt(pl)} · ${fmt(pc,0)} %`:"",ps==="none"?"":ps)
-      +tile("Живой вес, т",fmt(live/1000,1),(gTot!=null?"товарная свинка":"")+(VY.length>1?`${gTot!=null?" · ":""}в среднем ${fmt(live/1000/VY.length,1)} т в сутки`:""))
-      +tile("Средний вес головы",fmt(live/heads,1)+" кг",(gTot!=null?"товарная свинка":"")+(minF?`${gTot!=null?" · ":""}минимум ${minF[0]} — ${fmt(minF[1],1)} кг`:""))
+      +tile("Живой вес, т",fmt(live/1000,1),lwPl?`план ${fmt(lwPl,1)} · ${fmt(live/1000/lwPl*100,0)} %`:"товарная свинка")
+      +tile("Средний вес головы",fmt(live/heads,1)+" кг",(gTot!=null?"товарная свинка":"")+(minF?`${gTot!=null?" · ":""}минимум ${minF[0]} — ${fmt(minF[1],1)} кг (${fmt(minF[2])} гол)`:""))
       +tile("Партий (машин)",fmt(batches),VY.length>1?`в среднем ${fmt(batches/VY.length,1)} в сутки`:"");
     const fl=Object.entries(farms).sort((a,b)=>b[1][1]-a[1][1]), fm=Math.max(1,fl[0][1][1]), ft=fl.reduce((a,x)=>a+x[1][1],0)||1;
     fold(fb,"farms","Поставка по фермам, гол",fl.length+" ферм",fl.map(([n,v])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v[1])}</b> · ${fmt(v[1]/ft*100,1)} % · ${fmt(v[0])} парт.</span><div class="hb"><i class="o" style="width:${v[1]/fm*100}%"></i></div></div>`).join(""));
