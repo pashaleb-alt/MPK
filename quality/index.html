@@ -467,7 +467,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=dbe8a79e33"></script>
+<script src="/MPK/director-data.js?v=a18055ff3a"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -1224,11 +1224,11 @@ function renderCeo(f,t,lab){
     if(k==="ubl"){
       const rs=PD.filter(r=>r.why).reverse();
       ext=`<div class="why" data-k="why"${window.CEOOPEN.why?"":" hidden"}><h4>Причины отклонений по убою</h4>`+(rs.length?rs.map(r=>{const pl=r.ubl[0], fa=r.ubl[1], dv=(pl!=null&&fa!=null)?fa-pl:null;
-        return `<div class="wi"><div class="wh"><b>${+r.d.slice(8,10)} ${MG3[+r.d.slice(5,7)-1]}</b>${dv==null?"":` · план ${sf(pl,0)} / факт ${sf(fa,0)} · <b class="${dv>=0?"pos":"neg"}">${dv>0?"+":dv<0?"−":""}${sf(Math.abs(dv),0)} гол</b>`}${r.why.h?" · простой "+r.why.h:""}</div><div class="wt">${esc(r.why.t)}</div></div>`}).join(""):`<div class="none">${PD.length>1?"За выбранный период причины отклонений в книге не указаны.":"За этот день причина отклонения в книге не указана."}</div>`)+`</div>`}
+        return `<div class="wi"><div class="wh"><b>${+r.d.slice(8,10)} ${MG3[+r.d.slice(5,7)-1]}</b>${dv==null?"":` · план ${sf(pl,0)} / факт ${sf(fa,0)} · <b class="${dv>=0?"pos":"neg"}">${dv>0?"+":dv<0?"−":""}${sf(Math.abs(dv),0)} гол</b>`}${r.why.h?" · простой "+r.why.h:""}</div><div class="wt">${esc(r.why.t)}</div></div>`}).join(""):`<div class="none">${PD.length>1?"За выбранный период причины не внесены.":"Причина не внесена."}</div>`)+`</div>`}
     if(k==="obv"){
       const rs=PD.filter(r=>r.whyo).reverse();
       ext=`<div class="why" data-k="whyo"${window.CEOOPEN.whyo?"":" hidden"}><h4>Причины отклонений по обвалке</h4>`+(rs.length?rs.map(r=>{const pl=r.obv[0], fa=r.obv[1], dv=(pl!=null&&fa!=null)?fa-pl:null;
-        return `<div class="wi"><div class="wh"><b>${+r.d.slice(8,10)} ${MG3[+r.d.slice(5,7)-1]}</b>${dv==null?"":` · план ${sf(pl,0)} / факт ${sf(fa,0)} · <b class="${dv>=0?"pos":"neg"}">${dv>0?"+":dv<0?"−":""}${sf(Math.abs(dv),0)} гол</b>`}${r.whyo.h?" · простой "+r.whyo.h:""}</div><div class="wt">${esc(r.whyo.t)}</div></div>`}).join(""):`<div class="none">${PD.length>1?"За выбранный период причины отклонений в книге не указаны.":"За этот день причина отклонения в книге не указана."}</div>`)+`</div>`}
+        return `<div class="wi"><div class="wh"><b>${+r.d.slice(8,10)} ${MG3[+r.d.slice(5,7)-1]}</b>${dv==null?"":` · план ${sf(pl,0)} / факт ${sf(fa,0)} · <b class="${dv>=0?"pos":"neg"}">${dv>0?"+":dv<0?"−":""}${sf(Math.abs(dv),0)} гол</b>`}${r.whyo.h?" · простой "+r.whyo.h:""}</div><div class="wt">${esc(r.whyo.t)}</div></div>`}).join(""):`<div class="none">${PD.length>1?"За выбранный период причины не внесены.":"Причина не внесена."}</div>`)+`</div>`}
     if(k==="ves"){
       const fm={}; (DATA.vyh||[]).filter(r=>inR(r.d,f,t)).forEach(r=>Object.entries(r.farms||{}).forEach(([n,v])=>{const x=fm[n]||(fm[n]=[0,0]); x[0]+=v[1]; x[1]+=v[2]}));
       const fl=Object.entries(fm).filter(([n,v])=>v[0]>0).map(([n,v])=>[n,v[1]/v[0],v[0]]).sort((a,b)=>b[1]-a[1]);
