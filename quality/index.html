@@ -123,13 +123,16 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .hl h3{font-size:15px;color:var(--ink);margin:0 0 6px;font-weight:700} .hl h3 small{font-size:11.5px;color:var(--ink-3);font-weight:500;margin-left:6px}
 .hr{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px}
 .ceoh{margin:26px 0 8px;font-size:17px;font-weight:700}
-/* строки выполнения плана — как на вкладке «Производство» основного дашборда (Павел, 24.11.2026): название и отклонение, крупное значение, шкала с риской плана, график по дням */
-.xr{--sp:#b9c6d6;display:grid;grid-template-columns:1fr auto;gap:8px 14px;align-items:center;padding:14px 2px;border-top:1px solid var(--line)} .xr:first-child{border-top:0}
-.xr .nm{font-weight:600;font-size:16px} .xr .nm span{display:block;font:400 13px/1.3 "Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink-3);margin-top:3px;font-variant-numeric:tabular-nums} .xr .nm b.pos{color:var(--good-t)} .xr .nm b.neg{color:var(--crit-t)}
-.xr .val{font:500 25px/1 "Helvetica Neue",Helvetica,Arial,sans-serif;text-align:right;color:var(--txt);font-variant-numeric:tabular-nums} .xr .val i{font-size:14px;font-style:normal;font-weight:400}
-.xr .track{grid-column:1/-1;height:11px;border-radius:6px;background:var(--trk);position:relative} .xr .fill{position:absolute;inset:0 auto 0 0;border-radius:6px;background:var(--bar)} .xr .ref{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink-3);opacity:.55;border-radius:1px}
-.xr .spark{grid-column:1/-1;height:34px;width:100%} .xr .spark circle.sel{fill:var(--bar)}
-.xr.st-good{--bar:var(--good);--txt:var(--good-t);--trk:var(--good-bg)} .xr.st-warn{--bar:var(--warn);--txt:var(--warn-t);--trk:var(--warn-bg)} .xr.st-crit{--bar:var(--crit);--txt:var(--crit-t);--trk:var(--crit-bg)} .xr.st-none{--bar:var(--sp);--txt:var(--ink-3);--trk:var(--line-soft)}
+/* строки выполнения плана (24.11.2026, проще для чтения): сверху название и отклонение от плана, ниже две шкалы «план» и «факт» от одного нуля; цвет по статусу */
+.xr{--sp:#b9c6d6;display:block;padding:15px 2px;border-top:1px solid var(--line)} .xr:first-child{border-top:0}
+.xr .xh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.xr .nm{font-weight:600;font-size:16px;padding-top:2px} .xr .nm .chv{display:block;margin:3px 0 0}
+.xr .xd{font:600 24px/1.1 "Helvetica Neue",Helvetica,Arial,sans-serif;text-align:right;color:var(--txt);font-variant-numeric:tabular-nums;white-space:nowrap} .xr .xd small{display:block;font:500 12.5px/1.3 "Helvetica Neue",Helvetica,Arial,sans-serif;margin-top:3px}
+.xr .xb{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;margin-top:8px;font-variant-numeric:tabular-nums} .xr .xb .l{font-size:12.5px;color:var(--ink-3)} .xr .xb.f .l{color:var(--ink-2);font-weight:600}
+.xr .xb .t{height:16px;border-radius:5px;background:var(--line-soft);overflow:hidden} .xr .xb .t i{display:block;height:100%;border-radius:5px}
+.xr .xb .t i.p{background:var(--ink-3);opacity:.45} .xr .xb .t i.f{background:var(--bar)}
+.xr .xb .n{font-size:14px;color:var(--ink-2);text-align:right;min-width:92px} .xr .xb.f .n{color:var(--ink);font-weight:700}
+.xr.st-good{--bar:var(--good);--txt:var(--good-t)} .xr.st-warn{--bar:var(--warn);--txt:var(--warn-t)} .xr.st-crit{--bar:var(--crit);--txt:var(--crit-t)} .xr.st-none{--bar:var(--sp);--txt:var(--ink-3)}
 .xr.clk{cursor:pointer} .xr .nm .chv{margin-left:6px;font-size:11px;color:var(--ink-3);font-weight:400}
 .xr .why{grid-column:1/-1;padding:10px 12px;background:var(--ground);border:1px solid var(--line-soft);border-radius:10px;cursor:default;max-height:380px;overflow-y:auto}
 .xr .why h4{margin:0 0 6px;font-size:13px;color:var(--ink-2)} .xr .why .wi{padding:7px 0;border-top:1px solid var(--line-soft)} .xr .why .wi:first-of-type{border-top:0}
@@ -137,7 +140,6 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .xr .why .wt{font-size:13.5px;line-height:1.4;margin-top:2px;color:var(--ink)} .xr .why .none{font-size:13px;color:var(--ink-3)}
 .xr .why .fr{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--line-soft);font-size:13.5px;font-variant-numeric:tabular-nums} .xr .why .fr:first-of-type{border-top:0} .xr .why .fr span{color:var(--ink-3);font-size:12.5px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .xr{--sp:#4a5a6e}} :root[data-theme="dark"] .xr{--sp:#4a5a6e}
-@media (min-width:720px){.xr{grid-template-columns:minmax(180px,.95fr) 126px minmax(140px,.9fr) minmax(150px,.8fr);gap:16px;padding:15px 4px} .xr .track,.xr .spark{grid-column:auto}}
 .cr{padding:8px 0;border-top:1px solid var(--line)} .cr:first-child{border-top:0} .cr .h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap} .cr .nm{font-weight:600;font-size:14px} .cr .vl{font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink-2)} .cr .pc{font-size:15px;font-weight:700;margin-left:10px}
 .cr .tr{height:9px;background:var(--track);border-radius:5px;overflow:hidden;margin-top:5px} .cr .tr i{display:block;height:100%;border-radius:5px}
 .wlrow{padding:10px 0;border-top:1px solid var(--line)} .wlrow:first-child{border-top:0}
@@ -467,7 +469,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=a18055ff3a"></script>
+<script src="/MPK/director-data.js?v=5fee3be207"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="quality";
@@ -1202,7 +1204,7 @@ function renderCeo(f,t,lab){
   const xrow=k=>{const m=XM[k], a=agg(k);
     const sd=mode==="day"?[`2026-${String(mon).padStart(2,"0")}-01`,`2026-${String(mon).padStart(2,"0")}-31`]:[f,t];
     const pts=(DATA.pd||[]).filter(r=>r.d>=sd[0]&&r.d<=sd[1]).map(r=>({d:r.d,v:xval(m,r,k)})).filter(x=>x.v!=null);
-    let st="none", w=0, num="—", sub="";
+    let st="none", w=0, num="—", sub="", pw=0, fw2=0, pTxt="", fTxt="", dvTxt="", pcTxt="";
     if(a){const sc=m.sc||1, d=m.dec||0, dev=a.f-a.p, pcr=a.pc;
       if(m.abs) st=a.f<m.abs[0]?"crit":a.f<m.abs[1]?"warn":"good";
       else if(pcr!=null){const b=m.bands||[90,98]; st=m.inv?(pcr<=100?"good":pcr<120?"warn":"crit"):(pcr<b[0]?"crit":pcr<b[1]?"warn":"good")}
@@ -1211,6 +1213,10 @@ function renderCeo(f,t,lab){
       num=(m.val||m.wt)?sf(a.f/sc,d)+`<i> ${m.u}</i>`:(pcr==null?sf(a.f/sc,d)+`<i> ${m.u}</i>`:sf(pcr,0)+"<i>%</i>");
       const good=m.inv?dev<=0:dev>=0, dt=` · <b class="${good?"pos":"neg"}">${Number((Math.abs(dev)/sc).toFixed(d))===0?"":dev>0?"+":"−"}${sf(Math.abs(dev)/sc,d)} ${m.u}</b>`;
       sub=m.val?`${PD.length>1?"в среднем ":""}${sf(a.p,d)} / ${sf(a.f,d)} ${m.u}${dt}`:`${sf(a.p/sc,d)} / ${sf(a.f/sc,d)} ${m.u}${PD.length>1?" за период":""}${dt}`;
+      // упрощённый вид (24.11.2026): две шкалы «план» и «факт» от одного нуля, отклонение и цвет сверху
+      const mx=Math.max(a.p,a.f)||1; pw=a.p/mx*100; fw2=a.f/mx*100; pTxt=sf(a.p/sc,d); fTxt=sf(a.f/sc,d);
+      dvTxt=(Number((Math.abs(dev)/sc).toFixed(d))===0?"":dev>0?"+":"−")+sf(Math.abs(dev)/sc,d)+" "+m.u;
+      pcTxt=(m.val||m.wt||pcr==null)?"":sf(pcr,0)+" % плана";
     }
     let spark='<svg class="spark" aria-hidden="true"></svg>';
     if(pts.length>1){const W=240,H=38,P=5, vs=pts.map(x=>x.v), lo=Math.min(...vs), hi=Math.max(...vs), sp=(hi-lo)||1, xs=i=>P+i*(W-2*P)/(pts.length-1), ys=v=>H-P-(v-lo)/sp*(H-2*P);
@@ -1235,7 +1241,8 @@ function renderCeo(f,t,lab){
       ext=`<div class="why" data-k="vesf"${window.CEOOPEN.vesf?"":" hidden"}><h4>Средний вес по фермам</h4>`+(fl.length?fl.map(([n,w,h])=>`<div class="fr"><b>${n}</b><b>${sf(w,1)} кг <span>· ${sf(h,0)} гол</span></b></div>`).join(""):`<div class="none">Нет данных по поставке за выбранный период.</div>`)+`</div>`}
     const OK={ubl:"why",ves:"vesf",obv:"whyo"}, OL={ubl:"причины",ves:"по фермам",obv:"причины"};
     const clk=ext?` clk" data-o="${OK[k]}" role="button" tabindex="0`:"";
-    return `<div class="xr st-${st}${clk}"><div class="nm">${m.n}${ext?`<b class="chv">${window.CEOOPEN[OK[k]]?"▴":"▾"} ${OL[k]}</b>`:""}<span>${sub}</span></div><div class="val">${num}</div><div class="track"><div class="fill" style="width:${w.toFixed(1)}%"></div><div class="ref" style="left:${(100/140*100).toFixed(1)}%"></div></div>${spark}${ext}</div>`};
+    const bars=a?`<div class="xb"><span class="l">План</span><div class="t"><i class="p" style="width:${pw.toFixed(1)}%"></i></div><span class="n">${pTxt} ${m.u}</span></div><div class="xb f"><span class="l">Факт</span><div class="t"><i class="f" style="width:${fw2.toFixed(1)}%"></i></div><span class="n">${fTxt} ${m.u}</span></div>`:"";
+    return `<div class="xr st-${st}${clk}"><div class="xh"><div class="nm">${m.n}${ext?`<b class="chv">${window.CEOOPEN[OK[k]]?"▴":"▾"} ${OL[k]}</b>`:""}</div><div class="xd">${a?dvTxt||"по плану":"—"}${pcTxt?`<small>${pcTxt}</small>`:""}</div></div>${bars}${ext}</div>`};
   document.getElementById("ceo-plan").innerHTML=["ubl","ves","obv","crp"].map(xrow).join("");
   document.getElementById("ceo-ctf").innerHTML=["mkm","jir","pad"].map(xrow).join("");
   document.querySelectorAll("#ceo-plan .xr.clk").forEach(row=>{const tg=e=>{if(e.target.closest(".why")||e.target.closest("svg.spark")) return; const o=row.dataset.o; window.CEOOPEN[o]=!window.CEOOPEN[o]; row.querySelector(".why").hidden=!window.CEOOPEN[o]; const c=row.querySelector(".chv"); c.textContent=c.textContent.replace(/^./,window.CEOOPEN[o]?"▴":"▾")}; row.onclick=tg; row.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg(e)}}});
