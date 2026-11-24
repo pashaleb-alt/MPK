@@ -473,7 +473,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=1f7e2c5c7c"></script>
+<script src="/MPK/director-data.js?v=6123fbfe22"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="energy";
@@ -1294,14 +1294,14 @@ function renderCeo(f,t,lab){
     UN.innerHTML=U.map(u=>bar(u.n,`<span class="vl"><b style="color:var(--ink)">${fmt(u.fa,1)}</b> / ${fmt(u.p)} · ${u.v>0?"вакансий "+fmt(u.v,1):u.v<0?"сверх штата "+fmt(-u.v,1):"полностью"}</span>`,u.pc,stc(u.pc))).join("");
   }
   // безопасность
-  const IN=((DATA.ot&&DATA.ot.days)||[]).slice().sort((a,b)=>a.d<b.d?-1:1), injT=IN.filter(x=>x.d<=t), injP=IN.filter(x=>inR(x.d,f,t)).length, lastI=injT.length?injT[injT.length-1].d:null;
-  const noInj=Math.round((utc(t)-utc(lastI||"2026-01-01"))/864e5)+(lastI?0:1);
-  const B=(DATA.bio||[]).filter(b=>b.d<=t).slice(-1)[0], bp=B&&B.max?B.pts/B.max*100:null;
-  const iso8=x=>x.slice(6,10)+"-"+x.slice(3,5)+"-"+x.slice(0,2), PB=DATA.pb||{}, EV=(PB.evac||[]).filter(x=>iso8(x.d)<=t), FR=(PB.fires||[]).filter(x=>iso8(x.d)<=t), le=EV[EV.length-1];
+  const IN=((DATA.ot&&DATA.ot.days)||[]).slice().sort((a,b)=>a.d<b.d?-1:1), injT=IN.filter(x=>x.d<=(t<LAST?t:LAST)), injP=IN.filter(x=>inR(x.d,f,t)).length, lastI=injT.length?injT[injT.length-1].d:null;
+  const noInj=Math.round((utc(t<LAST?t:LAST)-utc(lastI||"2026-01-01"))/864e5)+(lastI?0:1);   // период до конца месяца/года не заходит за последний день данных
+  const B=(DATA.bio||[]).filter(b=>inR(b.d,f,t)).slice(-1)[0], bp=B&&B.max?B.pts/B.max*100:null;
+  const iso8=x=>x.slice(6,10)+"-"+x.slice(3,5)+"-"+x.slice(0,2), PB=DATA.pb||{}, EV=(PB.evac||[]).filter(x=>inR(iso8(x.d),f,t)), FR=(PB.fires||[]).filter(x=>inR(iso8(x.d),f,t)), le=EV[EV.length-1];
   const PM=DATA.prom||{}, opo=PM.opo||[], unreg=opo.filter(o=>o.reg==="не зарегистрирован").length;
-  document.getElementById("ceo-sf").innerHTML=tile("Травмы за период",fmt(injP),`с начала года ${fmt(injT.length)}`,injP?"warn":"good")
+  document.getElementById("ceo-sf").innerHTML=tile("Травмы за период",fmt(injP),"",injP?"warn":"good")
     +tile("Дней без травм",fmt(noInj),lastI?`последняя травма ${dd(lastI)}`:"с начала года травм не было",noInj>=30?"good":noInj>=7?"warn":"crit")
-    +tile("Биобезопасность",bp==null?"—":fmt(bp,0)+" %",B?`проверка ${dd(B.d)} · невыполнено ${fmt((B.items||[]).length)}`:"",bp==null?"":(bp>=90?"good":bp>=80?"warn":"crit"))
+    +tile("Биобезопасность",bp==null?"—":fmt(bp,0)+" %",B?`проверка ${dd(B.d)} · невыполнено ${fmt((B.items||[]).length)}`:"проверок за период не было",bp==null?"":(bp>=90?"good":bp>=80?"warn":"crit"))
     +tile("Пожарная безопасность",fmt(FR.length)+" пожар"+(FR.length%10===1&&FR.length%100!==11?"":"ов"),`учебных эвакуаций ${fmt(EV.length)}`+(le?` · последняя ${le.d.slice(0,5)}: ${fmt(le.dur,0)} мин при норме ${fmt(le.norm,0)}`:""),FR.length?"warn":"good")
     +tile("Промышленная безопасность",opo.length?`${opo.length-unreg} из ${opo.length}`:"—",opo.length?`ОПО зарегистрировано; аварий, инцидентов и несчастных случаев нет (отчёт за 2025)`:"",unreg?"warn":"good");
 }
