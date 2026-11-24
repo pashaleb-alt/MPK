@@ -429,7 +429,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=928dc783f9"></script>
+<script src="/MPK/director-data.js?v=087e09efe4"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="equipment";
@@ -1035,7 +1035,14 @@ function renderWells(f,t,lab){
     const e=mas[mas.length-1]||pts[pts.length-1];
     return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Динамика добычи, % от предыдущих ${n} суток"><line x1="${PAD}" x2="${W-PAD}" y1="${Y(100).toFixed(1)}" y2="${Y(100).toFixed(1)}" stroke="var(--ink-3)" stroke-opacity=".6" stroke-width="1" stroke-dasharray="4 3"/><path d="${path(pts)}" fill="none" stroke="var(--ink-3)" stroke-opacity=".4" stroke-width="1" stroke-linejoin="round"/><path d="${path(mas)}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${X(e.x).toFixed(1)}" cy="${Y(e.v).toFixed(1)}" r="3" fill="${col}"/></svg>`;
   };
-  WR.innerHTML=rows.map(r=>`<div class="wlrow"><div class="h"><span><span class="nm">Скважина №${r.k}</span><span class="st" style="color:${colr[r.st[1]]}">${arr[r.st[1]]} ${r.st[0]}</span></span><span class="vl"><b>${fmt(r.c)}</b> м³/сут${r.d==null?"":` · ${sg(r.d)}`}</span></div>${spark(r.k,r.p,colr[r.st[1]])}<div class="sub">за выбранный период: <b>${PR.length?fmt(ps(r.k))+" м³ · "+pShare(r.k)+" %":"—"}</b></div><div class="sub">доля в общей добыче за ${n} дн. ${fmt(r.shC,1)} % (было ${fmt(r.shP,1)} %) · загрузка от проекта ${fmt(r.c/WELL_DESIGN*100)} %</div></div>`).join("");
+  // (Павел, 24.11.2026) сначала — добыча по скважинам за выбранный день (горизонтальные гистограммы по каждой скважине); динамика (статусы и графики) — свёрнута по умолчанию
+  const bw=K.map(k=>({k,v:ps(k)})).sort((a,b)=>b.v-a.v), bmax=Math.max(1,...bw.map(x=>x.v)), pdays=Math.max(1,PR.length);
+  const bTitle=mode==="day"?`Добыча по скважинам за ${dd(f)}, м³`:`Добыча по скважинам за период ${dd(f)} — ${dd(t)}, м³`;
+  const BARS=`<div style="font-weight:600;font-size:14px;margin:4px 0 6px">${bTitle}</div>`+(PR.length?bw.map(x=>`<div class="hr"><span class="t">Скважина №${x.k}</span><span class="n"><b>${fmt(x.v)}</b> · ${pShare(x.k)} % · <span style="color:var(--ink-3)">загрузка ${fmt(x.v/pdays/WELL_DESIGN*100)} %</span></span><div class="hb"><i class="o" style="width:${x.v/bmax*100}%"></i></div></div>`).join("")
+      +`<div class="hr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span class="t"><b>Итого по скважинам</b></span><span class="n"><b>${fmt(pT)}</b>${pGen>0?` · <span style="color:var(--ink-3)">по общему счётчику ${fmt(pGen)}</span>`:""}</span></div>`:'<div class="empty">За выбранный период данных по скважинам нет.</div>');
+  const wtr=!!window.WELLTREND;
+  WR.innerHTML=BARS+`<div class="hr wtr" role="button" tabindex="0" style="cursor:pointer;user-select:none;margin-top:10px;padding-top:8px;border-top:1px solid var(--line)"><span class="t"><b>Динамика добычи по скважинам</b> <small style="color:var(--ink-3)">статус и график за ${2*n} суток</small> <span class="car" style="color:var(--ink-3)">${wtr?"▴":"▾"}</span></span></div><div class="wtb"${wtr?"":" hidden"}>`
+    +rows.map(r=>`<div class="wlrow"><div class="h"><span><span class="nm">Скважина №${r.k}</span><span class="st" style="color:${colr[r.st[1]]}">${arr[r.st[1]]} ${r.st[0]}</span></span><span class="vl"><b>${fmt(r.c)}</b> м³/сут${r.d==null?"":` · ${sg(r.d)}`}</span></div>${spark(r.k,r.p,colr[r.st[1]])}<div class="sub">доля в общей добыче за ${n} дн. ${fmt(r.shC,1)} % (было ${fmt(r.shP,1)} %) · загрузка от проекта ${fmt(r.c/WELL_DESIGN*100)} %</div></div>`).join("")+`</div>`;
   // добыча по скважинам по дням — раскрывающийся график (Павел, 23.11.2026: «лучше графиком, а не гистограммой»): последние 30 дней с данными до выбранного дня,
   // кнопки «Все / №1…№8» переключают скважину; клик по точке выбирает день; по умолчанию свёрнут
   const DR=E.slice(-30), wo=!!window.WELLDAYS, wsel=(window.WELLSEL==null?0:window.WELLSEL);
@@ -1046,6 +1053,7 @@ function renderWells(f,t,lab){
   lineChart(document.getElementById("wl-dch"),document.getElementById("wl-dxl"),dAx,it=>dvm.has(it.key)?dvm.get(it.key):null,()=>"none",{dec:0});
   const wdr=WR.querySelector(".wdr"); wdr.onclick=()=>{window.WELLDAYS=!window.WELLDAYS; WR.querySelector(".wdb").hidden=!window.WELLDAYS; wdr.querySelector(".car").textContent=window.WELLDAYS?"▴":"▾"}; wdr.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();wdr.click()}};
   WR.querySelectorAll(".wdc .chip").forEach(b=>b.onclick=()=>{window.WELLSEL=+b.dataset.k; renderWells(f,t,lab)});
+  const wtrH=WR.querySelector(".wtr"); wtrH.onclick=()=>{window.WELLTREND=!window.WELLTREND; WR.querySelector(".wtb").hidden=!window.WELLTREND; wtrH.querySelector(".car").textContent=window.WELLTREND?"▴":"▾"}; wtrH.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();wtrH.click()}};
   NT.innerHTML=`<span>Примечание: график за последние ${2*n} суток, пунктир — 100 % (среднее предыдущих ${n} суток), цветная линия — среднее за 7 дней, серая — добыча за сутки; линия вниз — добыча снижается. Добыча за сутки зависит и от режима работы насосов, поэтому для оценки дебита смотрите и на долю скважины в общей добыче. Дни без данных в график не входят.</span>`;
 }
 // электроэнергия (16.11.2026, Павел: «по примеру отчёта по воде»): расход на голову убоя, общий расход, по потребителям (узлы отчёта диспетчерской), график на голову; норм нет — цветовой оценки нет
