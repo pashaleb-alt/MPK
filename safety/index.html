@@ -122,6 +122,9 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .gf{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px} .gf th{font-weight:600;color:var(--ink-3);text-align:right;font-size:11.5px;padding:4px 6px;border-bottom:1px solid var(--line)} .gf td{padding:6px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap} .gf th:first-child,.gf td:first-child{text-align:left;font-weight:600} .gf tfoot td{font-weight:700;border-top:1px solid var(--ink-3)} .gfn{font-size:12px;color:var(--ink-3);margin-top:6px}
 .hl h3{font-size:15px;color:var(--ink);margin:0 0 6px;font-weight:700} .hl h3 small{font-size:11.5px;color:var(--ink-3);font-weight:500;margin-left:6px}
 .hr{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px}
+.ceoh{margin:26px 0 8px;font-size:17px;font-weight:700}
+.cr{padding:8px 0;border-top:1px solid var(--line)} .cr:first-child{border-top:0} .cr .h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap} .cr .nm{font-weight:600;font-size:14px} .cr .vl{font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink-2)} .cr .pc{font-size:15px;font-weight:700;margin-left:10px}
+.cr .tr{height:9px;background:var(--track);border-radius:5px;overflow:hidden;margin-top:5px} .cr .tr i{display:block;height:100%;border-radius:5px}
 .wlrow{padding:10px 0;border-top:1px solid var(--line)} .wlrow:first-child{border-top:0}
 .wlrow .h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap} .wlrow .nm{font-weight:600;font-size:14px} .wlrow .st{font-size:13px;margin-left:8px;font-weight:600}
 .wlrow .vl{font-size:13px;font-variant-numeric:tabular-nums} .wlrow svg{width:100%;height:68px;display:block;margin-top:4px} .wlrow .sub{font-size:12px;color:var(--ink-3)}
@@ -232,7 +235,7 @@ html.solo .dashnav{display:none!important} html.solo .wrap{padding-top:20px!impo
 <script>/* тема: по умолчанию светлая (Павел, 14.09.2026); ?theme=dark — тёмная, ?theme=auto — как в системе; выбор запоминается на устройстве */
 (()=>{try{const q=new URLSearchParams(location.search).get("theme"); if(q==="light"||q==="dark") localStorage.setItem("mpkTheme",q); if(q==="auto") localStorage.setItem("mpkTheme","auto");
 const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","light")}})();</script>
-<script>try{if(new URLSearchParams(location.search).get("solo")==="1") document.documentElement.classList.add("solo")}catch(e){}</script>
+<script>try{if(new URLSearchParams(location.search).get("solo")==="1"||"safety"==="ceo") document.documentElement.classList.add("solo")}catch(e){}</script>
 <div class="wrap">
   <nav class="dashnav" aria-label="Дашборды"><a href="/MPK/" data-p="prod"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10l5 3V10l5 3V6h6v14z"></path><path d="M4 20h16"></path></svg><span>Производство</span></a><a href="/MPK/safety/" data-p="safety" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.3-2.9 7.7-7 9.5-4.1-1.8-7-5.2-7-9.5V6z"></path><path d="M9 12l2.2 2.2L15.2 10"></path></svg><span>Безопасность</span></a><a href="/MPK/labor/" data-p="labor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18a8 8 0 1 1 16 0"></path><path d="M12 18l4-5"></path><path d="M12 8v1.5"></path></svg><span><span class="lf">Производительность</span><span class="ls">Произв. труда</span></span></a><a href="/MPK/staff/" data-p="staff"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><circle cx="17" cy="9" r="2.3"></circle><path d="M17 14.2c2.4 0 4 1.8 4 4.3"></path></svg><span>Персонал</span></a><a href="/MPK/quality/" data-p="quality"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.7 2.7L16 9.8"></path></svg><span>Качество</span></a><a href="/MPK/claims/" data-p="claims"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9.5L5 20v-4H4z"></path><path d="M12 8.5v3.2"></path><path d="M12 13.6v.1"></path></svg><span><span class="lf">Претензии и возвраты</span><span class="ls">Претензии и возвраты</span></span></a><a href="/MPK/equipment/" data-p="equipment"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span>Оборудование</span></a><a href="/MPK/energy/" data-p="energy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"></path></svg><span>Энергоносители</span></a></nav>
 <script>(function(){try{var u=new URL(location.href);if(u.searchParams.has("v"))return;var lm=new Date(document.lastModified).getTime();fetch(u.pathname,{method:"HEAD",cache:"no-store"}).then(function(r){var n=new Date(r.headers.get("last-modified")||0).getTime();if(n&&lm&&n-lm>1500){u.searchParams.set("v",Date.now());location.replace(u.toString())}}).catch(function(){})}catch(e){}})();</script>
@@ -415,6 +418,25 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     </div>
     <div class="two" style="display:none"><div class="hl" id="en-st"></div><div class="hl" id="en-src"></div></div>
   </section>
+  <section class="panel" id="p-ceo" hidden="">
+    <div class="ph"><h2>Отчёт генеральному директору · МПК</h2><span class="note" id="ceo-note"></span></div>
+    <div class="ceoh">Поставка живка</div>
+    <div class="tiles" id="ceo-sup"></div>
+    <div class="hl" id="ceo-farms" style="margin-top:8px"></div>
+    <div class="ceoh">Выполнение плана</div>
+    <div id="ceo-plan"></div>
+    <div class="ceoh">Мука, жир, падёж (ЦТФ)</div>
+    <div id="ceo-ctf"></div>
+    <div class="ceoh">Энергоносители</div>
+    <div class="tiles" id="ceo-en"></div>
+    <div class="legend" id="ceo-ennt" style="font-size:12px;margin-top:4px"></div>
+    <div class="ceoh">Персонал: заполненность штата</div>
+    <div class="tiles" id="ceo-st"></div>
+    <div class="ceoh" style="font-size:15px;margin-top:14px">Сводка по руководителям подразделений</div>
+    <div id="ceo-units"></div>
+    <div class="ceoh">Безопасность</div>
+    <div class="tiles" id="ceo-sf"></div>
+  </section>
 
   <section class="panel" id="p-equip" hidden="">
     <div class="ph"><h2>Оборудование: загрузка мощности линии 5</h2><span class="note" id="eq-note"></span></div>
@@ -429,13 +451,13 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">5</div><div class="s">последняя травма 18.11.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=0e1ff9a180"></script>
+<script src="/MPK/director-data.js?v=c54f3801e7"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
 // Отчёт №2 (Павел, 18.09.2026): вкладка «Качество» — полутуши, ЖКТ, обвалка для ЦРП, претензии, возвраты. Отчёт №3 (?full=1 или уже открывали в сессии) — все модули.
-const SECTIONS={quality:["p-pt","p-tech","p-gkt","p-crp","p-pod","p-san"],safety:["p-bb","p-ot"],equipment:["p-equip"],claims:["p-claims","p-voz"],energy:["p-energy"]};
-const SECTIONS_FULL={quality:["p-pt","p-tech","p-gkt","p-crp","p-pod","p-cgp","p-crp2","p-temp","p-san"],safety:["p-bb","p-ot"],equipment:["p-equip"],claims:["p-claims","p-voz"],energy:["p-energy"]};
+const SECTIONS={quality:["p-pt","p-tech","p-gkt","p-crp","p-pod","p-san"],safety:["p-bb","p-ot"],equipment:["p-equip"],claims:["p-claims","p-voz"],energy:["p-energy"],ceo:["p-ceo"]};
+const SECTIONS_FULL={quality:["p-pt","p-tech","p-gkt","p-crp","p-pod","p-cgp","p-crp2","p-temp","p-san"],safety:["p-bb","p-ot"],equipment:["p-equip"],claims:["p-claims","p-voz"],energy:["p-energy"],ceo:["p-ceo"]};
 const FULL3=(()=>{try{const q=new URLSearchParams(location.search).get("full"); if(q==="0"){sessionStorage.removeItem("mpkFull");return false}
   const f=q==="1"||sessionStorage.getItem("mpkFull")==="1"; if(f) sessionStorage.setItem("mpkFull","1"); return f}catch(e){return new URLSearchParams(location.search).get("full")==="1"}})();
 const SECT=(FULL3?SECTIONS_FULL:SECTIONS)[PAGE];
@@ -471,7 +493,7 @@ const _core=[...Object.keys(DATA.pt),...DATA.crp_days.map(r=>r.d),...DATA.mon.cg
 // надо тоже показать на 26.09»). Чек-листы и осмотры за более поздний день не открывают его раньше времени,
 // а простой завода не отбрасывает вкладки назад — модули без данных сами показывают последние или «проверок не было».
 // (19.11.2026, Павел: «в энергоносителях даты идут не так, как в других отчётах — сделай одинаково»): календарь «Энергоносителей» — как в «Производстве»: только дни, по которым есть данные, открывается на последнем из них
-const _ENL=PAGE==="energy"?(DATA.energy||[]).filter(r=>r.st!=null||r.el>0||r.gas>0||r.co2>0).map(r=>r.d).filter(d=>d.startsWith("2026")).sort():null;
+const _ENL=PAGE==="energy"?(DATA.energy||[]).filter(r=>r.st!=null||r.el>0||r.gas>0||r.co2>0).map(r=>r.d).filter(d=>d.startsWith("2026")).sort():(PAGE==="ceo"?(DATA.pd||[]).map(r=>r.d).filter(d=>d.startsWith("2026")).sort():null);   // «Энергоносители» — дни с данными по энергоносителям, отчёт директору — дни производства
 const LAST=(_ENL&&_ENL.length)?_ENL[_ENL.length-1]:((DATA.last_day_q&&DATA.last_day_q>(DATA.last_day||""))?DATA.last_day_q:(DATA.last_day||_core[_core.length-1]||"2026-01-01")), FIRST="2026-01-01";
 // дни для выбора — только до последнего закрытого дня (сменные чек-листы за текущий день не открывают его раньше времени)
 const DAYSET=(_ENL&&_ENL.length)?new Set(_ENL):new Set([...Object.keys(DATA.pt),...Object.keys(DATA.qual),...DATA.bio.map(r=>r.d),...DATA.voz.map(r=>r.d),...DATA.mon.cgp.map(r=>r.d),...DATA.tech.map(r=>r.d),...DATA.vyh.map(r=>r.d),...DATA.germ.map(r=>r.d),...DATA.mon.crp2.map(r=>r.d),...DATA.crp_days.map(r=>r.d),...DATA.pod.map(r=>r.d),...DATA.claims_list.map(c=>c.d),...(DATA.ot.days||[]).map(x=>x.d),...(DATA.prod_days||[]),...(DATA.energy||[]).map(r=>r.d),...(DATA.equip||[]).map(r=>r.d)].filter(d=>d<=LAST));
@@ -1136,6 +1158,62 @@ function renderCo2(f,t,lab){
     +tile("Расход CO₂ на голову",W.head!=null?fmt(W.head,2)+" кг":"—",killTx(W.killT))
     +ost;
 }
+// отчёт генеральному директору (Павел, 24.11.2026: «отдельный отчёт по отдельной ссылке»): поставка живка, выполнение плана убоя/обвалки/ЦРП, мука/жир/падёж, энергоносители укрупнённо,
+// заполненность штата (отдельная сводка по руководителям подразделений), безопасность; период выбирается календарём, по умолчанию — последний день производства
+function renderCeo(f,t,lab){
+  document.getElementById("ceo-note").textContent=lab+idleNote();
+  const stc=p=>p==null?"none":p>=95?"good":p>=90?"warn":"crit", col={good:"var(--good)",warn:"var(--warn)",crit:"var(--crit)",none:"var(--accent)",up:"var(--accent)"};
+  const PD=(DATA.pd||[]).filter(r=>inR(r.d,f,t));
+  const agg=k=>{const rs=PD.filter(r=>r[k]&&r[k][1]!=null); if(!rs.length) return null; const p=rs.reduce((a,r)=>a+(r[k][0]||0),0), fa=rs.reduce((a,r)=>a+r[k][1],0); return {p,f:fa,pc:p?fa/p*100:null}};
+  const bar=(name,right,pc,st)=>`<div class="cr"><div class="h"><span class="nm">${name}</span><span>${right}<span class="pc" style="color:${col[st]}">${pc==null?"—":fmt(pc,0)+" %"}</span></span></div><div class="tr"><i style="width:${pc==null?0:Math.min(100,pc)}%;background:${col[st]}"></i></div></div>`;
+  const row=(name,k,unit,neutral)=>{const a=agg(k); if(!a) return `<div class="cr"><div class="h"><span class="nm">${name}</span><span class="vl">—</span></div></div>`;
+    const sc=unit==="т"?1000:1, d=unit==="т"?1:0;
+    return bar(name,`<span class="vl"><b style="color:var(--ink)">${fmt(a.f/sc,d)}</b> / ${fmt(a.p/sc,d)} ${unit}</span>`,a.pc,neutral?"none":stc(a.pc))};
+  document.getElementById("ceo-plan").innerHTML=row("Убой, гол","ubl","гол")+row("Обвалка, гол","obv","гол")+row("Розничная продукция ЦРП","crp","т");
+  document.getElementById("ceo-ctf").innerHTML=row("Мясокостная мука","mkm","т")+row("Жир технический","jir","т")+row("Переработано падежа","pad","т",true);
+  // поставка живка: партии «Выход мяса на кости» (голов, живой вес, по фермам) против плана убоя
+  const VY=(DATA.vyh||[]).filter(r=>inR(r.d,f,t)), sup=document.getElementById("ceo-sup"), fb=document.getElementById("ceo-farms");
+  if(!VY.length){sup.innerHTML=tile("Принято живка","—","")+tile("Живой вес","—","")+tile("Средний вес головы","—","")+tile("Партий (машин)","—",""); fb.innerHTML=""} else {
+    const heads=VY.reduce((a,r)=>a+r.heads,0), live=VY.reduce((a,r)=>a+r.live,0), farms={}; let batches=0;
+    VY.forEach(r=>Object.entries(r.farms||{}).forEach(([n,v])=>{const x=farms[n]||(farms[n]=[0,0]); x[0]+=v[0]; x[1]+=v[1]; batches+=v[0]}));
+    const pa=agg("ubl"), pc=pa&&pa.p?heads/pa.p*100:null, ps=stc(pc);
+    sup.innerHTML=tile("Принято живка, гол",fmt(heads),pa?`план убоя ${fmt(pa.p)} · ${fmt(pc,0)} %`:"",ps==="none"?"":ps)
+      +tile("Живой вес, т",fmt(live/1000,1),VY.length>1?`в среднем ${fmt(live/1000/VY.length,1)} т в сутки`:"")
+      +tile("Средний вес головы",fmt(live/heads,1)+" кг","")
+      +tile("Партий (машин)",fmt(batches),VY.length>1?`в среднем ${fmt(batches/VY.length,1)} в сутки`:"");
+    const fl=Object.entries(farms).sort((a,b)=>b[1][1]-a[1][1]), fm=Math.max(1,fl[0][1][1]), ft=fl.reduce((a,x)=>a+x[1][1],0)||1;
+    fb.innerHTML=`<div style="font-weight:600;font-size:14px;margin:2px 0 6px">Поставка по фермам, гол</div>`+fl.map(([n,v])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v[1])}</b> · ${fmt(v[1]/ft*100,1)} % · ${fmt(v[0])} парт.</span><div class="hb"><i class="o" style="width:${v[1]/fm*100}%"></i></div></div>`).join("");
+  }
+  // энергоносители укрупнённо: расход на голову убоя (как в «Энергоносителях») и общий расход за период
+  const E=(DATA.energy||[]).filter(r=>inR(r.d,f,t)), per=key=>{const k=E.filter(r=>r.kill>0&&r[key]>0), kk=k.reduce((a,r)=>a+r.kill,0); return kk?k.reduce((a,r)=>a+r[key],0)/kk:null}, tot=key=>E.reduce((a,r)=>a+(r[key]>0?r[key]:0),0);
+  const w=per("st"), el=per("el"), g=per("gas"), c=per("co2"), hasE=E.length>0&&(w!=null||el!=null||g!=null||c!=null);
+  document.getElementById("ceo-en").innerHTML=tile("Вода на голову",w!=null?fmt(w,2)+" м³":"—",`норма ${fmt(NORM_W,2)} м³`+(w!=null?` · всего ${fmt(tot("st"))} м³`:""),w==null?"none":(Math.round(w*100)/100<=NORM_W?"good":"crit"))
+    +tile("Электроэнергия на голову",el!=null?fmt(el,1)+" кВт·ч":"—",el!=null?`всего ${fmt(tot("el")/1000,1)} МВт·ч`:"")
+    +tile("Газ на голову",g!=null?fmt(g,2)+" м³":"—",g!=null?`всего ${fmt(tot("gas")/1000,1)} тыс. м³`:"")
+    +tile("CO₂ на голову",c!=null?fmt(c,2)+" кг":"—",c!=null?`всего ${fmt(tot("co2")/1000,1)} т`:"");
+  const lastE=(DATA.energy||[]).filter(r=>r.d<=t&&(r.st!=null||r.el>0||r.gas>0||r.co2>0)).map(r=>r.d).sort().pop();
+  document.getElementById("ceo-ennt").innerHTML=(!hasE&&lastE)?`<span>За выбранный период данных по энергоносителям пока нет; последние внесённые данные — за ${dd(lastE)}.</span>`:"";
+  // заполненность штата: последний снимок ШР на выбранный день; сводка по руководителям — по подразделениям
+  const SA=DATA.staff||[], S=SA.filter(x=>x.d<=t).slice(-1)[0]||SA[0], ST=document.getElementById("ceo-st"), UN=document.getElementById("ceo-units");
+  if(!S){ST.innerHTML=tile("Укомплектованность штата","—","");UN.innerHTML=""} else {
+    const fp=S.plan?S.fact/S.plan*100:null;
+    ST.innerHTML=tile("Укомплектованность штата",fp==null?"—":fmt(fp,0)+" %",`факт ${fmt(S.fact,1)} из ${fmt(S.plan)} · ШР на ${dd(S.d)}`,stc(fp)==="none"?"":stc(fp))
+      +tile("Вакансий",fmt(S.vac,1),`КНДР ${fmt(S.kndr)} · аутсорс ${fmt(S.outs)}`);
+    const U=(S.units||[]).filter(u=>u[1]>0).map(u=>({n:u[0],p:u[1],fa:u[2],v:u[3],pc:u[2]/u[1]*100})).sort((a,b)=>a.pc-b.pc);
+    UN.innerHTML=U.map(u=>bar(u.n,`<span class="vl"><b style="color:var(--ink)">${fmt(u.fa,1)}</b> / ${fmt(u.p)} · ${u.v>0?"вакансий "+fmt(u.v,1):u.v<0?"сверх штата "+fmt(-u.v,1):"полностью"}</span>`,u.pc,stc(u.pc))).join("");
+  }
+  // безопасность
+  const IN=((DATA.ot&&DATA.ot.days)||[]).slice().sort((a,b)=>a.d<b.d?-1:1), injT=IN.filter(x=>x.d<=t), injP=IN.filter(x=>inR(x.d,f,t)).length, lastI=injT.length?injT[injT.length-1].d:null;
+  const noInj=Math.round((utc(t)-utc(lastI||"2026-01-01"))/864e5)+(lastI?0:1);
+  const B=(DATA.bio||[]).filter(b=>b.d<=t).slice(-1)[0], bp=B&&B.max?B.pts/B.max*100:null;
+  const iso8=x=>x.slice(6,10)+"-"+x.slice(3,5)+"-"+x.slice(0,2), PB=DATA.pb||{}, EV=(PB.evac||[]).filter(x=>iso8(x.d)<=t), FR=(PB.fires||[]).filter(x=>iso8(x.d)<=t), le=EV[EV.length-1];
+  const PM=DATA.prom||{}, opo=PM.opo||[], unreg=opo.filter(o=>o.reg==="не зарегистрирован").length;
+  document.getElementById("ceo-sf").innerHTML=tile("Травмы за период",fmt(injP),`с начала года ${fmt(injT.length)}`,injP?"warn":"good")
+    +tile("Дней без травм",fmt(noInj),lastI?`последняя травма ${dd(lastI)}`:"с начала года травм не было",noInj>=30?"good":noInj>=7?"warn":"crit")
+    +tile("Биобезопасность",bp==null?"—":fmt(bp,0)+" %",B?`проверка ${dd(B.d)} · невыполнено ${fmt((B.items||[]).length)}`:"",bp==null?"":(bp>=90?"good":bp>=80?"warn":"crit"))
+    +tile("Пожарная безопасность",fmt(FR.length)+" пожар"+(FR.length%10===1&&FR.length%100!==11?"":"ов"),`учебных эвакуаций ${fmt(EV.length)}`+(le?` · последняя ${le.d.slice(0,5)}: ${fmt(le.dur,0)} мин при норме ${fmt(le.norm,0)}`:""),FR.length?"warn":"good")
+    +tile("Промышленная безопасность",opo.length?`${opo.length-unreg} из ${opo.length}`:"—",opo.length?`ОПО зарегистрировано; аварий, инцидентов и несчастных случаев нет (отчёт за 2025)`:"",unreg?"warn":"good");
+}
 // верхние плашки вкладки (16.11.2026, Павел): расход на голову по каждому энергоносителю; по нажатию открывается отчёт по нему
 const EN_TOP=[["water","Вода","м³",2],["el","Электроэнергия","кВт·ч",1],["gas","Природный газ","м³",2],["co2","Углекислота (CO₂)","кг",2]];
 const EN_TILE_SWITCH=false;   // 16.11.2026, Павел: на телефоне плашки-переключатели неудобны — все отчёты идут по очереди; true вернёт верхние плашки с открытием отчёта по нажатию
@@ -1246,7 +1324,7 @@ const IDLE=new Set(DATA.idle_days||[]);
 const idleNote=()=>(mode==="day"&&IDLE.has(day))?" · завод не работал":"";
 function render(){
   const [f,t,lab]=range(); document.getElementById("cur").textContent=lab+idleNote(); renderPicker();
-  if(PAGE==="quality"){renderPt(f,t,lab);renderTech(f,t,lab);renderGkt(f,t,lab);renderCrp(f,t,lab);renderPod(f,t,lab);renderMon("cgp","cg",f,t,lab);renderMon("crp2","c2",f,t,lab);renderTemp(f,t,lab);renderSm(f,t,lab)} else if(PAGE==="energy") renderEnergy(f,t,lab); else if(PAGE==="equipment") renderEquip(f,t,lab); else if(PAGE==="claims"){renderClaims(f,t,lab);renderVoz(f,t,lab)} else renderSafety(f,t,lab);
+  if(PAGE==="quality"){renderPt(f,t,lab);renderTech(f,t,lab);renderGkt(f,t,lab);renderCrp(f,t,lab);renderPod(f,t,lab);renderMon("cgp","cg",f,t,lab);renderMon("crp2","c2",f,t,lab);renderTemp(f,t,lab);renderSm(f,t,lab)} else if(PAGE==="energy") renderEnergy(f,t,lab); else if(PAGE==="ceo") renderCeo(f,t,lab); else if(PAGE==="equipment") renderEquip(f,t,lab); else if(PAGE==="claims"){renderClaims(f,t,lab);renderVoz(f,t,lab)} else renderSafety(f,t,lab);
 }
 render();
 document.documentElement.classList.add("ready");
