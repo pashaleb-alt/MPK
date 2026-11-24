@@ -130,6 +130,12 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .xr .track{grid-column:1/-1;height:11px;border-radius:6px;background:var(--trk);position:relative} .xr .fill{position:absolute;inset:0 auto 0 0;border-radius:6px;background:var(--bar)} .xr .ref{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink-3);opacity:.55;border-radius:1px}
 .xr .spark{grid-column:1/-1;height:34px;width:100%} .xr .spark circle.sel{fill:var(--bar)}
 .xr.st-good{--bar:var(--good);--txt:var(--good-t);--trk:var(--good-bg)} .xr.st-warn{--bar:var(--warn);--txt:var(--warn-t);--trk:var(--warn-bg)} .xr.st-crit{--bar:var(--crit);--txt:var(--crit-t);--trk:var(--crit-bg)} .xr.st-none{--bar:var(--sp);--txt:var(--ink-3);--trk:var(--line-soft)}
+.xr.clk{cursor:pointer} .xr .nm .chv{margin-left:6px;font-size:11px;color:var(--ink-3);font-weight:400}
+.xr .why{grid-column:1/-1;padding:10px 12px;background:var(--ground);border:1px solid var(--line-soft);border-radius:10px;cursor:default;max-height:380px;overflow-y:auto}
+.xr .why h4{margin:0 0 6px;font-size:13px;color:var(--ink-2)} .xr .why .wi{padding:7px 0;border-top:1px solid var(--line-soft)} .xr .why .wi:first-of-type{border-top:0}
+.xr .why .wh{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums} .xr .why .wh b{color:var(--ink)} .xr .why .wh .neg{color:var(--crit-t)} .xr .why .wh .pos{color:var(--good-t)}
+.xr .why .wt{font-size:13.5px;line-height:1.4;margin-top:2px;color:var(--ink)} .xr .why .none{font-size:13px;color:var(--ink-3)}
+.xr .why .fr{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--line-soft);font-size:13.5px;font-variant-numeric:tabular-nums} .xr .why .fr:first-of-type{border-top:0} .xr .why .fr span{color:var(--ink-3);font-size:12.5px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .xr{--sp:#4a5a6e}} :root[data-theme="dark"] .xr{--sp:#4a5a6e}
 @media (min-width:720px){.xr{grid-template-columns:minmax(180px,.95fr) 126px minmax(140px,.9fr) minmax(150px,.8fr);gap:16px;padding:15px 4px} .xr .track,.xr .spark{grid-column:auto}}
 .cr{padding:8px 0;border-top:1px solid var(--line)} .cr:first-child{border-top:0} .cr .h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap} .cr .nm{font-weight:600;font-size:14px} .cr .vl{font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink-2)} .cr .pc{font-size:15px;font-weight:700;margin-left:10px}
@@ -461,7 +467,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=8268603d45"></script>
+<script src="/MPK/director-data.js?v=e0a5f91913"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="equipment";
@@ -1212,9 +1218,22 @@ function renderCeo(f,t,lab){
       spark=`<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Динамика"><path d="${pts.map((x,i)=>(i?"L":"M")+xs(i).toFixed(1)+" "+ys(x.v).toFixed(1)).join(" ")}" fill="none" stroke="var(--sp)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"></path>`
         +(si>=0?`<circle class="sel" cx="${xs(si).toFixed(1)}" cy="${ys(pts[si].v).toFixed(1)}" r="3.8"></circle>`:"")
         +pts.map((x,i)=>`<rect x="${(xs(i)-5).toFixed(1)}" y="0" width="10" height="${H}" fill="transparent" data-d="${x.d}" style="cursor:pointer"><title>${+x.d.slice(8,10)} ${MG3[+x.d.slice(5,7)-1]} — ${sf(x.v,m.val?m.dec:0)}${m.val?"":" %"}</title></rect>`).join("")+`</svg>`}
-    return `<div class="xr st-${st}"><div class="nm">${m.n}<span>${sub}</span></div><div class="val">${num}</div><div class="track"><div class="fill" style="width:${w.toFixed(1)}%"></div><div class="ref" style="left:${(100/140*100).toFixed(1)}%"></div></div>${spark}</div>`};
-  document.getElementById("ceo-plan").innerHTML=["ubl","ves","vyh","obv","crp"].map(xrow).join("");
+    // раскрывающиеся блоки: причины невыполнения убоя; средний вес по фермам (Павел, 24.11.2026)
+    const esc=x=>String(x).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch]);
+    let ext="";
+    if(k==="ubl"){
+      const rs=PD.filter(r=>r.why).reverse();
+      ext=`<div class="why" data-k="why"${window.CEOOPEN.why?"":" hidden"}><h4>Причины отклонений по убою</h4>`+(rs.length?rs.map(r=>{const pl=r.ubl[0], fa=r.ubl[1], dv=(pl!=null&&fa!=null)?fa-pl:null;
+        return `<div class="wi"><div class="wh"><b>${+r.d.slice(8,10)} ${MG3[+r.d.slice(5,7)-1]}</b>${dv==null?"":` · план ${sf(pl,0)} / факт ${sf(fa,0)} · <b class="${dv>=0?"pos":"neg"}">${dv>0?"+":dv<0?"−":""}${sf(Math.abs(dv),0)} гол</b>`}${r.why.h?" · простой "+r.why.h:""}</div><div class="wt">${esc(r.why.t)}</div></div>`}).join(""):`<div class="none">${PD.length>1?"За выбранный период причины отклонений в книге не указаны.":"За этот день причина отклонения в книге не указана."}</div>`)+`</div>`}
+    if(k==="ves"){
+      const fm={}; (DATA.vyh||[]).filter(r=>inR(r.d,f,t)).forEach(r=>Object.entries(r.farms||{}).forEach(([n,v])=>{const x=fm[n]||(fm[n]=[0,0]); x[0]+=v[1]; x[1]+=v[2]}));
+      const fl=Object.entries(fm).filter(([n,v])=>v[0]>0).map(([n,v])=>[n,v[1]/v[0],v[0]]).sort((a,b)=>b[1]-a[1]);
+      ext=`<div class="why" data-k="vesf"${window.CEOOPEN.vesf?"":" hidden"}><h4>Средний вес по фермам</h4>`+(fl.length?fl.map(([n,w,h])=>`<div class="fr"><b>${n}</b><b>${sf(w,1)} кг <span>· ${sf(h,0)} гол</span></b></div>`).join(""):`<div class="none">Нет данных по поставке за выбранный период.</div>`)+`</div>`}
+    const clk=ext?` clk" data-o="${k==="ubl"?"why":"vesf"}" role="button" tabindex="0`:"";
+    return `<div class="xr st-${st}${clk}"><div class="nm">${m.n}${ext?`<b class="chv">${window.CEOOPEN[k==="ubl"?"why":"vesf"]?"▴":"▾"} ${k==="ubl"?"причины":"по фермам"}</b>`:""}<span>${sub}</span></div><div class="val">${num}</div><div class="track"><div class="fill" style="width:${w.toFixed(1)}%"></div><div class="ref" style="left:${(100/140*100).toFixed(1)}%"></div></div>${spark}${ext}</div>`};
+  document.getElementById("ceo-plan").innerHTML=["ubl","ves","obv","crp"].map(xrow).join("");
   document.getElementById("ceo-ctf").innerHTML=["mkm","jir","pad"].map(xrow).join("");
+  document.querySelectorAll("#ceo-plan .xr.clk").forEach(row=>{const tg=e=>{if(e.target.closest(".why")||e.target.closest("svg.spark")) return; const o=row.dataset.o; window.CEOOPEN[o]=!window.CEOOPEN[o]; row.querySelector(".why").hidden=!window.CEOOPEN[o]; const c=row.querySelector(".chv"); c.textContent=c.textContent.replace(/^./,window.CEOOPEN[o]?"▴":"▾")}; row.onclick=tg; row.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg(e)}}});
   // нажатие на точку графика открывает этот день
   document.querySelectorAll("#ceo-plan .spark rect,#ceo-ctf .spark rect").forEach(r=>r.onclick=()=>{if(DAYSET.has(r.dataset.d)){mode="day"; day=r.dataset.d; mon=+r.dataset.d.slice(5,7); render()}});
   // поставка живка: партии «Выход мяса на кости» (голов, живой вес, по фермам) против плана убоя
