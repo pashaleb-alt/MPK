@@ -452,7 +452,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">5</div><div class="s">последняя травма 18.11.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=a75d2787d6"></script>
+<script src="/MPK/director-data.js?v=5568673f3b"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -1182,13 +1182,15 @@ function renderCeo(f,t,lab){
   document.getElementById("ceo-ctf").innerHTML=row("Мясокостная мука","mkm","т")+row("Жир технический","jir","т")+row("Переработано падежа","pad","т",true);
   // поставка живка: партии «Выход мяса на кости» (голов, живой вес, по фермам) против плана убоя
   const VY=(DATA.vyh||[]).filter(r=>inR(r.d,f,t)), sup=document.getElementById("ceo-sup"), fb=document.getElementById("ceo-farms");
+  // принято живка = сумма всех групп (Павел, 24.11.2026): товарная, ремонтная, технологическая свинка, свиноматка; вес и партии — только по товарной свинке (из «Выхода мяса на кости»)
+  const GA=PD.filter(r=>r.grp), gTot=GA.length?GA.reduce((a,r)=>a+r.grp[0].reduce((x,y)=>x+y,0),0):null, gPlan=GA.length?GA.reduce((a,r)=>a+r.grp[1].reduce((x,y)=>x+y,0),0):null;
   if(!VY.length){sup.innerHTML=tile("Принято живка","—","")+tile("Живой вес","—","")+tile("Средний вес головы","—","")+tile("Партий (машин)","—",""); fb.innerHTML=""} else {
     const heads=VY.reduce((a,r)=>a+r.heads,0), live=VY.reduce((a,r)=>a+r.live,0), farms={}; let batches=0;
     VY.forEach(r=>Object.entries(r.farms||{}).forEach(([n,v])=>{const x=farms[n]||(farms[n]=[0,0]); x[0]+=v[0]; x[1]+=v[1]; batches+=v[0]}));
-    const pa=agg("ubl"), pc=pa&&pa.p?heads/pa.p*100:null, ps=stc(pc);
-    sup.innerHTML=tile("Принято живка, гол",fmt(heads),pa?`план убоя ${fmt(pa.p)} · ${fmt(pc,0)} %`:"",ps==="none"?"":ps)
-      +tile("Живой вес, т",fmt(live/1000,1),VY.length>1?`в среднем ${fmt(live/1000/VY.length,1)} т в сутки`:"")
-      +tile("Средний вес головы",fmt(live/heads,1)+" кг","")
+    const pa=agg("ubl"), tot=gTot!=null?gTot:heads, pl=gTot!=null?gPlan:(pa?pa.p:null), pc=pl?tot/pl*100:null, ps=stc(pc);
+    sup.innerHTML=tile("Принято живка, гол",fmt(tot),pl?`план ${fmt(pl)} · ${fmt(pc,0)} %`:"",ps==="none"?"":ps)
+      +tile("Живой вес, т",fmt(live/1000,1),(gTot!=null?"товарная свинка":"")+(VY.length>1?`${gTot!=null?" · ":""}в среднем ${fmt(live/1000/VY.length,1)} т в сутки`:""))
+      +tile("Средний вес головы",fmt(live/heads,1)+" кг",gTot!=null?"товарная свинка":"")
       +tile("Партий (машин)",fmt(batches),VY.length>1?`в среднем ${fmt(batches/VY.length,1)} в сутки`:"");
     const fl=Object.entries(farms).sort((a,b)=>b[1][1]-a[1][1]), fm=Math.max(1,fl[0][1][1]), ft=fl.reduce((a,x)=>a+x[1][1],0)||1;
     fold(fb,"farms","Поставка по фермам, гол",fl.length+" ферм",fl.map(([n,v])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v[1])}</b> · ${fmt(v[1]/ft*100,1)} % · ${fmt(v[0])} парт.</span><div class="hb"><i class="o" style="width:${v[1]/fm*100}%"></i></div></div>`).join(""));
