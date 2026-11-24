@@ -128,10 +128,11 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .xr .xh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .xr .nm{font-weight:600;font-size:16px;padding-top:2px} .xr .nm .chv{display:block;margin:3px 0 0}
 .xr .xd{font:600 24px/1.1 "Helvetica Neue",Helvetica,Arial,sans-serif;text-align:right;color:var(--txt);font-variant-numeric:tabular-nums;white-space:nowrap} .xr .xd small{display:block;font:500 12.5px/1.3 "Helvetica Neue",Helvetica,Arial,sans-serif;margin-top:3px}
-.xr .xb{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;margin-top:8px;font-variant-numeric:tabular-nums} .xr .xb .l{font-size:12.5px;color:var(--ink-3)} .xr .xb.f .l{color:var(--ink-2);font-weight:600}
-.xr .xb .t{height:16px;border-radius:5px;background:var(--line-soft);overflow:hidden} .xr .xb .t i{display:block;height:100%;border-radius:5px}
+.xr .xb{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:8px;font-variant-numeric:tabular-nums} .xr .xb .l{font-size:12.5px;color:var(--ink-3)} .xr .xb.f .l{color:var(--ink-2);font-weight:600}
+.xr .xb .t{display:none;height:16px;border-radius:5px;background:var(--line-soft);overflow:hidden} .xr .xb .t i{display:block;height:100%;border-radius:5px}
 .xr .xb .t i.p{background:var(--ink-3);opacity:.45} .xr .xb .t i.f{background:var(--bar)}
 .xr .xb .n{font-size:14px;color:var(--ink-2);text-align:right;min-width:92px} .xr .xb.f .n{color:var(--ink);font-weight:700}
+/* горизонтальные гистограммы убраны (24.11.2026): остались числа */ #p-ceo .hb{display:none}
 .xr.st-good{--bar:var(--good);--txt:var(--good-t)} .xr.st-warn{--bar:var(--warn);--txt:var(--warn-t)} .xr.st-crit{--bar:var(--crit);--txt:var(--crit-t)} .xr.st-none{--bar:var(--sp);--txt:var(--ink-3)}
 .xr.clk{cursor:pointer} .xr .nm .chv{margin-left:6px;font-size:11px;color:var(--ink-3);font-weight:400}
 .xr .why{grid-column:1/-1;padding:10px 12px;background:var(--ground);border:1px solid var(--line-soft);border-radius:10px;cursor:default;max-height:380px;overflow-y:auto}
@@ -469,7 +470,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=5fee3be207"></script>
+<script src="/MPK/director-data.js?v=f754243b1d"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
