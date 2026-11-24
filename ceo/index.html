@@ -451,9 +451,9 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=c54f3801e7"></script>
+<script src="/MPK/ceo-data.js?v=6aa4c37c80"></script>
 <script>
-/* данные в director-data.js */
+/* данные в ceo-data.js */
 const PAGE="ceo";
 // Отчёт №2 (Павел, 18.09.2026): вкладка «Качество» — полутуши, ЖКТ, обвалка для ЦРП, претензии, возвраты. Отчёт №3 (?full=1 или уже открывали в сессии) — все модули.
 const SECTIONS={quality:["p-pt","p-tech","p-gkt","p-crp","p-pod","p-san"],safety:["p-bb","p-ot"],equipment:["p-equip"],claims:["p-claims","p-voz"],energy:["p-energy"],ceo:["p-ceo"]};
@@ -486,7 +486,7 @@ const fmtD=d=>utc(d).toLocaleDateString("ru-RU",{day:"numeric",month:"long",time
 const WD=["воскресенье","понедельник","вторник","среда","четверг","пятница","суббота"];
 
 // все даты, где есть хоть что-то дневное
-const _core=[...Object.keys(DATA.pt),...DATA.crp_days.map(r=>r.d),...DATA.mon.cgp.map(r=>r.d)].filter(d=>d.startsWith("2026")).sort();   // последний закрытый день убоя/обвалки
+const _core=[...Object.keys(DATA.pt||{}),...(DATA.crp_days||[]).map(r=>r.d),...((DATA.mon&&DATA.mon.cgp)||[]).map(r=>r.d)].filter(d=>d.startsWith("2026")).sort();   // последний закрытый день убоя/обвалки
 // день отчёта — последний закрытый день производства (сводка); чек-листы и осмотры за сегодня не должны открывать день
 // раньше времени (Павел, 23.09.2026: «почему отчёт опять за 23.09? должно быть за 22.09» — после перехода полутуш на дату вкладки)
 // День отчёта = последний закрытый день производства (Павел, 27.09.2026: «все остальные вкладки и модули
