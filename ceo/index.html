@@ -436,7 +436,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
   <section class="panel" id="p-ceo">
     <div class="ph"><h2>Сводный отчет МПК</h2><span class="note" id="ceo-note">23 ноября, понедельник</span></div>
     <div class="ceoh">Поставка живка</div>
-    <div class="tiles" id="ceo-sup"><div class="tile st-good"><div class="l">Принято живка, гол</div><div class="v">3&nbsp;005</div><div class="s">план 3&nbsp;042 · 99 %</div></div><div class="tile "><div class="l">Живой вес, т</div><div class="v">320,9</div><div class="s">товарная свинка</div></div><div class="tile "><div class="l">Средний вес головы</div><div class="v">109,8 кг</div><div class="s">товарная свинка</div></div><div class="tile "><div class="l">Партий (машин)</div><div class="v">16</div><div class="s"></div></div></div>
+    <div class="tiles" id="ceo-sup"><div class="tile st-good"><div class="l">Принято живка, гол</div><div class="v">3&nbsp;005</div><div class="s">план 3&nbsp;042 · 99 %</div></div><div class="tile "><div class="l">Живой вес, т</div><div class="v">320,9</div><div class="s">товарная свинка</div></div><div class="tile "><div class="l">Средний вес головы</div><div class="v">109,8 кг</div><div class="s">товарная свинка · минимум СВК 4 — 89,7 кг</div></div><div class="tile "><div class="l">Партий (машин)</div><div class="v">16</div><div class="s"></div></div></div>
     <div class="hl" id="ceo-grp" style="margin-top:8px"><h3 class="fold" role="button" tabindex="0" style="cursor:pointer;user-select:none">Товарные группы, гол<small>3&nbsp;005 гол · нажмите, чтобы раскрыть</small><span class="car" style="float:right;color:var(--ink-3)">▾</span></h3><div class="fb" hidden=""><div class="hr"><span class="t">Товарная свинка</span><span class="n"><b>2&nbsp;924</b> · 97,3 % · план 2&nbsp;960</span><div class="hb"><i class="o" style="width:100%"></i></div></div><div class="hr"><span class="t">Технологическая свинка</span><span class="n"><b>70</b> · 2,3 % · план 72</span><div class="hb"><i class="o" style="width:2.3939808481532148%"></i></div></div><div class="hr"><span class="t">Ремонтная свинка</span><span class="n"><b>11</b> · 0,4 % · план 10</span><div class="hb"><i class="o" style="width:0.3761969904240766%"></i></div></div><div class="hr"><span class="t">Свиноматка</span><span class="n"><b>0</b> · 0,0 %</span><div class="hb"><i class="o" style="width:0%"></i></div></div></div></div>
     <div class="hl" id="ceo-farms" style="margin-top:8px"><h3 class="fold" role="button" tabindex="0" style="cursor:pointer;user-select:none">Поставка по фермам, гол<small>7 ферм · нажмите, чтобы раскрыть</small><span class="car" style="float:right;color:var(--ink-3)">▾</span></h3><div class="fb" hidden=""><div class="hr"><span class="t">СВК 3</span><span class="n"><b>557</b> · 19,0 % · 3 парт.</span><div class="hb"><i class="o" style="width:100%"></i></div></div><div class="hr"><span class="t">ФО 1</span><span class="n"><b>555</b> · 19,0 % · 3 парт.</span><div class="hb"><i class="o" style="width:99.64093357271095%"></i></div></div><div class="hr"><span class="t">СВК 9</span><span class="n"><b>554</b> · 18,9 % · 3 парт.</span><div class="hb"><i class="o" style="width:99.46140035906643%"></i></div></div><div class="hr"><span class="t">ФО 2</span><span class="n"><b>554</b> · 18,9 % · 3 парт.</span><div class="hb"><i class="o" style="width:99.46140035906643%"></i></div></div><div class="hr"><span class="t">СВК 4</span><span class="n"><b>370</b> · 12,7 % · 2 парт.</span><div class="hb"><i class="o" style="width:66.42728904847397%"></i></div></div><div class="hr"><span class="t">СВК 7</span><span class="n"><b>186</b> · 6,4 % · 1 парт.</span><div class="hb"><i class="o" style="width:33.39317773788151%"></i></div></div><div class="hr"><span class="t">СВК 8</span><span class="n"><b>148</b> · 5,1 % · 1 парт.</span><div class="hb"><i class="o" style="width:26.570915619389584%"></i></div></div></div></div>
     <div class="ceoh">Выполнение плана</div>
@@ -467,7 +467,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/ceo-data.js?v=0d263a6958"></script>
+<script src="/MPK/ceo-data.js?v=636f28b56a"></script>
 <script>
 /* данные в ceo-data.js */
 const PAGE="ceo";
@@ -1242,11 +1242,12 @@ function renderCeo(f,t,lab){
   const GA=PD.filter(r=>r.grp), gTot=GA.length?GA.reduce((a,r)=>a+r.grp[0].reduce((x,y)=>x+y,0),0):null, gPlan=GA.length?GA.reduce((a,r)=>a+r.grp[1].reduce((x,y)=>x+y,0),0):null;
   if(!VY.length){sup.innerHTML=tile("Принято живка","—","")+tile("Живой вес","—","")+tile("Средний вес головы","—","")+tile("Партий (машин)","—",""); fb.innerHTML=""} else {
     const heads=VY.reduce((a,r)=>a+r.heads,0), live=VY.reduce((a,r)=>a+r.live,0), farms={}; let batches=0;
-    VY.forEach(r=>Object.entries(r.farms||{}).forEach(([n,v])=>{const x=farms[n]||(farms[n]=[0,0]); x[0]+=v[0]; x[1]+=v[1]; batches+=v[0]}));
+    VY.forEach(r=>Object.entries(r.farms||{}).forEach(([n,v])=>{const x=farms[n]||(farms[n]=[0,0,0]); x[0]+=v[0]; x[1]+=v[1]; x[2]+=v[2]; batches+=v[0]}));
+    const fw=Object.entries(farms).filter(([n,v])=>v[1]>0&&v[2]>0).map(([n,v])=>[n,v[2]/v[1]]).sort((a,b)=>a[1]-b[1]), minF=fw[0]||null;
     const pa=agg("ubl"), tot=gTot!=null?gTot:heads, pl=gTot!=null?gPlan:(pa?pa.p:null), pc=pl?tot/pl*100:null, ps=stc(pc);
     sup.innerHTML=tile("Принято живка, гол",fmt(tot),pl?`план ${fmt(pl)} · ${fmt(pc,0)} %`:"",ps==="none"?"":ps)
       +tile("Живой вес, т",fmt(live/1000,1),(gTot!=null?"товарная свинка":"")+(VY.length>1?`${gTot!=null?" · ":""}в среднем ${fmt(live/1000/VY.length,1)} т в сутки`:""))
-      +tile("Средний вес головы",fmt(live/heads,1)+" кг",gTot!=null?"товарная свинка":"")
+      +tile("Средний вес головы",fmt(live/heads,1)+" кг",(gTot!=null?"товарная свинка":"")+(minF?`${gTot!=null?" · ":""}минимум ${minF[0]} — ${fmt(minF[1],1)} кг`:""))
       +tile("Партий (машин)",fmt(batches),VY.length>1?`в среднем ${fmt(batches/VY.length,1)} в сутки`:"");
     const fl=Object.entries(farms).sort((a,b)=>b[1][1]-a[1][1]), fm=Math.max(1,fl[0][1][1]), ft=fl.reduce((a,x)=>a+x[1][1],0)||1;
     fold(fb,"farms","Поставка по фермам, гол",fl.length+" ферм",fl.map(([n,v])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v[1])}</b> · ${fmt(v[1]/ft*100,1)} % · ${fmt(v[0])} парт.</span><div class="hb"><i class="o" style="width:${v[1]/fm*100}%"></i></div></div>`).join(""));
