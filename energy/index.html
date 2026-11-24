@@ -422,6 +422,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="ph"><h2>Сводный отчет МПК</h2><span class="note" id="ceo-note"></span></div>
     <div class="ceoh">Поставка живка</div>
     <div class="tiles" id="ceo-sup"></div>
+    <div class="hl" id="ceo-grp" style="margin-top:8px"></div>
     <div class="hl" id="ceo-farms" style="margin-top:8px"></div>
     <div class="ceoh">Выполнение плана</div>
     <div id="ceo-plan"></div>
@@ -451,7 +452,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=400006c22d"></script>
+<script src="/MPK/director-data.js?v=15e5e6b973"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="energy";
@@ -1183,6 +1184,12 @@ function renderCeo(f,t,lab){
       +tile("Партий (машин)",fmt(batches),VY.length>1?`в среднем ${fmt(batches/VY.length,1)} в сутки`:"");
     const fl=Object.entries(farms).sort((a,b)=>b[1][1]-a[1][1]), fm=Math.max(1,fl[0][1][1]), ft=fl.reduce((a,x)=>a+x[1][1],0)||1;
     fb.innerHTML=`<div style="font-weight:600;font-size:14px;margin:2px 0 6px">Поставка по фермам, гол</div>`+fl.map(([n,v])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v[1])}</b> · ${fmt(v[1]/ft*100,1)} % · ${fmt(v[0])} парт.</span><div class="hb"><i class="o" style="width:${v[1]/fm*100}%"></i></div></div>`).join("");
+  }
+  // товарные группы: свинка товарная, ремонтная, технологическая, свиноматка (лист «ЦУиППЖ», факт и план убоя по группам)
+  const GN=["Товарная свинка","Ремонтная свинка","Технологическая свинка","Свиноматка"], GR=PD.filter(r=>r.grp), gb=document.getElementById("ceo-grp");
+  if(!GR.length) gb.innerHTML=""; else {
+    const gf=GN.map((n,i)=>[n,GR.reduce((a,r)=>a+r.grp[0][i],0),GR.reduce((a,r)=>a+r.grp[1][i],0)]), gt=gf.reduce((a,x)=>a+x[1],0)||1, gm=Math.max(1,...gf.map(x=>x[1]));
+    gb.innerHTML=`<div style="font-weight:600;font-size:14px;margin:2px 0 6px">Товарные группы, гол</div>`+gf.map(([n,fa,pl])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(fa)}</b> · ${fmt(fa/gt*100,1)} %${pl?` · план ${fmt(pl)}`:""}</span><div class="hb"><i class="o" style="width:${fa/gm*100}%"></i></div></div>`).join("");
   }
   // энергоносители укрупнённо: расход на голову убоя (как в «Энергоносителях») и общий расход за период
   const E=(DATA.energy||[]).filter(r=>inR(r.d,f,t)), per=key=>{const k=E.filter(r=>r.kill>0&&r[key]>0), kk=k.reduce((a,r)=>a+r.kill,0); return kk?k.reduce((a,r)=>a+r[key],0)/kk:null}, tot=key=>E.reduce((a,r)=>a+(r[key]>0?r[key]:0),0);
