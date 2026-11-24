@@ -473,7 +473,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=6123fbfe22"></script>
+<script src="/MPK/director-data.js?v=d6be98af2c"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="equipment";
@@ -1302,8 +1302,7 @@ function renderCeo(f,t,lab){
   document.getElementById("ceo-sf").innerHTML=tile("Травмы за период",fmt(injP),"",injP?"warn":"good")
     +tile("Дней без травм",fmt(noInj),lastI?`последняя травма ${dd(lastI)}`:"с начала года травм не было",noInj>=30?"good":noInj>=7?"warn":"crit")
     +tile("Биобезопасность",bp==null?"—":fmt(bp,0)+" %",B?`проверка ${dd(B.d)} · невыполнено ${fmt((B.items||[]).length)}`:"проверок за период не было",bp==null?"":(bp>=90?"good":bp>=80?"warn":"crit"))
-    +tile("Пожарная безопасность",fmt(FR.length)+" пожар"+(FR.length%10===1&&FR.length%100!==11?"":"ов"),`учебных эвакуаций ${fmt(EV.length)}`+(le?` · последняя ${le.d.slice(0,5)}: ${fmt(le.dur,0)} мин при норме ${fmt(le.norm,0)}`:""),FR.length?"warn":"good")
-    +tile("Промышленная безопасность",opo.length?`${opo.length-unreg} из ${opo.length}`:"—",opo.length?`ОПО зарегистрировано; аварий, инцидентов и несчастных случаев нет (отчёт за 2025)`:"",unreg?"warn":"good");
+    +tile("Пожарная безопасность",fmt(FR.length)+" пожар"+(FR.length%10===1&&FR.length%100!==11?"":"ов"),`учебных эвакуаций ${fmt(EV.length)}`+(le?` · последняя ${le.d.slice(0,5)}: ${fmt(le.dur,0)} мин при норме ${fmt(le.norm,0)}`:""),FR.length?"warn":"good");
 }
 // верхние плашки вкладки (16.11.2026, Павел): расход на голову по каждому энергоносителю; по нажатию открывается отчёт по нему
 const EN_TOP=[["water","Вода","м³",2],["el","Электроэнергия","кВт·ч",1],["gas","Природный газ","м³",2],["co2","Углекислота (CO₂)","кг",2]];
