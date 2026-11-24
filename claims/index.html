@@ -461,7 +461,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=eae58a7147"></script>
+<script src="/MPK/director-data.js?v=8268603d45"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -1235,7 +1235,7 @@ function renderCeo(f,t,lab){
   // товарные группы: свинка товарная, ремонтная, технологическая, свиноматка (лист «ЦУиППЖ», факт и план убоя по группам)
   const GN=["Товарная свинка","Ремонтная свинка","Технологическая свинка","Свиноматка"], GR=PD.filter(r=>r.grp), gb=document.getElementById("ceo-grp");
   if(!GR.length) gb.innerHTML=""; else {
-    const gf=GN.map((n,i)=>[n,GR.reduce((a,r)=>a+r.grp[0][i],0),GR.reduce((a,r)=>a+r.grp[1][i],0)]), gt=gf.reduce((a,x)=>a+x[1],0)||1, gm=Math.max(1,...gf.map(x=>x[1]));
+    const gf=GN.map((n,i)=>[n,GR.reduce((a,r)=>a+r.grp[0][i],0),GR.reduce((a,r)=>a+r.grp[1][i],0)]).sort((a,b)=>b[1]-a[1]), gt=gf.reduce((a,x)=>a+x[1],0)||1, gm=Math.max(1,...gf.map(x=>x[1]));
     fold(gb,"grp","Товарные группы, гол",fmt(gt)+" гол",gf.map(([n,fa,pl])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(fa)}</b> · ${fmt(fa/gt*100,1)} %${pl?` · план ${fmt(pl)}`:""}</span><div class="hb"><i class="o" style="width:${fa/gm*100}%"></i></div></div>`).join(""));
   }
   // энергоносители укрупнённо: расход на голову убоя (как в «Энергоносителях») и общий расход за период
