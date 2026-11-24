@@ -132,6 +132,9 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.45 "Helvetic
 .xr .xb .t{display:none;height:16px;border-radius:5px;background:var(--line-soft);overflow:hidden} .xr .xb .t i{display:block;height:100%;border-radius:5px}
 .xr .xb .t i.p{background:var(--ink-3);opacity:.45} .xr .xb .t i.f{background:var(--bar)}
 .xr .xb .n{font-size:14px;color:var(--ink-2);text-align:right;min-width:92px} .xr .xb.f .n{color:var(--ink);font-weight:700}
+.xr .xv{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px} .xr .xv small{display:block;font-size:12.5px;color:var(--ink-3)} .xr .xv b{font:600 27px/1.15 "Helvetica Neue",Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums;color:var(--ink-2)} .xr .xv b.f{color:var(--txt)} .xr .xv i{font-style:normal;font-size:14px;color:var(--ink-3)}
+.xr .xs{margin-top:5px;font-size:14px;font-weight:600;color:var(--txt);font-variant-numeric:tabular-nums}
+.xr .xh,.xr .xb{display:none}
 /* горизонтальные гистограммы убраны (24.11.2026): остались числа */ #p-ceo .hb{display:none}
 .xr.st-good{--bar:var(--good);--txt:var(--good-t)} .xr.st-warn{--bar:var(--warn);--txt:var(--warn-t)} .xr.st-crit{--bar:var(--crit);--txt:var(--crit-t)} .xr.st-none{--bar:var(--sp);--txt:var(--ink-3)}
 .xr.clk{cursor:pointer} .xr .nm .chv{margin-left:6px;font-size:11px;color:var(--ink-3);font-weight:400}
@@ -470,7 +473,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=f754243b1d"></script>
+<script src="/MPK/director-data.js?v=1f7e2c5c7c"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="energy";
@@ -1242,8 +1245,8 @@ function renderCeo(f,t,lab){
       ext=`<div class="why" data-k="vesf"${window.CEOOPEN.vesf?"":" hidden"}><h4>Средний вес по фермам</h4>`+(fl.length?fl.map(([n,w,h])=>`<div class="fr"><b>${n}</b><b>${sf(w,1)} кг <span>· ${sf(h,0)} гол</span></b></div>`).join(""):`<div class="none">Нет данных по поставке за выбранный период.</div>`)+`</div>`}
     const OK={ubl:"why",ves:"vesf",obv:"whyo"}, OL={ubl:"причины",ves:"по фермам",obv:"причины"};
     const clk=ext?` clk" data-o="${OK[k]}" role="button" tabindex="0`:"";
-    const bars=a?`<div class="xb"><span class="l">План</span><div class="t"><i class="p" style="width:${pw.toFixed(1)}%"></i></div><span class="n">${pTxt} ${m.u}</span></div><div class="xb f"><span class="l">Факт</span><div class="t"><i class="f" style="width:${fw2.toFixed(1)}%"></i></div><span class="n">${fTxt} ${m.u}</span></div>`:"";
-    return `<div class="xr st-${st}${clk}"><div class="xh"><div class="nm">${m.n}${ext?`<b class="chv">${window.CEOOPEN[OK[k]]?"▴":"▾"} ${OL[k]}</b>`:""}</div><div class="xd">${a?dvTxt||"по плану":"—"}${pcTxt?`<small>${pcTxt}</small>`:""}</div></div>${bars}${ext}</div>`};
+    const big=a?`<div class="xv"><div><small>План</small><b>${pTxt}</b><i> ${m.u}</i></div><div><small>Факт</small><b class="f">${fTxt}</b><i> ${m.u}</i></div></div><div class="xs">${dvTxt||"по плану"}${pcTxt?` · ${pcTxt}`:""}</div>`:`<div class="xv"><div><b>—</b></div></div>`;
+    return `<div class="xr st-${st}${clk}"><div class="nm">${m.n}${ext?`<b class="chv">${window.CEOOPEN[OK[k]]?"▴":"▾"} ${OL[k]}</b>`:""}</div>${big}${ext}</div>`};
   document.getElementById("ceo-plan").innerHTML=["ubl","ves","obv","crp"].map(xrow).join("");
   document.getElementById("ceo-ctf").innerHTML=["mkm","jir","pad"].map(xrow).join("");
   document.querySelectorAll("#ceo-plan .xr.clk").forEach(row=>{const tg=e=>{if(e.target.closest(".why")||e.target.closest("svg.spark")) return; const o=row.dataset.o; window.CEOOPEN[o]=!window.CEOOPEN[o]; row.querySelector(".why").hidden=!window.CEOOPEN[o]; const c=row.querySelector(".chv"); c.textContent=c.textContent.replace(/^./,window.CEOOPEN[o]?"▴":"▾")}; row.onclick=tg; row.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg(e)}}});
