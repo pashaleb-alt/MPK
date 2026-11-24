@@ -452,7 +452,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=15e5e6b973"></script>
+<script src="/MPK/director-data.js?v=a75d2787d6"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="equipment";
@@ -1162,15 +1162,23 @@ function renderCo2(f,t,lab){
 // отчёт генеральному директору (Павел, 24.11.2026: «отдельный отчёт по отдельной ссылке»): поставка живка, выполнение плана убоя/обвалки/ЦРП, мука/жир/падёж, энергоносители укрупнённо,
 // заполненность штата (отдельная сводка по руководителям подразделений), безопасность; период выбирается календарём, по умолчанию — последний день производства
 function renderCeo(f,t,lab){
+  // свёрнутые по умолчанию блоки (Павел, 24.11.2026): товарные группы и поставка по фермам раскрываются по нажатию
+  window.CEOOPEN=window.CEOOPEN||{};
+  const fold=(el,key,title,note,body)=>{const op=!!window.CEOOPEN[key];
+    el.innerHTML=`<h3 class="fold" role="button" tabindex="0" style="cursor:pointer;user-select:none">${title}<small>${note} · нажмите, чтобы раскрыть</small><span class="car" style="float:right;color:var(--ink-3)">${op?"▴":"▾"}</span></h3><div class="fb"${op?"":" hidden"}>${body}</div>`;
+    const hh=el.querySelector("h3.fold"), fb=el.querySelector(".fb"), car=el.querySelector(".car"), tg=()=>{window.CEOOPEN[key]=!window.CEOOPEN[key]; fb.hidden=!window.CEOOPEN[key]; car.textContent=window.CEOOPEN[key]?"▴":"▾"};
+    hh.onclick=tg; hh.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg()}}};
   document.getElementById("ceo-note").textContent=lab+idleNote();
   const stc=p=>p==null?"none":p>=95?"good":p>=90?"warn":"crit", col={good:"var(--good)",warn:"var(--warn)",crit:"var(--crit)",none:"var(--accent)",up:"var(--accent)"};
   const PD=(DATA.pd||[]).filter(r=>inR(r.d,f,t));
-  const agg=k=>{const rs=PD.filter(r=>r[k]&&r[k][1]!=null); if(!rs.length) return null; const p=rs.reduce((a,r)=>a+(r[k][0]||0),0), fa=rs.reduce((a,r)=>a+r[k][1],0); return {p,f:fa,pc:p?fa/p*100:null}};
+  const agg=k=>{const rs=PD.filter(r=>r[k]&&r[k][1]!=null); if(!rs.length) return null; const mean=(k==="ves"||k==="vyh"), n=mean?rs.length:1, p=rs.reduce((a,r)=>a+(r[k][0]||0),0)/n, fa=rs.reduce((a,r)=>a+r[k][1],0)/n; return {p,f:fa,pc:p?fa/p*100:null}};
   const bar=(name,right,pc,st)=>`<div class="cr"><div class="h"><span class="nm">${name}</span><span>${right}<span class="pc" style="color:${col[st]}">${pc==null?"—":fmt(pc,0)+" %"}</span></span></div><div class="tr"><i style="width:${pc==null?0:Math.min(100,pc)}%;background:${col[st]}"></i></div></div>`;
   const row=(name,k,unit,neutral)=>{const a=agg(k); if(!a) return `<div class="cr"><div class="h"><span class="nm">${name}</span><span class="vl">—</span></div></div>`;
-    const sc=unit==="т"?1000:1, d=unit==="т"?1:0;
-    return bar(name,`<span class="vl"><b style="color:var(--ink)">${fmt(a.f/sc,d)}</b> / ${fmt(a.p/sc,d)} ${unit}</span>`,a.pc,neutral?"none":stc(a.pc))};
-  document.getElementById("ceo-plan").innerHTML=row("Убой, гол","ubl","гол")+row("Обвалка, гол","obv","гол")+row("Розничная продукция ЦРП","crp","т");
+    const sc=unit==="т"?1000:1, d=(unit==="т"||unit==="кг"||unit==="%")?1:0;
+    // выход п/т — по отклонению в п. п. (≥ −0,5 хорошо, ≥ −1,0 внимание), средний вес — по выполнению (≥ 99 %, ≥ 95 %), остальное — 95/90
+    const st=neutral?"none":k==="vyh"?(a.f-a.p>=-0.5?"good":a.f-a.p>=-1?"warn":"crit"):k==="ves"?(a.pc>=99?"good":a.pc>=95?"warn":"crit"):stc(a.pc);
+    return bar(name,`<span class="vl"><b style="color:var(--ink)">${fmt(a.f/sc,d)}</b> / ${fmt(a.p/sc,d)} ${unit}${k==="vyh"?` · отклонение ${a.f-a.p>=0?"+":"−"}${fmt(Math.abs(a.f-a.p),1)} п. п.`:""}</span>`,a.pc,st)};
+  document.getElementById("ceo-plan").innerHTML=row("Убой, гол","ubl","гол")+row("Средний вес товарной свинки","ves","кг")+row("Выход парной полутуши (товарная свинка)","vyh","%")+row("Обвалка, гол","obv","гол")+row("Розничная продукция ЦРП","crp","т");
   document.getElementById("ceo-ctf").innerHTML=row("Мясокостная мука","mkm","т")+row("Жир технический","jir","т")+row("Переработано падежа","pad","т",true);
   // поставка живка: партии «Выход мяса на кости» (голов, живой вес, по фермам) против плана убоя
   const VY=(DATA.vyh||[]).filter(r=>inR(r.d,f,t)), sup=document.getElementById("ceo-sup"), fb=document.getElementById("ceo-farms");
@@ -1183,13 +1191,13 @@ function renderCeo(f,t,lab){
       +tile("Средний вес головы",fmt(live/heads,1)+" кг","")
       +tile("Партий (машин)",fmt(batches),VY.length>1?`в среднем ${fmt(batches/VY.length,1)} в сутки`:"");
     const fl=Object.entries(farms).sort((a,b)=>b[1][1]-a[1][1]), fm=Math.max(1,fl[0][1][1]), ft=fl.reduce((a,x)=>a+x[1][1],0)||1;
-    fb.innerHTML=`<div style="font-weight:600;font-size:14px;margin:2px 0 6px">Поставка по фермам, гол</div>`+fl.map(([n,v])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v[1])}</b> · ${fmt(v[1]/ft*100,1)} % · ${fmt(v[0])} парт.</span><div class="hb"><i class="o" style="width:${v[1]/fm*100}%"></i></div></div>`).join("");
+    fold(fb,"farms","Поставка по фермам, гол",fl.length+" ферм",fl.map(([n,v])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(v[1])}</b> · ${fmt(v[1]/ft*100,1)} % · ${fmt(v[0])} парт.</span><div class="hb"><i class="o" style="width:${v[1]/fm*100}%"></i></div></div>`).join(""));
   }
   // товарные группы: свинка товарная, ремонтная, технологическая, свиноматка (лист «ЦУиППЖ», факт и план убоя по группам)
   const GN=["Товарная свинка","Ремонтная свинка","Технологическая свинка","Свиноматка"], GR=PD.filter(r=>r.grp), gb=document.getElementById("ceo-grp");
   if(!GR.length) gb.innerHTML=""; else {
     const gf=GN.map((n,i)=>[n,GR.reduce((a,r)=>a+r.grp[0][i],0),GR.reduce((a,r)=>a+r.grp[1][i],0)]), gt=gf.reduce((a,x)=>a+x[1],0)||1, gm=Math.max(1,...gf.map(x=>x[1]));
-    gb.innerHTML=`<div style="font-weight:600;font-size:14px;margin:2px 0 6px">Товарные группы, гол</div>`+gf.map(([n,fa,pl])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(fa)}</b> · ${fmt(fa/gt*100,1)} %${pl?` · план ${fmt(pl)}`:""}</span><div class="hb"><i class="o" style="width:${fa/gm*100}%"></i></div></div>`).join("");
+    fold(gb,"grp","Товарные группы, гол",fmt(gt)+" гол",gf.map(([n,fa,pl])=>`<div class="hr"><span class="t">${n}</span><span class="n"><b>${fmt(fa)}</b> · ${fmt(fa/gt*100,1)} %${pl?` · план ${fmt(pl)}`:""}</span><div class="hb"><i class="o" style="width:${fa/gm*100}%"></i></div></div>`).join(""));
   }
   // энергоносители укрупнённо: расход на голову убоя (как в «Энергоносителях») и общий расход за период
   const E=(DATA.energy||[]).filter(r=>inR(r.d,f,t)), per=key=>{const k=E.filter(r=>r.kill>0&&r[key]>0), kk=k.reduce((a,r)=>a+r.kill,0); return kk?k.reduce((a,r)=>a+r[key],0)/kk:null}, tot=key=>E.reduce((a,r)=>a+(r[key]>0?r[key]:0),0);
