@@ -461,7 +461,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"><div class="tiles"><div class="tile big st-good click"><div class="l">Дней без травм</div><div class="v">5</div><div class="s">последняя травма 18.11.2026</div></div><div class="tile st-good click"><div class="l">Всего травм</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них порезы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них ушибы</div><div class="v">0</div><div class="s">пред. период: 0</div></div><div class="tile st-good click"><div class="l">из них переломы</div><div class="v">0</div><div class="s">пред. период: 0</div></div></div><div class="hl" id="ot-list" hidden=""></div><div class="hl" style="margin-top:12px"><h3>По категориям работников</h3><div class="empty">травм нет</div></div></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=dc51902c29"></script>
+<script src="/MPK/director-data.js?v=eae58a7147"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="safety";
@@ -1189,7 +1189,7 @@ function renderCeo(f,t,lab){
     return bar(name,`<span class="vl"><b style="color:var(--ink)">${fmt(a.f/sc,d)}</b> / ${fmt(a.p/sc,d)} ${unit}${k==="vyh"?` · отклонение ${a.f-a.p>=0?"+":"−"}${fmt(Math.abs(a.f-a.p),1)} п. п.`:""}</span>`,a.pc,st)};
   // строки как на «Производстве»: пороги те же (выполнение: <90 красный, <98 жёлтый; вес — 90/100; выход п/т — 74,39/75,39 %; падёж — не больше плана)
   const XM={ubl:{n:"Убой",u:"гол"},ves:{n:"Средний вес тов.св.",u:"кг",val:1,dec:1,bands:[90,100]},vyh:{n:"Выход п/т",u:"%",val:1,dec:1,abs:[74.39,75.39],norm:75.39},
-    obv:{n:"Обвалка",u:"гол"},crp:{n:"Розничная продукция ЦРП",u:"т",sc:1000,dec:1},mkm:{n:"Мясокостная мука",u:"т",sc:1000,dec:1},jir:{n:"Жир технический",u:"т",sc:1000,dec:1},pad:{n:"Падёж",u:"т",sc:1000,dec:1,inv:1}};
+    obv:{n:"Обвалка",u:"гол"},crp:{n:"Розничная продукция ЦРП",u:"т",sc:1000,dec:1},mkm:{n:"Мясокостная мука",u:"т",sc:1000,dec:1},jir:{n:"Жир технический",u:"т",sc:1000,dec:1},pad:{n:"Переработано падежа",u:"т",sc:1000,dec:1,inv:1}};
   const MG3=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
   const sf=(x,d)=>fmt(x,d);
   const xval=(m,r,k)=>{const q=r[k]; if(!q||q[1]==null) return null; if(m.val) return q[1]; return q[0]?q[1]/q[0]*100:null};
