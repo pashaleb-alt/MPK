@@ -454,7 +454,9 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="legend" id="ceo-ennt" style="font-size:12px;margin-top:4px"></div>
     <div class="ceoh">Персонал: заполненность штата</div>
     <div class="tiles" id="ceo-st"></div>
-    <div class="ceoh" style="font-size:15px;margin-top:14px">Сводка по руководителям подразделений</div>
+    <div class="ceoh" style="font-size:15px;margin-top:14px">Отсутствующие руководители</div>
+    <div id="ceo-mg"></div>
+    <div class="ceoh" style="font-size:15px;margin-top:14px">Заполненность подразделений</div>
     <div id="ceo-units"></div>
     <div class="ceoh">Безопасность</div>
     <div class="tiles" id="ceo-sf"></div>
@@ -473,7 +475,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=af053158a7"></script>
+<script src="/MPK/director-data.js?v=7f52efde31"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="equipment";
@@ -1284,12 +1286,27 @@ function renderCeo(f,t,lab){
     +tile("CO₂ на голову",c!=null?fmt(c,2)+" кг":"—",c!=null?`всего ${fmt(tot("co2")/1000,1)} т`:"");
   const lastE=(DATA.energy||[]).filter(r=>r.d<=t&&(r.st!=null||r.el>0||r.gas>0||r.co2>0)).map(r=>r.d).sort().pop();
   document.getElementById("ceo-ennt").innerHTML=(!hasE&&lastE)?`<span>За выбранный период данных по энергоносителям пока нет; последние внесённые данные — за ${dd(lastE)}.</span>`:"";
+  // отсутствующие руководители (Павел, 25.11.2026): вакантные места + СВО + декрет по должностям руководителей (начальники, главные специалисты-руководители, заведующие, директор); мастера — отдельно
+  const mgAbs=(S,kind)=>{const L=(S.mg||[]).filter(x=>x[2]===kind); return {plan:L.reduce((a,x)=>a+x[3],0), vac:L.reduce((a,x)=>a+Math.max(x[5],0),0), dec:L.reduce((a,x)=>a+x[6],0), svo:L.reduce((a,x)=>a+x[7],0), n:L.length}};
+  const mgTiles=(S,SA)=>{if(!(S.mg&&S.mg.length)) return tile("Руководители отсутствуют","—","нет разбивки по должностям в ШР на "+dd(S.d));
+    const prev=SA.filter(x=>x.d<S.d&&x.mg&&x.mg.length).slice(-1)[0];
+    return ["m","w"].map(k=>{const a=mgAbs(S,k), ab=a.vac+a.dec+a.svo, p=prev?mgAbs(prev,k):null, pa=p?p.vac+p.dec+p.svo:null, sh=a.plan?ab/a.plan:0;
+      return tile(k==="m"?"Руководители отсутствуют":"Мастера отсутствуют",`${fmt(ab)} из ${fmt(a.plan)}`,
+        `вакантно ${fmt(a.vac)} · СВО ${fmt(a.svo)} · декрет ${fmt(a.dec)}`+(pa!=null?` · на ${dd(prev.d)}: ${fmt(pa)}`:""), ab===0?"good":sh<0.25?"warn":"crit")}).join("")};
+  const renderMg=S=>{const el=document.getElementById("ceo-mg"); if(!(S.mg&&S.mg.length)){el.innerHTML='<div class="empty">В выгрузке ШР нет разбивки по должностям.</div>'; return}
+    const rows=S.mg.filter(x=>x[2]==="m"&&(Math.max(x[5],0)+x[6]+x[7])>0);
+    const why=x=>[x[5]>0?(x[5]>1?`вакантно ${fmt(x[5])}`:"вакансия"):"",x[7]>0?(x[7]>1?`СВО ${fmt(x[7])}`:"СВО"):"",x[6]>0?(x[6]>1?`декрет ${fmt(x[6])}`:"декрет"):""].filter(Boolean).join(" · ");
+    const dn=n=>n==="Руководство МПК"?n:n.replace(/\s+МПК$/,"");
+    el.innerHTML=rows.length?rows.map(x=>`<div class="cr"><div class="h"><span class="nm">${x[1]}</span><span class="vl"><b style="color:${x[5]>0?"var(--crit)":"var(--warn)"}">${why(x)}</b></span></div><div class="vl" style="font-size:12px;color:var(--ink-3)">${dn(x[0])}</div></div>`).join(""):'<div class="empty">Все руководящие места заняты.</div>';
+    el.innerHTML+=`<div class="legend" style="font-size:12px;margin-top:4px">ШР на ${dd(S.d)}. Считаются руководящие должности МПК (начальники цехов и участков, главный инженер, главный технолог, заведующий складом, директор); мастера — отдельной плашкой. Отсутствует = вакантное место, СВО, декрет.</div>`};
   // заполненность штата: последний снимок ШР на выбранный день; сводка по руководителям — по подразделениям
   const SA=DATA.staff||[], S=SA.filter(x=>x.d<=t).slice(-1)[0]||SA[0], ST=document.getElementById("ceo-st"), UN=document.getElementById("ceo-units");
-  if(!S){ST.innerHTML=tile("Укомплектованность штата","—","");UN.innerHTML=""} else {
+  if(!S){ST.innerHTML=tile("Укомплектованность штата","—","");UN.innerHTML="";document.getElementById("ceo-mg").innerHTML=""} else {
     const fp=S.plan?S.fact/S.plan*100:null;
     ST.innerHTML=tile("Укомплектованность штата",fp==null?"—":fmt(fp,0)+" %",`факт ${fmt(S.fact,1)} из ${fmt(S.plan)} · ШР на ${dd(S.d)}`,stc(fp)==="none"?"":stc(fp))
-      +tile("Вакансий",fmt(S.vac,1),`КНДР ${fmt(S.kndr)} · аутсорс ${fmt(S.outs)}`);
+      +tile("Вакансий",fmt(S.vac,1),`КНДР ${fmt(S.kndr)} · аутсорс ${fmt(S.outs)}`)
+      +mgTiles(S,SA);
+    renderMg(S);
     const U=(S.units||[]).filter(u=>u[1]>0).map(u=>({n:u[0],p:u[1],fa:u[2],v:u[3],pc:u[2]/u[1]*100})).sort((a,b)=>a.pc-b.pc);
     UN.innerHTML=U.map(u=>bar(u.n,`<span class="vl"><b style="color:var(--ink)">${fmt(u.fa,1)}</b> / ${fmt(u.p)} · ${u.v>0?"вакансий "+fmt(u.v,1):u.v<0?"сверх штата "+fmt(-u.v,1):"полностью"}</span>`,u.pc,stc(u.pc))).join("");
   }
