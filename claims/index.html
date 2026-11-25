@@ -475,7 +475,7 @@ const t=localStorage.getItem("mpkTheme")||"light"; if(t!=="auto") document.docum
     <div class="sf" id="ot"></div>
   </section>
 </div>
-<script src="/MPK/director-data.js?v=7f52efde31"></script>
+<script src="/MPK/director-data.js?v=7278362e76"></script>
 <script>
 /* данные в director-data.js */
 const PAGE="claims";
@@ -1290,15 +1290,15 @@ function renderCeo(f,t,lab){
   const mgAbs=(S,kind)=>{const L=(S.mg||[]).filter(x=>x[2]===kind); return {plan:L.reduce((a,x)=>a+x[3],0), vac:L.reduce((a,x)=>a+Math.max(x[5],0),0), dec:L.reduce((a,x)=>a+x[6],0), svo:L.reduce((a,x)=>a+x[7],0), n:L.length}};
   const mgTiles=(S,SA)=>{if(!(S.mg&&S.mg.length)) return tile("Руководители отсутствуют","—","нет разбивки по должностям в ШР на "+dd(S.d));
     const prev=SA.filter(x=>x.d<S.d&&x.mg&&x.mg.length).slice(-1)[0];
-    return ["m","w"].map(k=>{const a=mgAbs(S,k), ab=a.vac+a.dec+a.svo, p=prev?mgAbs(prev,k):null, pa=p?p.vac+p.dec+p.svo:null, sh=a.plan?ab/a.plan:0;
+    return ["m","w"].map(k=>{const a=mgAbs(S,k), ab=a.vac, p=prev?mgAbs(prev,k):null, pa=p?p.vac:null, sh=a.plan?ab/a.plan:0;
       return tile(k==="m"?"Руководители отсутствуют":"Мастера отсутствуют",`${fmt(ab)} из ${fmt(a.plan)}`,
-        `вакантно ${fmt(a.vac)} · СВО ${fmt(a.svo)} · декрет ${fmt(a.dec)}`+(pa!=null?` · на ${dd(prev.d)}: ${fmt(pa)}`:""), ab===0?"good":sh<0.25?"warn":"crit")}).join("")};
+        `вакантных мест`+(pa!=null?` · на ${dd(prev.d)}: ${fmt(pa)}`:""), ab===0?"good":sh<0.25?"warn":"crit")}).join("")};
   const renderMg=S=>{const el=document.getElementById("ceo-mg"); if(!(S.mg&&S.mg.length)){el.innerHTML='<div class="empty">В выгрузке ШР нет разбивки по должностям.</div>'; return}
-    const rows=S.mg.filter(x=>x[2]==="m"&&(Math.max(x[5],0)+x[6]+x[7])>0);
-    const why=x=>[x[5]>0?(x[5]>1?`вакантно ${fmt(x[5])}`:"вакансия"):"",x[7]>0?(x[7]>1?`СВО ${fmt(x[7])}`:"СВО"):"",x[6]>0?(x[6]>1?`декрет ${fmt(x[6])}`:"декрет"):""].filter(Boolean).join(" · ");
+    const rows=S.mg.filter(x=>x[2]==="m"&&x[5]>0);
+    const why=x=>x[5]>1?`вакантно ${fmt(x[5])}`:"вакансия";
     const dn=n=>n==="Руководство МПК"?n:n.replace(/\s+МПК$/,"");
-    el.innerHTML=rows.length?rows.map(x=>`<div class="cr"><div class="h"><span class="nm">${x[1]}</span><span class="vl"><b style="color:${x[5]>0?"var(--crit)":"var(--warn)"}">${why(x)}</b></span></div><div class="vl" style="font-size:12px;color:var(--ink-3)">${dn(x[0])}</div></div>`).join(""):'<div class="empty">Все руководящие места заняты.</div>';
-    el.innerHTML+=`<div class="legend" style="font-size:12px;margin-top:4px">ШР на ${dd(S.d)}. Считаются руководящие должности МПК (начальники цехов и участков, главный инженер, главный технолог, заведующий складом, директор); мастера — отдельной плашкой. Отсутствует = вакантное место, СВО, декрет.</div>`};
+    el.innerHTML=rows.length?rows.map(x=>`<div class="cr"><div class="h"><span class="nm">${x[1]}</span><span class="vl"><b style="color:var(--crit)">${why(x)}</b></span></div><div class="vl" style="font-size:12px;color:var(--ink-3)">${dn(x[0])}</div></div>`).join(""):'<div class="empty">Все руководящие места заняты.</div>';
+    el.innerHTML+=`<div class="legend" style="font-size:12px;margin-top:4px">ШР на ${dd(S.d)}. Считаются руководящие должности МПК (начальники цехов и участков, главный инженер, главный технолог, заведующий складом, директор); мастера — отдельной плашкой. Отсутствует = вакантное место.</div>`};
   // заполненность штата: последний снимок ШР на выбранный день; сводка по руководителям — по подразделениям
   const SA=DATA.staff||[], S=SA.filter(x=>x.d<=t).slice(-1)[0]||SA[0], ST=document.getElementById("ceo-st"), UN=document.getElementById("ceo-units");
   if(!S){ST.innerHTML=tile("Укомплектованность штата","—","");UN.innerHTML="";document.getElementById("ceo-mg").innerHTML=""} else {
